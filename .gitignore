@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# cl_st_carol
+cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/*.mp4
