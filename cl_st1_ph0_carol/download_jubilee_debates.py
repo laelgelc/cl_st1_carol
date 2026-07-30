@@ -54,10 +54,10 @@ from typing import Any
 TOOL_NAME = "download_jubilee_debates.py"
 TOOL_VERSION = "v1"
 
-DEFAULT_METADATA_PATH = (
-    "cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson"
-)
-DEFAULT_OUTPUT_DIR = "cl_st1_ph0_carol/corpus/01_jubilee_debates"
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+DEFAULT_METADATA_PATH = "corpus/00_sources/jubilee_debates_samples.ndjson"
+DEFAULT_OUTPUT_DIR = "corpus/01_jubilee_debates"
 
 DEFAULT_VIDEOS_DIR_NAME = "videos"
 DEFAULT_RAW_METADATA_DIR_NAME = "metadata_raw"
@@ -65,16 +65,11 @@ DEFAULT_DESCRIPTIONS_DIR_NAME = "descriptions"
 DEFAULT_SUBTITLES_DIR_NAME = "subtitles"
 DEFAULT_COMMENTS_DIR_NAME = "comments"
 
-DEFAULT_LOG_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log"
-)
+DEFAULT_LOG_FILE = "corpus/01_jubilee_debates/download_jubilee_debates.log"
 DEFAULT_MANIFEST_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/"
-    "download_jubilee_debates_manifest.json"
+    "corpus/01_jubilee_debates/download_jubilee_debates_manifest.json"
 )
-DEFAULT_INDEX_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
-)
+DEFAULT_INDEX_FILE = "corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
 
 DEFAULT_TEST_MODE = True
 DEFAULT_TEST_LIMIT = 5
@@ -120,6 +115,18 @@ def path_to_str(path: Path | None) -> str | None:
     return path.as_posix()
 
 
+def resolve_script_relative_path(path: Path) -> Path:
+    """
+    Resolve a path relative to the script directory when it is not absolute.
+
+    This makes default paths stable whether the programme is executed from the
+    project root, from cl_st1_ph0_carol/, or from another working directory.
+    """
+    if path.is_absolute():
+        return path
+    return SCRIPT_DIR / path
+
+
 def short_error(stderr: str, stdout: str = "", limit: int = 1000) -> str:
     """
     Extract a short error message from process stderr/stdout.
@@ -159,9 +166,7 @@ def parse_args() -> argparse.Namespace:
         argparse handles malformed arguments by printing usage and exiting.
     """
     parser = argparse.ArgumentParser(
-        description=(
-            "Download selected Jubilee debate videos and metadata with yt-dlp."
-        )
+        description="Download selected Jubilee debate videos and metadata with yt-dlp."
     )
 
     parser.add_argument(
@@ -321,7 +326,18 @@ def parse_args() -> argparse.Namespace:
         help="Subtitle language selector passed to yt-dlp.",
     )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    args.metadata = resolve_script_relative_path(args.metadata)
+    args.output_dir = resolve_script_relative_path(args.output_dir)
+    args.log_file = resolve_script_relative_path(args.log_file)
+    args.manifest_file = resolve_script_relative_path(args.manifest_file)
+    args.index_file = resolve_script_relative_path(args.index_file)
+
+    if args.cookies is not None:
+        args.cookies = resolve_script_relative_path(args.cookies)
+
+    return args
 
 
 def setup_logging(log_file: Path) -> logging.Logger:
@@ -427,13 +443,16 @@ def validate_args(args: argparse.Namespace) -> None:
         raise ConfigurationError("--max-retries must be zero or greater")
     if args.retry_delay < 0:
         raise ConfigurationError("--retry-delay must be zero or greater")
+
     if args.cookies is not None:
         if not args.cookies.exists():
             raise ConfigurationError(f"Cookies file does not exist: {args.cookies}")
         if not args.cookies.is_file():
             raise ConfigurationError(f"Cookies path is not a file: {args.cookies}")
+
     if args.start_corpus_id is not None and not args.start_corpus_id.strip():
         raise ConfigurationError("--start-corpus-id cannot be empty")
+
     if args.metadata_only and args.skip_metadata:
         raise ConfigurationError("--metadata-only and --skip-metadata cannot be combined")
 
@@ -478,7 +497,9 @@ def check_yt_dlp() -> dict[str, Any]:
     }
 
 
-def load_samples(metadata_path: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], int]:
+def load_samples(
+        metadata_path: Path,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], int]:
     """
     Load, validate, and deduplicate debate sample records from NDJSON.
 
@@ -592,7 +613,9 @@ def output_paths_for_record(record: dict[str, Any], output_dir: Path) -> dict[st
                 output_dir / DEFAULT_DESCRIPTIONS_DIR_NAME / f"{corpus_id}.description"
         ),
         "subtitles_dir": output_dir / DEFAULT_SUBTITLES_DIR_NAME,
-        "comments_file": output_dir / DEFAULT_COMMENTS_DIR_NAME / f"{corpus_id}.comments.json",
+        "comments_file": (
+                output_dir / DEFAULT_COMMENTS_DIR_NAME / f"{corpus_id}.comments.json"
+        ),
     }
 
 
@@ -636,6 +659,7 @@ def item_outputs_satisfied(
         missing.append("video")
     if not metadata_exists:
         missing.append("metadata")
+
     return False, f"missing {', '.join(missing)}"
 
 
@@ -746,13 +770,9 @@ def build_yt_dlp_command(
     url = str(item["youtube_url"])
 
     if args.metadata_only:
-        output_template = (
-                output_paths["raw_metadata_file"].parent / f"{corpus_id}.%(ext)s"
-        )
+        output_template = output_paths["raw_metadata_file"].parent / f"{corpus_id}.%(ext)s"
     else:
-        output_template = (
-                output_paths["video_file"].parent / f"{corpus_id}.%(ext)s"
-        )
+        output_template = output_paths["video_file"].parent / f"{corpus_id}.%(ext)s"
 
     command = ["yt-dlp"]
 
@@ -887,10 +907,16 @@ def run_yt_dlp_command(
                 {
                     "attempt": attempt_number,
                     "return_code": None,
-                    "stdout_tail": (exc.stdout or "")[-4000:]
-                    if isinstance(exc.stdout, str) else "",
-                    "stderr_tail": (exc.stderr or "")[-4000:]
-                    if isinstance(exc.stderr, str) else "",
+                    "stdout_tail": (
+                        (exc.stdout or "")[-4000:]
+                        if isinstance(exc.stdout, str)
+                        else ""
+                    ),
+                    "stderr_tail": (
+                        (exc.stderr or "")[-4000:]
+                        if isinstance(exc.stderr, str)
+                        else ""
+                    ),
                     "error": final_error,
                     "duration_seconds": (
                             attempt_end - attempt_start
@@ -957,10 +983,12 @@ def move_if_exists(source: Path, destination: Path) -> bool:
     """
     if destination.exists():
         return True
+
     if source.exists():
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(destination))
         return True
+
     return False
 
 
@@ -989,12 +1017,8 @@ def normalise_sidecar_files(
     corpus_id = str(item["corpus_id"])
     video_dir = output_paths["video_file"].parent
     metadata_dir = output_paths["raw_metadata_file"].parent
-    descriptions_dir = output_paths["description_file"].parent
     subtitles_dir = output_paths["subtitles_dir"]
-    comments_dir = output_paths["comments_file"].parent
 
-    # yt-dlp writes sidecars next to the output template base. In normal mode,
-    # that is videos/. In metadata-only mode, that is metadata_raw/.
     candidate_dirs = [video_dir, metadata_dir]
 
     for directory in candidate_dirs:
@@ -1017,11 +1041,13 @@ def normalise_sidecar_files(
         for subtitle_candidate in directory.glob(f"{corpus_id}.*"):
             if subtitle_candidate.suffix.lower() not in {".vtt", ".srt", ".ass", ".json3"}:
                 continue
+
             destination = subtitles_dir / subtitle_candidate.name
             if subtitle_candidate.resolve() != destination.resolve():
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 if not destination.exists():
                     shutil.move(str(subtitle_candidate), str(destination))
+
             subtitle_files.append(destination)
 
     subtitle_files.extend(
@@ -1029,7 +1055,9 @@ def normalise_sidecar_files(
         if path.suffix.lower() in {".vtt", ".srt", ".ass", ".json3"}
     )
 
-    unique_subtitle_files = sorted({path.resolve(): path for path in subtitle_files}.values())
+    unique_subtitle_files = sorted(
+        {path.resolve(): path for path in subtitle_files}.values()
+    )
 
     return {
         "raw_metadata_file": (
@@ -1449,15 +1477,21 @@ def process_item(
 
     if not local_paths:
         local_paths = {
-            "raw_metadata_file": paths["raw_metadata_file"]
-            if paths["raw_metadata_file"].exists()
-            else None,
-            "description_file": paths["description_file"]
-            if paths["description_file"].exists()
-            else None,
-            "comments_file": paths["comments_file"]
-            if paths["comments_file"].exists()
-            else None,
+            "raw_metadata_file": (
+                paths["raw_metadata_file"]
+                if paths["raw_metadata_file"].exists()
+                else None
+            ),
+            "description_file": (
+                paths["description_file"]
+                if paths["description_file"].exists()
+                else None
+            ),
+            "comments_file": (
+                paths["comments_file"]
+                if paths["comments_file"].exists()
+                else None
+            ),
             "subtitles_files": sorted(
                 path for path in paths["subtitles_dir"].glob(f"{item['corpus_id']}.*")
                 if path.suffix.lower() in {".vtt", ".srt", ".ass", ".json3"}
@@ -1524,7 +1558,6 @@ def main() -> int:
         if not records:
             raise ConfigurationError("No valid records found in metadata file")
 
-        # Validate --start-corpus-id after loading, so the error is precise.
         if args.start_corpus_id and not any(
                 record["corpus_id"] == args.start_corpus_id for record in records
         ):
@@ -1571,22 +1604,30 @@ def main() -> int:
 
             paths = skipped_item["paths"]
             local_paths = {
-                "raw_metadata_file": paths["raw_metadata_file"]
-                if paths["raw_metadata_file"].exists()
-                else None,
-                "description_file": paths["description_file"]
-                if paths["description_file"].exists()
-                else None,
-                "comments_file": paths["comments_file"]
-                if paths["comments_file"].exists()
-                else None,
+                "raw_metadata_file": (
+                    paths["raw_metadata_file"]
+                    if paths["raw_metadata_file"].exists()
+                    else None
+                ),
+                "description_file": (
+                    paths["description_file"]
+                    if paths["description_file"].exists()
+                    else None
+                ),
+                "comments_file": (
+                    paths["comments_file"]
+                    if paths["comments_file"].exists()
+                    else None
+                ),
                 "subtitles_files": sorted(
                     path for path in paths["subtitles_dir"].glob(
                         f"{skipped_item['corpus_id']}.*"
                     )
                     if path.suffix.lower() in {".vtt", ".srt", ".ass", ".json3"}
                 ),
-                "video_file": paths["video_file"] if paths["video_file"].exists() else None,
+                "video_file": (
+                    paths["video_file"] if paths["video_file"].exists() else None
+                ),
             }
 
             index_records.append(
@@ -1624,7 +1665,6 @@ def main() -> int:
         run_metadata["summary"]["failed"] = failed
         run_metadata["end_time"] = utc_timestamp()
 
-        # Refresh downloaded_at_utc after end_time is known.
         for record in index_records:
             record["downloaded_at_utc"] = run_metadata["end_time"]
 
@@ -1652,11 +1692,13 @@ def main() -> int:
 
         if failed > 0 or invalid_records:
             return 1
+
         return 0
 
     except KeyboardInterrupt:
         run_metadata["interrupted"] = True
         run_metadata["end_time"] = utc_timestamp()
+
         if logger is not None:
             logger.error("Interrupted by user")
 
@@ -1665,22 +1707,27 @@ def main() -> int:
         except OSError:
             if logger is not None:
                 logger.exception("Failed to write interrupted manifest")
+
         return 130
 
     except ConfigurationError as exc:
         message = f"Configuration error: {exc}"
+
         if logger is not None:
             logger.error(message)
         else:
             print(message, file=sys.stderr)
+
         return 2
 
     except OSError as exc:
         message = f"I/O error: {exc}"
+
         if logger is not None:
             logger.exception(message)
         else:
             print(message, file=sys.stderr)
+
         return 2
 
 
