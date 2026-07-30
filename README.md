@@ -1,1 +1,4 @@
-# cl_st1_carol
+# Corpus Linguistics - Study 1 - Carol
+
+## Phase 0 - Speaker Diarisation Test
+
