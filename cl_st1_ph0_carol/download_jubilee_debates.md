@@ -4,6 +4,12 @@
 
 `download_jubilee_debates.py` is a batch-processing programme that downloads selected Jubilee debate videos and associated metadata for **Corpus Linguistics — Study 1 — Carol, Phase 0**.
 
+The programme is located at:
+
+```text
+cl_st1_ph0_carol/download_jubilee_debates.py
+```
+
 The programme reads an NDJSON input file containing the debate sample selected by Carol:
 
 ```text
@@ -23,17 +29,107 @@ The programme uses `yt-dlp` to download:
 
 1. the video file;
 2. the full raw metadata file produced by `yt-dlp`;
-3. optionally, description files;
-4. optionally, subtitles and automatic captions;
-5. optionally, comments, if enabled.
+3. description files, by default;
+4. subtitles and automatic captions, by default;
+5. comments, optionally, if enabled.
 
 In addition, the programme creates a curated corpus index file that extracts and normalises selected metadata useful for the study.
 
 ---
 
-## 2. Default Paths
+## 2. Path Resolution Policy
+
+The programme must resolve its **default paths relative to the directory where `download_jubilee_debates.py` is located**, not relative to the current working directory.
+
+This means that if the script is located at:
+
+```text
+cl_st1_ph0_carol/download_jubilee_debates.py
+```
+
+then the default metadata path:
+
+```text
+corpus/00_sources/jubilee_debates_samples.ndjson
+```
+
+must resolve to:
+
+```text
+cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
+```
+
+and the default output directory:
+
+```text
+corpus/01_jubilee_debates/
+```
+
+must resolve to:
+
+```text
+cl_st1_ph0_carol/corpus/01_jubilee_debates/
+```
+
+This policy ensures that the programme works correctly whether executed from:
+
+```text
+cl_st1_carol/
+```
+
+or from:
+
+```text
+cl_st1_carol/cl_st1_ph0_carol/
+```
+
+or from another current working directory.
+
+### 2.1 Internal path base
+
+The implementation should define a script directory equivalent to:
+
+```python
+SCRIPT_DIR = Path(__file__).resolve().parent
+```
+
+Relative default paths should then be resolved against `SCRIPT_DIR`.
+
+### 2.2 Absolute paths
+
+If the user supplies an absolute path for an argument such as `--metadata`, `--output-dir`, `--log-file`, `--manifest-file`, `--index-file`, or `--cookies`, the programme must preserve that absolute path.
+
+### 2.3 Relative command-line paths
+
+For consistency with the default behaviour, relative command-line paths should also be resolved relative to the programme directory.
+
+For example, if the user runs:
+
+```bash
+python download_jubilee_debates.py --cookies env/youtube_cookies.txt
+```
+
+from inside `cl_st1_ph0_carol/`, the cookies path should resolve to:
+
+```text
+cl_st1_ph0_carol/env/youtube_cookies.txt
+```
+
+---
+
+## 3. Default Paths
+
+The following defaults are relative to the programme directory `cl_st1_ph0_carol/`.
 
 ### Input file
+
+Default argument value:
+
+```text
+corpus/00_sources/jubilee_debates_samples.ndjson
+```
+
+Resolved project path:
 
 ```text
 cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
@@ -41,11 +137,27 @@ cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
 
 ### Output directory
 
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/
+```
+
+Resolved project path:
+
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/
 ```
 
 ### Default log file
+
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/download_jubilee_debates.log
+```
+
+Resolved project path:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log
@@ -53,11 +165,21 @@ cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log
 
 ### Latest run manifest
 
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
+```
+
+Resolved project path:
+
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
 ```
 
 ### Timestamped run manifest pattern
+
+Resolved project path pattern:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest_<run_id>.json
@@ -65,13 +187,21 @@ cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest_<ru
 
 ### Curated corpus index
 
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+```
+
+Resolved project path:
+
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 
 ---
 
-## 3. Output Directory Structure
+## 4. Output Directory Structure
 
 The programme should organise outputs as follows:
 
@@ -102,21 +232,31 @@ cl_st1_ph0_carol/corpus/01_jubilee_debates/
 └── download_jubilee_debates_manifest_<run_id>.json
 ```
 
-For the first implementation, `videos/` and `metadata_raw/` should be mandatory. The other subdirectories may be created when their corresponding options are enabled.
+The programme should create the following subdirectories if they do not already exist:
+
+```text
+videos/
+metadata_raw/
+descriptions/
+subtitles/
+comments/
+```
+
+For the first implementation, `videos/` and `metadata_raw/` are the primary output directories. The other subdirectories are created to support description, subtitle, and optional comment outputs.
 
 ---
 
-## 4. Input Specification
+## 5. Input Specification
 
 The input file is NDJSON: one JSON object per line.
 
-Default path:
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
 ```
 
-### 4.1 Required input fields
+### 5.1 Required input fields
 
 Each valid record must contain:
 
@@ -128,7 +268,7 @@ Each valid record must contain:
 | `title`         | string | Title as supplied in the sample selection                 |
 | `debate_format` | string | Debate format, e.g. `Surrounded`                          |
 
-### 4.2 Recommended input fields
+### 5.2 Recommended input fields
 
 The programme should preserve these fields in the curated index if present:
 
@@ -145,17 +285,28 @@ The programme should preserve these fields in the curated index if present:
 | `status`                        | e.g. `selected`                                      |
 | `notes`                         | Optional notes                                       |
 
-### 4.3 Example input record
+### 5.3 Example input record
 
 ```json
 {"corpus_id":"jubilee_surrounded_001","source_platform":"YouTube","channel":"Jubilee","debate_format":"Surrounded","sample_group":"carol_initial_sample","sample_order":1,"title":"1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)","youtube_url":"https://www.youtube.com/watch?v=WV29R1M25n8","youtube_id":"WV29R1M25n8","views_reported_by_selector":"~43 milhões","views_reported_numeric_approx":43000000,"selected_by":"Carol","selection_source":"email","status":"selected","notes":null}
 ```
 
+### 5.4 Invalid input records
+
+If a row is missing one or more required fields:
+
+- the row must not be downloaded;
+- the row should be recorded in `invalid_records` in the manifest;
+- the row should be marked with status `failed_metadata` or equivalent;
+- processing should continue for other records.
+
+Invalid JSON lines are configuration errors and should cause the programme to exit with code `2`.
+
 ---
 
-## 5. Download Behaviour
+## 6. Download Behaviour
 
-### 5.1 Video download command
+### 6.1 Video download command
 
 For each valid input record, the programme should download the video using a command equivalent to:
 
@@ -163,24 +314,28 @@ For each valid input record, the programme should download the video using a com
 yt-dlp \
   -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4" \
   "https://www.youtube.com/watch?v=WV29R1M25n8" \
-  -o "cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4"
+  -o "cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.%(ext)s"
 ```
 
 The output filename should be based on `corpus_id`, not on YouTube title, to ensure stable and filesystem-safe filenames.
 
-Example:
+Expected final video path:
 
 ```text
-videos/jubilee_surrounded_001.mp4
+cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4
 ```
 
-### 5.2 Raw metadata download
+### 6.2 Raw metadata download
 
-The programme must save a raw `yt-dlp` metadata JSON file for each video.
+The programme must save a raw `yt-dlp` metadata JSON file for each video unless `--skip-metadata` is provided.
 
-The preferred approach is to invoke `yt-dlp` with `--write-info-json`.
+The programme should invoke `yt-dlp` with:
 
-Example command:
+```bash
+--write-info-json
+```
+
+When running a normal video download, the command should be equivalent to:
 
 ```bash
 yt-dlp \
@@ -190,20 +345,20 @@ yt-dlp \
   -o "cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.%(ext)s"
 ```
 
-However, because `yt-dlp` normally writes sidecar files next to the media output, the implementation should either:
+Because `yt-dlp` normally writes sidecar files next to the media output, the implementation may:
 
 1. configure output templates carefully; or
 2. move/rename the produced `.info.json` file after download.
 
-The final raw metadata path should be:
+The final raw metadata path must be:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json
 ```
 
-### 5.3 Metadata-only mode
+### 6.3 Metadata-only mode
 
-The programme should support a metadata-only mode:
+The programme must support a metadata-only mode:
 
 ```bash
 python download_jubilee_debates.py --metadata-only
@@ -228,9 +383,35 @@ yt-dlp \
   -o "cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.%(ext)s"
 ```
 
+Expected final raw metadata path:
+
+```text
+cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json
+```
+
+### 6.4 Existing outputs
+
+Existing outputs should be skipped by default.
+
+If `--metadata-only` is enabled, an item may be skipped when its raw metadata file already exists and `--reprocess` is not enabled.
+
+If normal video download mode is enabled, an item may be skipped when both the video file and raw metadata file already exist and `--reprocess` is not enabled.
+
+If `--skip-metadata` is enabled, an item may be skipped when the video file exists and `--reprocess` is not enabled.
+
+### 6.5 Reprocessing
+
+If `--reprocess` is provided:
+
+```bash
+python download_jubilee_debates.py --reprocess
+```
+
+the programme should call `yt-dlp` again and allow outputs to be overwritten or refreshed.
+
 ---
 
-## 6. Metadata Selection for Curated Index
+## 7. Metadata Selection for Curated Index
 
 The programme must write a curated index file:
 
@@ -245,60 +426,61 @@ Each line should contain one JSON object combining:
 3. local file paths;
 4. extraction metadata.
 
-### 6.1 Recommended curated index fields
+### 7.1 Recommended curated index fields
 
 Each curated index record should contain:
 
-| Field                          | Source           | Description                                      |
-|--------------------------------|------------------|--------------------------------------------------|
-| `corpus_id`                    | input            | Internal stable corpus ID                        |
-| `debate_format`                | input            | e.g. `Surrounded`                                |
-| `sample_group`                 | input            | e.g. `carol_initial_sample`                      |
-| `sample_order`                 | input            | Carol’s sample order                             |
-| `title_selected`               | input            | Title from Carol’s message                       |
-| `title_extracted`              | `yt-dlp`         | Title extracted at download time                 |
-| `youtube_id`                   | input / `yt-dlp` | YouTube video ID                                 |
-| `youtube_url`                  | input            | Original URL from input file                     |
-| `webpage_url`                  | `yt-dlp`         | Canonical URL extracted by `yt-dlp`              |
-| `source_platform`              | input            | Usually `YouTube`                                |
-| `channel_selected`             | input            | Channel from input file                          |
-| `channel_extracted`            | `yt-dlp`         | Channel from `yt-dlp`                            |
-| `channel_id`                   | `yt-dlp`         | YouTube channel ID                               |
-| `channel_url`                  | `yt-dlp`         | YouTube channel URL                              |
-| `uploader`                     | `yt-dlp`         | Uploader name                                    |
-| `uploader_id`                  | `yt-dlp`         | Uploader ID                                      |
-| `upload_date`                  | `yt-dlp`         | Upload date, usually `YYYYMMDD`                  |
-| `duration_seconds`             | `yt-dlp`         | Duration in seconds                              |
-| `duration_string`              | `yt-dlp`         | Human-readable duration                          |
-| `view_count_at_selection`      | input            | Carol’s approximate reported view count          |
-| `view_count_at_download`       | `yt-dlp`         | Extracted view count at download time            |
-| `like_count_at_download`       | `yt-dlp`         | Extracted like count, if available               |
-| `comment_count_at_download`    | `yt-dlp`         | Extracted comment count, if available            |
-| `categories`                   | `yt-dlp`         | YouTube categories                               |
-| `tags`                         | `yt-dlp`         | YouTube tags                                     |
-| `description`                  | `yt-dlp`         | Full video description or optional path only     |
-| `thumbnail_url`                | `yt-dlp`         | Main thumbnail URL                               |
-| `chapters`                     | `yt-dlp`         | Chapter metadata, if available                   |
-| `subtitles_available`          | derived          | Whether manual subtitles are available           |
-| `automatic_captions_available` | derived          | Whether automatic captions are available         |
-| `availability`                 | `yt-dlp`         | Public/private/unlisted/member-only if available |
-| `age_limit`                    | `yt-dlp`         | Age restriction data                             |
-| `live_status`                  | `yt-dlp`         | Live status                                      |
-| `video_file`                   | local            | Local `.mp4` path                                |
-| `raw_metadata_file`            | local            | Local `.info.json` path                          |
-| `description_file`             | local            | Optional local description path                  |
-| `subtitles_files`              | local            | List of local subtitle files                     |
-| `comments_file`                | local            | Optional local comments path                     |
-| `download_status`              | programme        | `success`, `failed`, `skipped_existing`, etc.    |
-| `metadata_status`              | programme        | `success`, `failed`, `skipped_existing`, etc.    |
-| `download_run_id`              | programme        | Run ID                                           |
-| `downloaded_at_utc`            | programme        | Timestamp                                        |
-| `yt_dlp_version`               | programme        | `yt-dlp --version`                               |
-| `selected_by`                  | input            | e.g. `Carol`                                     |
-| `selection_source`             | input            | e.g. `email`                                     |
-| `notes`                        | input            | Optional notes                                   |
+| Field                             | Source           | Description                                      |
+|-----------------------------------|------------------|--------------------------------------------------|
+| `corpus_id`                       | input            | Internal stable corpus ID                        |
+| `debate_format`                   | input            | e.g. `Surrounded`                                |
+| `sample_group`                    | input            | e.g. `carol_initial_sample`                      |
+| `sample_order`                    | input            | Carol’s sample order                             |
+| `title_selected`                  | input            | Title from Carol’s message                       |
+| `title_extracted`                 | `yt-dlp`         | Title extracted at download time                 |
+| `youtube_id`                      | input / `yt-dlp` | YouTube video ID                                 |
+| `youtube_url`                     | input            | Original URL from input file                     |
+| `webpage_url`                     | `yt-dlp`         | Canonical URL extracted by `yt-dlp`              |
+| `source_platform`                 | input            | Usually `YouTube`                                |
+| `channel_selected`                | input            | Channel from input file                          |
+| `channel_extracted`               | `yt-dlp`         | Channel from `yt-dlp`                            |
+| `channel_id`                      | `yt-dlp`         | YouTube channel ID                               |
+| `channel_url`                     | `yt-dlp`         | YouTube channel URL                              |
+| `uploader`                        | `yt-dlp`         | Uploader name                                    |
+| `uploader_id`                     | `yt-dlp`         | Uploader ID                                      |
+| `upload_date`                     | `yt-dlp`         | Upload date, usually `YYYYMMDD`                  |
+| `duration_seconds`                | `yt-dlp`         | Duration in seconds                              |
+| `duration_string`                 | `yt-dlp`         | Human-readable duration                          |
+| `view_count_at_selection`         | input            | Carol’s approximate reported view count          |
+| `view_count_reported_by_selector` | input            | Original textual view count reported by Carol    |
+| `view_count_at_download`          | `yt-dlp`         | Extracted view count at download time            |
+| `like_count_at_download`          | `yt-dlp`         | Extracted like count, if available               |
+| `comment_count_at_download`       | `yt-dlp`         | Extracted comment count, if available            |
+| `categories`                      | `yt-dlp`         | YouTube categories                               |
+| `tags`                            | `yt-dlp`         | YouTube tags                                     |
+| `description`                     | `yt-dlp`         | Full video description                           |
+| `thumbnail_url`                   | `yt-dlp`         | Main thumbnail URL                               |
+| `chapters`                        | `yt-dlp`         | Chapter metadata, if available                   |
+| `subtitles_available`             | derived          | Whether manual subtitles are available           |
+| `automatic_captions_available`    | derived          | Whether automatic captions are available         |
+| `availability`                    | `yt-dlp`         | Public/private/unlisted/member-only if available |
+| `age_limit`                       | `yt-dlp`         | Age restriction data                             |
+| `live_status`                     | `yt-dlp`         | Live status                                      |
+| `video_file`                      | local            | Local `.mp4` path                                |
+| `raw_metadata_file`               | local            | Local `.info.json` path                          |
+| `description_file`                | local            | Optional local description path                  |
+| `subtitles_files`                 | local            | List of local subtitle files                     |
+| `comments_file`                   | local            | Optional local comments path                     |
+| `download_status`                 | programme        | `success`, `failed`, `skipped_existing`, etc.    |
+| `metadata_status`                 | programme        | `success`, `failed`, `skipped_existing`, etc.    |
+| `download_run_id`                 | programme        | Run ID                                           |
+| `downloaded_at_utc`               | programme        | Timestamp                                        |
+| `yt_dlp_version`                  | programme        | `yt-dlp --version`                               |
+| `selected_by`                     | input            | e.g. `Carol`                                     |
+| `selection_source`                | input            | e.g. `email`                                     |
+| `notes`                           | input            | Optional notes                                   |
 
-### 6.2 Example curated index record
+### 7.2 Example curated index record
 
 ```json
 {
@@ -322,6 +504,7 @@ Each curated index record should contain:
   "duration_seconds": null,
   "duration_string": null,
   "view_count_at_selection": 43000000,
+  "view_count_reported_by_selector": "~43 milhões",
   "view_count_at_download": null,
   "like_count_at_download": null,
   "comment_count_at_download": null,
@@ -353,13 +536,23 @@ Each curated index record should contain:
 
 ---
 
-## 7. Command-line Interface
+## 8. Command-line Interface
 
-### 7.1 Default usage
+### 8.1 Default usage
+
+The script may be run from inside `cl_st1_ph0_carol/`:
 
 ```bash
 python download_jubilee_debates.py
 ```
+
+or from the project root:
+
+```bash
+python cl_st1_ph0_carol/download_jubilee_debates.py
+```
+
+Both commands should resolve default paths correctly.
 
 Default behaviour:
 
@@ -380,43 +573,71 @@ cl_st1_ph0_carol/corpus/01_jubilee_debates/
 - sequential processing;
 - skip existing videos and metadata;
 - no cookies file;
-- no start corpus ID filter.
+- no start corpus ID filter;
+- write descriptions;
+- write manual subtitles;
+- write automatic captions;
+- do not write comments.
 
-Because the current sample contains exactly five debates, the default test run would process the entire current sample.
+Because the current sample contains exactly five debates, the default test run processes the entire current sample unless outputs are already present and skipped.
 
 ---
 
-## 8. Optional Arguments
+## 9. Optional Arguments
 
-### 8.1 Input metadata file
+### 9.1 Input metadata file
 
 ```bash
 --metadata PATH
 ```
 
-Default:
+Default argument value:
+
+```text
+corpus/00_sources/jubilee_debates_samples.ndjson
+```
+
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
 ```
 
+Description:
+
+Path to the NDJSON input metadata file.
+
+Relative paths are resolved relative to the programme directory.
+
 ---
 
-### 8.2 Output directory
+### 9.2 Output directory
 
 ```bash
 --output-dir PATH
 ```
 
-Default:
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/
+```
+
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/
 ```
 
+Description:
+
+Directory where downloaded files, sidecar files, logs, manifests, and the curated index are written.
+
+Relative paths are resolved relative to the programme directory.
+
 ---
 
-### 8.3 Test mode
+### 9.3 Test mode
 
 ```bash
 --test-mode
@@ -433,7 +654,7 @@ When enabled, only the first `--test-limit` planned records are processed.
 
 ---
 
-### 8.4 Test limit
+### 9.4 Test limit
 
 ```bash
 --test-limit N
@@ -449,7 +670,7 @@ Must be a positive integer.
 
 ---
 
-### 8.5 Reprocess existing outputs
+### 9.5 Reprocess existing outputs
 
 ```bash
 --reprocess
@@ -467,7 +688,7 @@ When provided, the programme should re-run `yt-dlp` and overwrite or refresh out
 
 ---
 
-### 8.6 Metadata-only mode
+### 9.6 Metadata-only mode
 
 ```bash
 --metadata-only
@@ -487,7 +708,7 @@ When enabled:
 
 ---
 
-### 8.7 Skip metadata refresh
+### 9.7 Skip metadata refresh
 
 ```bash
 --skip-metadata
@@ -505,11 +726,11 @@ When enabled:
 - rely on existing raw metadata files if available;
 - still update the manifest and curated index where possible.
 
-This option should not be used together with `--metadata-only`.
+This option must not be used together with `--metadata-only`.
 
 ---
 
-### 8.8 Cookies file
+### 9.8 Cookies file
 
 ```bash
 --cookies PATH
@@ -530,6 +751,8 @@ python download_jubilee_debates.py \
   --cookies env/youtube_cookies.txt
 ```
 
+Relative cookies paths are resolved relative to the programme directory.
+
 Security requirements:
 
 - do not log the file contents;
@@ -538,7 +761,7 @@ Security requirements:
 
 ---
 
-### 8.9 Start corpus ID
+### 9.9 Start corpus ID
 
 ```bash
 --start-corpus-id CORPUS_ID
@@ -570,49 +793,73 @@ This is better than `--start-video-id` for this project because `corpus_id` is t
 
 ---
 
-### 8.10 Log file
+### 9.10 Log file
 
 ```bash
 --log-file PATH
 ```
 
-Default:
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/download_jubilee_debates.log
+```
+
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log
 ```
 
+Relative paths are resolved relative to the programme directory.
+
 ---
 
-### 8.11 Manifest file
+### 9.11 Manifest file
 
 ```bash
 --manifest-file PATH
 ```
 
-Default:
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
+```
+
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
 ```
 
+Relative paths are resolved relative to the programme directory.
+
 ---
 
-### 8.12 Index file
+### 9.12 Index file
 
 ```bash
 --index-file PATH
 ```
 
-Default:
+Default argument value:
+
+```text
+corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+```
+
+Default resolved path:
 
 ```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 
+Relative paths are resolved relative to the programme directory.
+
 ---
 
-### 8.13 Workers
+### 9.13 Workers
 
 ```bash
 --workers N
@@ -624,27 +871,27 @@ Default:
 1
 ```
 
-For the first implementation, only `--workers 1` should be supported.
+For the first implementation, only `--workers 1` is supported.
 
 ---
 
-### 8.14 Timeout
+### 9.14 Timeout
 
 ```bash
 --timeout SECONDS
 ```
 
-Default suggestion:
+Default:
 
 ```text
 7200
 ```
 
-Jubilee debates may be long, so a two-hour per-video timeout is safer than the one-hour default used in the reference specification.
+Jubilee debates may be long, so a two-hour per-video timeout is safer than a shorter default.
 
 ---
 
-### 8.15 Maximum retries
+### 9.15 Maximum retries
 
 ```bash
 --max-retries N
@@ -660,7 +907,7 @@ Must be zero or a positive integer.
 
 ---
 
-### 8.16 Retry delay
+### 9.16 Retry delay
 
 ```bash
 --retry-delay SECONDS
@@ -672,21 +919,42 @@ Default:
 5
 ```
 
+Must be zero or a positive integer.
+
 ---
 
-### 8.17 Subtitles
+### 9.17 Description
+
+```bash
+--write-description
+--no-write-description
+```
+
+Default:
+
+```text
+--write-description
+```
+
+The video description is useful contextual metadata and should be saved by default.
+
+---
+
+### 9.18 Subtitles
 
 ```bash
 --write-subs
+--no-write-subs
 --write-auto-subs
+--no-write-auto-subs
 --sub-langs LANGS
 ```
 
 Recommended defaults:
 
 ```text
---write-auto-subs enabled
---write-subs enabled
+--write-subs
+--write-auto-subs
 --sub-langs en.*
 ```
 
@@ -694,56 +962,52 @@ Since the later phase involves transcription and speaker diarisation, preserving
 
 ---
 
-### 8.18 Description
-
-```bash
---write-description
-```
-
-Default recommendation:
-
-```text
-True
-```
-
-The video description is useful contextual metadata and should be saved by default.
-
----
-
-### 8.19 Comments
+### 9.19 Comments
 
 ```bash
 --write-comments
 ```
 
-Default recommendation:
+Default:
 
 ```text
 False
 ```
 
-Comments can be large and are not necessary for the initial speaker diarisation test. The programme may support them, but should not enable them by default.
+Comments can be large and are not necessary for the initial speaker diarisation test. The programme supports comments, but should not enable them by default.
 
 ---
 
-## 9. Example Commands
+## 10. Example Commands
 
-### Default run
+### Default run from inside `cl_st1_ph0_carol/`
 
 ```bash
 python download_jubilee_debates.py
+```
+
+### Metadata-only run from inside `cl_st1_ph0_carol/`
+
+```bash
+python download_jubilee_debates.py --metadata-only
+```
+
+### Default run from project root
+
+```bash
+python cl_st1_ph0_carol/download_jubilee_debates.py
+```
+
+### Metadata-only run from project root
+
+```bash
+python cl_st1_ph0_carol/download_jubilee_debates.py --metadata-only
 ```
 
 ### Full run
 
 ```bash
 python download_jubilee_debates.py --no-test-mode
-```
-
-### Metadata-only run
-
-```bash
-python download_jubilee_debates.py --metadata-only
 ```
 
 ### Full run with cookies
@@ -788,24 +1052,41 @@ python download_jubilee_debates.py \
   --reprocess
 ```
 
+### Disable subtitles
+
+```bash
+python download_jubilee_debates.py \
+  --no-write-subs \
+  --no-write-auto-subs
+```
+
+### Download comments explicitly
+
+```bash
+python download_jubilee_debates.py \
+  --write-comments
+```
+
 ---
 
-## 10. Validation Rules
+## 11. Validation Rules
 
 The programme must fail fast with a configuration error if:
 
 - the input metadata file does not exist;
+- the input metadata path is not a file;
 - the input metadata file is unreadable;
 - the input file contains invalid JSON lines;
-- required fields are missing from all records;
+- no valid records are found in the metadata file;
 - `--test-limit` is less than or equal to zero;
 - `--workers` is less than or equal to zero;
 - `--workers` is not `1` in the first implementation;
 - `--timeout` is less than or equal to zero;
 - `--max-retries` is negative;
 - `--retry-delay` is negative;
-- `--cookies` is provided but the file does not exist;
-- `--cookies` is provided but the path is not a file;
+- `--cookies` is provided but the cookies file does not exist;
+- `--cookies` is provided but the cookies path is not a file;
+- `--start-corpus-id` is provided but empty;
 - `--start-corpus-id` is provided but not found;
 - `--metadata-only` and `--skip-metadata` are both provided;
 - `yt-dlp` is not available on the system path.
@@ -816,14 +1097,21 @@ The programme should check `yt-dlp` availability with:
 yt-dlp --version
 ```
 
+A validation error should:
+
+- be printed clearly to the console or log;
+- be written to the log if logging has already been configured;
+- cause the programme to exit with code `2`.
+
 ---
 
-## 11. Core Processing Flow
+## 12. Core Processing Flow
 
 The programme should follow this workflow:
 
 1. **Startup**
    - Parse command-line arguments.
+   - Resolve relative paths against the programme directory.
    - Generate UTC `run_id`.
    - Ensure output directories exist.
    - Configure logging.
@@ -857,8 +1145,13 @@ The programme should follow this workflow:
 
 5. **Execution**
    - For each planned item:
+     - build the `yt-dlp` command;
+     - include `--cookies PATH` if provided;
+     - include `--write-info-json` unless `--skip-metadata` is provided;
+     - include `--skip-download` if `--metadata-only` is provided;
+     - include description/subtitle/comment options as configured;
      - run `yt-dlp`;
-     - capture stdout, stderr, return code;
+     - capture stdout, stderr, return code, timings, and errors;
      - retry failures according to `--max-retries`;
      - move/normalise sidecar files if needed;
      - mark the item status.
@@ -881,7 +1174,7 @@ The programme should follow this workflow:
 
 ---
 
-## 12. Suggested Status Values
+## 13. Suggested Status Values
 
 | Status             | Meaning                                               |
 |--------------------|-------------------------------------------------------|
@@ -895,7 +1188,7 @@ The programme should follow this workflow:
 
 ---
 
-## 13. Manifest Design
+## 14. Manifest Design
 
 The manifest should use this general structure:
 
@@ -928,7 +1221,8 @@ The manifest should use this general structure:
       "write_subs": true,
       "write_auto_subs": true,
       "write_comments": false,
-      "sub_langs": "en.*"
+      "sub_langs": "en.*",
+      "skip_metadata": false
     },
     "yt_dlp": {
       "available": true,
@@ -965,7 +1259,19 @@ The manifest should use this general structure:
       "retries": 0,
       "duration_seconds": 850.25,
       "start_time": "2026-07-30T10:01:00Z",
-      "end_time": "2026-07-30T10:15:10Z"
+      "end_time": "2026-07-30T10:15:10Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "https://www.youtube.com/watch?v=WV29R1M25n8",
+          "-o",
+          "cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.%(ext)s"
+        ],
+        "attempts": []
+      }
     }
   ],
   "invalid_records": [],
@@ -973,9 +1279,11 @@ The manifest should use this general structure:
 }
 ```
 
+The manifest may include absolute paths depending on how paths were resolved internally. This is acceptable, provided the paths identify the actual files used during the run.
+
 ---
 
-## 14. Logging Specification
+## 15. Logging Specification
 
 The programme must write an append-only UTF-8 log file:
 
@@ -994,16 +1302,21 @@ Required log events:
 - startup;
 - run ID;
 - parsed configuration;
-- metadata path;
-- output directory;
-- index path;
+- resolved metadata path;
+- resolved output directory;
+- resolved index path;
 - test mode status;
 - metadata-only status;
+- skip-metadata status;
+- reprocess status;
 - cookies provided or not;
+- start corpus ID, if provided;
 - `yt-dlp` version;
 - number of records loaded;
 - number of valid and invalid records;
+- number of duplicate records;
 - number of planned items;
+- number of skipped existing items;
 - each skipped item;
 - each download attempt;
 - each retry;
@@ -1019,16 +1332,92 @@ The programme must not log cookies file contents.
 
 ---
 
-## 15. Suggested Constants
+## 16. Error Handling and Resiliency
+
+### 16.1 Configuration errors
+
+Configuration errors must stop the programme before downloads begin.
+
+Examples:
+
+- metadata file missing;
+- metadata path is not a file;
+- invalid command-line arguments;
+- cookies file missing when `--cookies` is provided;
+- start corpus ID not found when `--start-corpus-id` is provided;
+- `yt-dlp` is not installed or not found.
+
+The programme must exit with code `2`.
+
+### 16.2 Per-item errors
+
+Per-item errors must not stop the full run.
+
+Examples:
+
+- video unavailable;
+- video private;
+- video deleted;
+- region restriction;
+- malformed URL;
+- network error;
+- timeout;
+- `yt-dlp` non-zero return code;
+- YouTube bot-confirmation message.
+
+For each per-item error:
+
+- mark the item as `failed`;
+- capture a short error message;
+- log the error;
+- continue to the next item.
+
+The programme must exit with code `1` if one or more attempted items fail.
+
+### 16.3 Invalid metadata records
+
+Rows with missing required fields should be captured in `invalid_records`.
+
+Preferred behaviour:
+
+- continue processing valid records;
+- write invalid rows to the manifest;
+- exit with code `1` after the run.
+
+Invalid JSON lines are treated as configuration errors and cause exit code `2`.
+
+### 16.4 Keyboard interruption
+
+If the user interrupts the programme with `Ctrl+C`, the programme must:
+
+- stop processing;
+- mark the run as interrupted in the manifest;
+- write a partial manifest with completed results so far, where possible;
+- log the interruption;
+- exit with code `130`.
+
+The manifest should include:
+
+```json
+"interrupted": true
+```
+
+inside `run_metadata`.
+
+---
+
+## 17. Suggested Constants
+
+The implementation should define constants near the top of the file.
 
 ```python
 TOOL_NAME = "download_jubilee_debates.py"
 TOOL_VERSION = "v1"
 
-DEFAULT_METADATA_PATH = (
-    "cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson"
-)
-DEFAULT_OUTPUT_DIR = "cl_st1_ph0_carol/corpus/01_jubilee_debates"
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+DEFAULT_METADATA_PATH = "corpus/00_sources/jubilee_debates_samples.ndjson"
+DEFAULT_OUTPUT_DIR = "corpus/01_jubilee_debates"
 
 DEFAULT_VIDEOS_DIR_NAME = "videos"
 DEFAULT_RAW_METADATA_DIR_NAME = "metadata_raw"
@@ -1036,15 +1425,11 @@ DEFAULT_DESCRIPTIONS_DIR_NAME = "descriptions"
 DEFAULT_SUBTITLES_DIR_NAME = "subtitles"
 DEFAULT_COMMENTS_DIR_NAME = "comments"
 
-DEFAULT_LOG_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log"
-)
+DEFAULT_LOG_FILE = "corpus/01_jubilee_debates/download_jubilee_debates.log"
 DEFAULT_MANIFEST_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest.json"
+    "corpus/01_jubilee_debates/download_jubilee_debates_manifest.json"
 )
-DEFAULT_INDEX_FILE = (
-    "cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
-)
+DEFAULT_INDEX_FILE = "corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
 
 DEFAULT_TEST_MODE = True
 DEFAULT_TEST_LIMIT = 5
@@ -1060,19 +1445,35 @@ DEFAULT_WRITE_SUBS = True
 DEFAULT_WRITE_AUTO_SUBS = True
 DEFAULT_WRITE_COMMENTS = False
 DEFAULT_SUB_LANGS = "en.*"
+
+REQUIRED_FIELDS = (
+    "corpus_id",
+    "youtube_id",
+    "youtube_url",
+    "title",
+    "debate_format",
+)
 ```
 
 ---
 
-## 16. Suggested Function Architecture
+## 18. Suggested Function Architecture
 
 ```python
 def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments."""
+    """Parse command-line arguments and resolve paths."""
+
+
+def resolve_script_relative_path(path: Path) -> Path:
+    """Resolve relative paths against the programme directory."""
 
 
 def setup_logging(log_file: Path) -> logging.Logger:
     """Configure append-only logging."""
+
+
+def ensure_output_dirs(output_dir: Path) -> dict[str, Path]:
+    """Create the output directory structure."""
 
 
 def validate_args(args: argparse.Namespace) -> None:
@@ -1083,8 +1484,21 @@ def check_yt_dlp() -> dict:
     """Check whether yt-dlp is available and return version metadata."""
 
 
-def load_samples(metadata_path: Path) -> tuple[list[dict], list[dict], list[dict]]:
+def load_samples(
+    metadata_path: Path,
+) -> tuple[list[dict], list[dict], list[dict], int]:
     """Load, validate, and deduplicate debate sample records."""
+
+
+def output_paths_for_record(record: dict, output_dir: Path) -> dict:
+    """Compute expected output paths for one record."""
+
+
+def item_outputs_satisfied(
+    paths: dict,
+    args: argparse.Namespace,
+) -> tuple[bool, str]:
+    """Determine whether requested outputs already exist."""
 
 
 def plan_items(
@@ -1108,12 +1522,22 @@ def run_yt_dlp_command(
     timeout: int,
     max_retries: int,
     retry_delay: int,
+    logger: logging.Logger,
+    corpus_id: str,
 ) -> dict:
     """Run yt-dlp with retries and return structured execution metadata."""
 
 
-def normalise_sidecar_files(item: dict, output_paths: dict) -> dict:
+def normalise_sidecar_files(
+    item: dict,
+    output_paths: dict,
+    args: argparse.Namespace,
+) -> dict:
     """Move or rename yt-dlp sidecar files into the expected project layout."""
+
+
+def load_raw_metadata(raw_metadata_path: Path | None) -> dict:
+    """Load a raw yt-dlp info JSON file if available."""
 
 
 def extract_curated_metadata(
@@ -1121,6 +1545,7 @@ def extract_curated_metadata(
     raw_metadata_path: Path | None,
     local_paths: dict,
     run_metadata: dict,
+    item_result: dict,
 ) -> dict:
     """Create one curated corpus index record."""
 
@@ -1137,13 +1562,37 @@ def write_manifests(
     """Write latest and timestamped manifest files."""
 
 
+def make_initial_run_metadata(
+    args: argparse.Namespace,
+    run_id: str,
+    start_time: str,
+    yt_dlp_info: dict | None = None,
+) -> dict:
+    """Construct the initial run metadata dictionary."""
+
+
+def item_result_from_skipped(
+    item: dict,
+    run_metadata: dict,
+) -> dict:
+    """Create a manifest item result for an existing skipped item."""
+
+
+def process_item(
+    item: dict,
+    args: argparse.Namespace,
+    logger: logging.Logger,
+) -> tuple[dict, dict]:
+    """Process one planned item with yt-dlp."""
+
+
 def main() -> int:
     """Run the complete Jubilee debate download workflow."""
 ```
 
 ---
 
-## 17. Exit Codes
+## 19. Exit Codes
 
 | Exit code | Meaning                                                               |
 |----------:|-----------------------------------------------------------------------|
@@ -1154,85 +1603,124 @@ def main() -> int:
 
 ---
 
-## 18. Acceptance Criteria
+## 20. Acceptance Criteria
 
 The programme is considered complete when:
 
-1. Running the default command works:
+1. Running from inside `cl_st1_ph0_carol/` works:
 
    ```bash
    python download_jubilee_debates.py
    ```
 
-2. It reads:
+2. Running from the project root works:
+
+   ```bash
+   python cl_st1_ph0_carol/download_jubilee_debates.py
+   ```
+
+3. Default relative paths are resolved relative to the programme directory, not the current working directory.
+
+4. It reads:
 
    ```text
    cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
    ```
 
-3. It creates:
+5. It creates:
 
    ```text
    cl_st1_ph0_carol/corpus/01_jubilee_debates/
    ```
 
-4. It downloads videos into:
+6. It downloads videos into:
 
    ```text
    cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/
    ```
 
-5. Video filenames are based on `corpus_id`.
+7. Video filenames are based on `corpus_id`.
 
-6. It saves raw `yt-dlp` metadata into:
+8. It saves raw `yt-dlp` metadata into:
 
    ```text
    cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/
    ```
 
-7. It writes a curated index:
+9. It writes descriptions into:
+
+   ```text
+   cl_st1_ph0_carol/corpus/01_jubilee_debates/descriptions/
+   ```
+
+   when descriptions are enabled.
+
+10. It writes subtitles into:
+
+   ```text
+   cl_st1_ph0_carol/corpus/01_jubilee_debates/subtitles/
+   ```
+
+   when subtitles or automatic captions are enabled.
+
+11. It writes comments into:
+
+   ```text
+   cl_st1_ph0_carol/corpus/01_jubilee_debates/comments/
+   ```
+
+   when comments are explicitly enabled.
+
+12. It writes a curated index:
 
    ```text
    cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
    ```
 
-8. The curated index preserves Carol’s sample metadata and adds selected `yt-dlp` metadata.
+13. The curated index preserves Carol’s sample metadata and adds selected `yt-dlp` metadata.
 
-9. Existing outputs are skipped by default.
+14. Existing outputs are skipped by default.
 
-10. `--reprocess` forces reprocessing.
+15. `--reprocess` forces reprocessing.
 
-11. `--metadata-only` fetches metadata without downloading video files.
+16. `--metadata-only` fetches metadata without downloading video files.
 
-12. `--cookies PATH` is supported.
+17. `--skip-metadata` avoids refreshing raw metadata and relies on existing metadata where available.
 
-13. `--start-corpus-id CORPUS_ID` is supported.
+18. `--metadata-only` and `--skip-metadata` cannot be used together.
 
-14. Failed downloads do not stop the entire batch.
+19. `--cookies PATH` is supported.
 
-15. Logs are written to:
+20. `--start-corpus-id CORPUS_ID` is supported.
+
+21. Failed downloads do not stop the entire batch.
+
+22. Logs are written to:
 
    ```text
    cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates.log
    ```
 
-16. Latest and timestamped manifests are written.
+23. Latest and timestamped manifests are written.
 
-17. The programme exits with the specified exit codes.
+24. The programme exits with the specified exit codes.
 
 ---
 
-## 19. Design Decision Summary
+## 21. Design Decision Summary
 
 The main project-specific design choices are:
 
-| Decision                                                | Rationale                                                           |
-|---------------------------------------------------------|---------------------------------------------------------------------|
-| Use `corpus_id` for filenames                           | Stable, clean, research-oriented identifier                         |
-| Keep raw `.info.json` files                             | Preserves full `yt-dlp` metadata for reproducibility                |
-| Also generate curated NDJSON index                      | Easier for analysis and downstream scripts                          |
-| Separate `videos/`, `metadata_raw/`, `subtitles/`, etc. | Keeps corpus directory organised                                    |
-| Default `test-limit = 5`                                | Matches the current initial sample size                             |
-| Support metadata-only mode                              | Useful before large downloads and for metadata inspection           |
-| Save Carol’s reported view counts separately            | Distinguishes selection-time popularity from download-time metadata |
-| Prefer `--start-corpus-id` over `--start-video-id`      | Corpus IDs are the internal stable identifiers                      |
+| Decision                                                                            | Rationale                                                                        |
+|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| Resolve paths relative to the script directory                                      | Prevents accidental nested paths when running from different working directories |
+| Use `corpus_id` for filenames                                                       | Stable, clean, research-oriented identifier                                      |
+| Keep raw `.info.json` files                                                         | Preserves full `yt-dlp` metadata for reproducibility                             |
+| Also generate curated NDJSON index                                                  | Easier for analysis and downstream scripts                                       |
+| Separate `videos/`, `metadata_raw/`, `descriptions/`, `subtitles/`, and `comments/` | Keeps corpus directory organised                                                 |
+| Default `test-limit = 5`                                                            | Matches the current initial sample size                                          |
+| Support metadata-only mode                                                          | Useful before large downloads and for metadata inspection                        |
+| Save Carol’s reported view counts separately                                        | Distinguishes selection-time popularity from download-time metadata              |
+| Prefer `--start-corpus-id` over `--start-video-id`                                  | Corpus IDs are the internal stable identifiers                                   |
+| Write descriptions and subtitles by default                                         | Useful contextual material for later transcription and diarisation work          |
+| Do not write comments by default                                                    | Comments can be large and are not required for the initial diarisation test      |
