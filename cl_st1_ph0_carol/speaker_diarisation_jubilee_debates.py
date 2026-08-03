@@ -44,7 +44,8 @@ DEFAULT_AUDIO_INDEX = "corpus/02_jubilee_debates_audio/jubilee_debates_audio_ind
 DEFAULT_DEBATE_INDEX = "corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
 DEFAULT_OUTPUT_DIR = "corpus/03_jubilee_debates_speaker_diarisation"
 
-DEFAULT_MODEL = "gemini-3.1-pro"
+#DEFAULT_MODEL = "gemini-3.1-pro"
+DEFAULT_MODEL = gemini-3.1-pro-preview
 DEFAULT_TEMPERATURE = 0.0
 DEFAULT_MAX_OUTPUT_TOKENS = 0
 DEFAULT_TEST_MODE = True

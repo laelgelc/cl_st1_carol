@@ -1,0 +1,302 @@
+{
+  "programme": "speaker_diarisation_jubilee_debates.py",
+  "tool_version": "v1",
+  "corpus_id": "jubilee_surrounded_001",
+  "status": "success",
+  "paths": {
+    "path_resolution_policy": {
+      "default_paths": "resolved_relative_to_programme_directory",
+      "cli_relative_paths": "resolved_relative_to_current_working_directory",
+      "absolute_paths": "used_as_given"
+    },
+    "programme_directory": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol",
+    "current_working_directory": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol"
+  },
+  "input": {
+    "audio_index": {
+      "path": "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "path_source": "default"
+    },
+    "debate_index": {
+      "path": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "path_source": "default"
+    },
+    "audio_file": {
+      "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
+    },
+    "prompt_template": {
+      "path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "path_source": "default"
+    },
+    "output_txt": {
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt"
+    },
+    "output_json": {
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+      "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+    }
+  },
+  "source_metadata": {
+    "audio_index_row": {
+      "corpus_id": "jubilee_surrounded_001",
+      "debate_format": "Surrounded",
+      "sample_group": "carol_initial_sample",
+      "sample_order": 1,
+      "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+      "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+      "youtube_id": "WV29R1M25n8",
+      "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "channel_selected": "Jubilee",
+      "channel_extracted": "Jubilee",
+      "duration_seconds": 5427,
+      "duration_string": "1:30:27",
+      "chapters": [
+        {
+          "start_time": 0,
+          "title": "Intro",
+          "end_time": 45
+        },
+        {
+          "start_time": 45,
+          "title": "Claim #1 Abortion is murder and should be illegal",
+          "end_time": 1258
+        },
+        {
+          "start_time": 1258,
+          "title": "Claim #2 College is a scam",
+          "end_time": 2416
+        },
+        {
+          "start_time": 2416,
+          "title": "Claim #3 Trans women are not women",
+          "end_time": 3626
+        },
+        {
+          "start_time": 3626,
+          "title": "Claim #4 Kamal Harris is a DEI candidate",
+          "end_time": 4741
+        },
+        {
+          "start_time": 4741,
+          "title": "Student's Claim: Affirmative Action is constitutional",
+          "end_time": 5427
+        }
+      ],
+      "subtitles_files": [
+        "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en-orig.vtt",
+        "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en.vtt"
+      ],
+      "raw_metadata_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json",
+      "description_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/descriptions/jubilee_surrounded_001.description",
+      "download_run_id": "20260730T194409Z",
+      "downloaded_at_utc": "2026-07-30T19:56:01Z",
+      "yt_dlp_version": "2026.07.04",
+      "selected_by": "Carol",
+      "selection_source": "email",
+      "notes": null,
+      "metadata_status": "success",
+      "source_video_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
+      "audio_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "audio_profile": "gemini_flac",
+      "audio_format": "flac",
+      "audio_codec": "flac",
+      "audio_channels": 2,
+      "audio_sample_rate": 44100,
+      "audio_sample_format": null,
+      "audio_file_size_bytes": 411950549,
+      "audio_extraction_status": "success",
+      "audio_extraction_run_id": "20260730T212337Z",
+      "audio_extracted_at_utc": "2026-07-30T21:24:44Z",
+      "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "video_download_status": "success",
+      "_line_number": 1
+    },
+    "debate_index_row": {
+      "corpus_id": "jubilee_surrounded_001",
+      "debate_format": "Surrounded",
+      "sample_group": "carol_initial_sample",
+      "sample_order": 1,
+      "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+      "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+      "youtube_id": "WV29R1M25n8",
+      "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "source_platform": "YouTube",
+      "channel_selected": "Jubilee",
+      "channel_extracted": "Jubilee",
+      "channel_id": "UCJjSDX-jUChzOEyok9XYRJQ",
+      "channel_url": "https://www.youtube.com/channel/UCJjSDX-jUChzOEyok9XYRJQ",
+      "uploader": "Jubilee",
+      "uploader_id": "@jubilee",
+      "upload_date": "20240908",
+      "duration_seconds": 5427,
+      "duration_string": "1:30:27",
+      "view_count_at_selection": 43000000,
+      "view_count_reported_by_selector": "~43 milhões",
+      "view_count_at_download": 43688309,
+      "like_count_at_download": 863297,
+      "comment_count_at_download": 183000,
+      "categories": [
+        "Entertainment"
+      ],
+      "tags": [
+        "jubilee",
+        "jubilee media",
+        "jubilee project",
+        "middle ground",
+        "spectrum",
+        "odd man out",
+        "versus 1",
+        "embrace empathy",
+        "live deeper",
+        "love language",
+        "blind devotion",
+        "Odd One Out",
+        "Game Show",
+        "Dating Show",
+        "Nectar",
+        "Ask Me Anything",
+        "Gen Z",
+        "Millennial",
+        "loveprint",
+        "jason y lee"
+      ],
+      "description": "Go to https://SAN.com/surrounded to get unbiased, straight facts. You can Download the app through our link or search Straight Arrow News in your app store.\n\nHey you 👈 Wanna be in a Jubilee video? https://bit.ly/be-in-a-video\n\nLET’S BE FRIENDS\nInstagram: https://www.instagram.com/jubileemedia/\nTikTok: https://www.tiktok.com/@jubilee?lang=en\nWebsite: https://www.jubileemedia.com\n\nCharlie: https://www.youtube.com/@RealCharlieKirk\nAlize: https://www.tiktok.com/@alizefuentes\nAmanda: https://www.instagram.com/azueagu\nAva: https://www.instagram.com/avadotcom\nBrad: https://www.instagram.com/bradbrady_/\nDedan: https://www.tiktok.com/@dedankaggio\nEmily: https://www.instagram.com/emilytsuge/\nGreg: https://www.instagram.com/greg.anywhere\nLily: https://www.instagram.com/lilyolsonn/\nMaddie: https://www.instagram.com/m.addie.n.8\nMaddox: https://www.instagram.com/maddoxconrady\nMaren: https://www.instagram.com/marencarrere\nMason: https://www.instagram.com/onehandpolitics\nNaima: https://www.instagram.com/hair.soup/\nNoah: https://www.instagram.com/sleepyb0i10\nParker: https://www.tiktok.com/@parkergetajob\nSage: https://www.instagram.com/whoa.its.sage\nSam: https://x.com/1Frosty_Slime\n\nOUR LOVE + DATING CHANNEL 🍑\nYouTube: https://www.youtube.com/@nectarcrush\nInstagram: https://www.instagram.com/lovecommanectar  \nNectar app: https://lovecommanectar.co/497Ru93 \n\nARE YOU A BRAND? WANNA WORK WITH US?\nEmail partnerships@jubileemedia.com\n\nTIMECODES:\n00:00 Intro\n00:45 Claim #1 Abortion is murder and should be illegal\n20:58 Claim #2 College is a scam\n40:16 Claim #3 Trans women are not women\n01:00:26 Claim #4 Kamal Harris is a DEI candidate\n01:19:01 Student's Claim: Affirmative Action is constitutional",
+      "thumbnail_url": "https://i.ytimg.com/vi/WV29R1M25n8/maxresdefault.jpg",
+      "chapters": [
+        {
+          "start_time": 0,
+          "title": "Intro",
+          "end_time": 45
+        },
+        {
+          "start_time": 45,
+          "title": "Claim #1 Abortion is murder and should be illegal",
+          "end_time": 1258
+        },
+        {
+          "start_time": 1258,
+          "title": "Claim #2 College is a scam",
+          "end_time": 2416
+        },
+        {
+          "start_time": 2416,
+          "title": "Claim #3 Trans women are not women",
+          "end_time": 3626
+        },
+        {
+          "start_time": 3626,
+          "title": "Claim #4 Kamal Harris is a DEI candidate",
+          "end_time": 4741
+        },
+        {
+          "start_time": 4741,
+          "title": "Student's Claim: Affirmative Action is constitutional",
+          "end_time": 5427
+        }
+      ],
+      "subtitles_available": false,
+      "automatic_captions_available": true,
+      "availability": "public",
+      "age_limit": 0,
+      "live_status": "not_live",
+      "video_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
+      "raw_metadata_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json",
+      "description_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/descriptions/jubilee_surrounded_001.description",
+      "subtitles_files": [
+        "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en-orig.vtt",
+        "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en.vtt"
+      ],
+      "comments_file": null,
+      "download_status": "success",
+      "metadata_status": "success",
+      "download_run_id": "20260730T194409Z",
+      "downloaded_at_utc": "2026-07-30T19:56:01Z",
+      "yt_dlp_version": "2026.07.04",
+      "selected_by": "Carol",
+      "selection_source": "email",
+      "notes": null,
+      "_line_number": 1
+    }
+  },
+  "prompt": {
+    "template_path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_sha256": "7a5b867fbb439ced290bb03ddf934a069d16bc4bbb3a9eeb9d258c0dd5deef46",
+    "template_character_count": 899,
+    "metadata_note_included": true,
+    "metadata_note_sha256": "ba0bf01861dbfb57d830a8f4c4566e4a57987d304ea8d3989ab9798f592fab38",
+    "request_text_sha256": "5f74fece74d318eb0328768edc2f41a0c7e545497d56010949ce13b486ac6a09"
+  },
+  "audio": {
+    "filename": "jubilee_surrounded_001.flac",
+    "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "resolved_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "format": "flac",
+    "sha256": "a2b08ffd3d85afb0ef8999ba744256a1fee14755cf8267eadcd8f9bf1e228c52",
+    "size_bytes": 411950549,
+    "submitted": true,
+    "role": "primary_audio_evidence"
+  },
+  "model": {
+    "provider": "google",
+    "model": "gemini-3.1-pro-preview",
+    "temperature": 0.0,
+    "temperature_sent_to_api": true,
+    "max_output_tokens": null,
+    "generation_config": {
+      "temperature": 0.0
+    }
+  },
+  "api_metadata": {
+    "response_id": "OMVwatnyMfHAz7IPu_OboAg",
+    "usage_metadata": "cache_tokens_details=None cached_content_token_count=None candidates_token_count=2619 candidates_tokens_details=None prompt_token_count=135969 prompt_tokens_details=[ModalityTokenCount(\n  modality=<MediaModality.AUDIO: 'AUDIO'>,\n  token_count=135665\n), ModalityTokenCount(\n  modality=<MediaModality.TEXT: 'TEXT'>,\n  token_count=304\n)] thoughts_token_count=62913 tool_use_prompt_token_count=None tool_use_prompt_tokens_details=None total_token_count=201501 traffic_type=None",
+    "finish_reason": "FinishReason.MAX_TOKENS",
+    "safety_ratings": [],
+    "uploaded_file": {
+      "name": "files/7v7z1gj9mr8f",
+      "uri": "https://generativelanguage.googleapis.com/v1beta/files/7v7z1gj9mr8f",
+      "mime_type": "audio/flac",
+      "display_name": null,
+      "state": "FileState.ACTIVE"
+    }
+  },
+  "response": {
+    "text": "[00:00] Speaker A (Charlie Kirk): Do you think men can give birth?\n\n[00:01] Speaker B: I think that, uh, a person...\n\n[00:02] Speaker A (Charlie Kirk): Yes or no question.\n\n[00:03] Speaker B: I think that a person who is assigned male at birth, I don't think they can give birth.\n\n[00:06] Speaker A (Charlie Kirk): Assigned male at birth? So people are not male at birth?\n\n[00:08] Speaker B: I think that a person...\n\n[00:09] Speaker A (Charlie Kirk): See, your evidence that college is a scam, my friend.\n\n[00:12] Speaker C: So would you say in some cases women with IUDs are murderers?\n\n[00:14] Speaker A (Charlie Kirk): Of course not, they're not murderers. We do not know...\n\n[00:15] Speaker C: So what's the difference between an IUD killing a conceived zygote and like a mother going to Planned Parenthood and killing the fetus in her womb?\n\n[00:21] Speaker A (Charlie Kirk): That was actually the best point somebody made.\n\n[00:23] Speaker D: It's not about the the cells, it's not about...\n\n[00:25] Speaker A (Charlie Kirk): No, I'm...\n\n[00:25] Speaker D: No, no, no, I'm speaking. No, I'm speaking. No, I'm speaking. No, I'm speaking. No, I'm speaking. No, I'm speaking. No, I'm speaking.\n\n[00:28] Speaker A (Charlie Kirk): I know, we're both... we're both talking to ourselves. Okay. Let me say one more time.\n\n[00:31] Speaker D: No, I'm speaking.\n\n[00:32] Speaker A (Charlie Kirk): Hello everyone, I am Charlie Kirk, founder of Turning Point USA, and uh, I am surrounded by 20 woke college kids.\n\n[00:43] Speaker A (Charlie Kirk): My first prompt is, abortion is murder and should be illegal.\n\n[00:54] Speaker E (Juliana): All right. Can I maybe go?\n\n[01:02] Speaker A (Charlie Kirk): Okay, hello, what's your name?\n\n[01:03] Speaker E (Juliana): Hi, Juliana.\n\n[01:04] Speaker A (Charlie Kirk): Nice to meet you.\n\n[01:04] Speaker E (Juliana): Nice to meet you.\n\n[01:05] Speaker A (Charlie Kirk): Can we get our terms right first?\n\n[01:06] Speaker E (Juliana): Yeah.\n\n[01:06] Speaker A (Charlie Kirk): Okay, abortion is the forcible ending of the viability of a being in utero, otherwise known as a fetus. Do we agree that's what abortion is?\n\n[01:14] Speaker E (Juliana): Okay, yeah.\n\n[01:16] Speaker A (Charlie Kirk): Okay, great. And then murder is the intentional taking of life different than killing or sudden death. So murder would be the intent, with intent taking another life. Do we agree with that?\n\n[01:25] Speaker E (Juliana): Okay.\n\n[01:26] Speaker A (Charlie Kirk): Okay, and then we agree that murder in general in society should be illegal.\n\n[01:30] Speaker E (Juliana): Yeah.\n\n[01:30] Speaker A (Charlie Kirk): Okay, great.\n\n[01:31] Speaker E (Juliana): So yeah, no, I do want to preface that I'm a Catholic. So I think one really important thing that the Bible says is to not judge. And just going back to the topic, um, I think there's a big difference, uh, between, you know, cells in utero than a living, breathing, existing being. And while, um, I do believe it's murder and that's just my personal belief, right? I don't believe in telling people what to do with their bodies. That's not up to me and it's not up to us as well as Christians to judge.\n\n[02:01] Speaker A (Charlie Kirk): But should we prevent murder in society?\n\n[02:03] Speaker E (Juliana): For sure, yeah. I mean...\n\n[02:04] Speaker A (Charlie Kirk): And it should be illegal.\n\n[02:06] Speaker E (Juliana): But I think that it's really different, right? Because, you know, these people aren't...\n\n[02:11] Speaker A (Charlie Kirk): Sorry.\n\n[02:14] Speaker E (Juliana): Sorry, nice to meet you.\n\n[02:15] Speaker A (Charlie Kirk): Nice to meet you.\n\n[02:20] Speaker A (Charlie Kirk): Okay, what's your name?\n\n[02:24] Speaker F (Naima): Naima.\n\n[02:24] Speaker A (Charlie Kirk): Nice to meet you.\n\n[02:25] Speaker F (Naima): Nice to meet you. Okay, can I just ask, um, at how many weeks do you think that a fetus is viable?\n\n[02:30] Speaker A (Charlie Kirk): Well, viability and moral worth are two different things.\n\n[02:33] Speaker F (Naima): No, but I'm asking you, at how many weeks do you think a fetus is viable?\n\n[02:35] Speaker A (Charlie Kirk): Well, at about 20 weeks a baby can survive outside of utero.\n\n[02:39] Speaker F (Naima): So it's actually 24 to 26 weeks.\n\n[02:40] Speaker A (Charlie Kirk): Well, 20, the youngest ever in a NICU unit actually happened in San Diego, not far from here, and survived at 20 weeks.\n\n[02:46] Speaker F (Naima): Okay, so under Roe v. Wade, 93% of abortions happened in the first 13 weeks of pregnancy. That's 93% of the abortions happened well before a fetus is technically viable as a form of life.\n\n[02:58] Speaker A (Charlie Kirk): For sure. So let's go into viability. So what is it about, let's say, a six-week baby that has a heartbeat, its own DNA, fingerprint, brain waves, that is less moral worth than an 88-year-old right now with dementia in a home down the street? That person requires assistance, requires help. What, why is it that the six-week baby is of less moral worth?\n\n[03:19] Speaker F (Naima): Well, first of all, it's not a baby, it's a fetus.\n\n[03:21] Speaker A (Charlie Kirk): What does fetus mean?\n\n[03:22] Speaker F (Naima): A fetus is in utero.\n\n[03:24] Speaker A (Charlie Kirk): What does fetus mean in Latin?\n\n[03:25] Speaker F (Naima): What the [beep]? I'm sorry, is this a language class?\n\n[03:28] Speaker A (Charlie Kirk): It means, it means little human being.\n\n[03:30] Speaker F (Naima): Okay.\n\n[03:31] Speaker A (Charlie Kirk): This smile is very creepy.\n\n[03:33] Speaker F (Naima): Oh, smiling is creepy?\n\n[03:34] Speaker A (Charlie Kirk): No, your smile specifically.\n\n[03:35] Speaker F (Naima): Got it. Thank you.\n\n[03:36] Speaker A (Charlie Kirk): But let's go back to...\n\n[03:37] Speaker F (Naima): We're losing track here.\n\n[03:39] Speaker A (Charlie Kirk): No, but, but is it, what species is the fetus?\n\n[03:41] Speaker F (Naima): The fetus is not a species yet. It's technically classified as a parasite until it is viable. Now I want to talk to you about something very quickly.\n\n[03:48] Speaker A (Charlie Kirk): No, no, no, I can't let you get past that. Are you saying, are you saying a baby is a disease or a tumor?\n\n[03:52] Speaker F (Naima): A parasite is not a disease and a tumor. Those are not the same thing. A parasite is defined as something that cannot survive outside of its host. A baby, before it is viable, cannot survive outside of a woman's womb. Therefore, it is not a living organism.\n\n[04:07] Speaker A (Charlie Kirk): Got it. So let's extrapolate that. Are, are old people with Alzheimer's and dementia that are being assisted every day, are they parasites?\n\n[04:15] Speaker F (Naima): No, they're not parasites. They're human beings who are on the brink of death. They are not going to be able to survive.\n\n[04:19] Speaker A (Charlie Kirk): Got it. So my six, my four-month-old that requires mom's breast milk and requires daily changes and feedings cannot survive without its own. Is my four-month-old a parasite?\n\n[04:29] Speaker F (Naima): Your baby can breathe on its own. Your baby can drink water from its mouth to its stomach.\n\n[04:34] Speaker A (Charlie Kirk): But, but it cannot, can it hunt? Can it gather? Can it reason?\n\n[04:38] Speaker F (Naima): But that's not what qualifies something as being a living organism. Being a living organism simply means, can you survive outside of a womb? Outside of your host?\n\n[04:49] Speaker A (Charlie Kirk): Got it. So I just want to make sure I'm clear. Why does that then equate to moral viability?\n\n[04:55] Speaker F (Naima): It equates to scientific viability.\n\n[04:57] Speaker A (Charlie Kirk): Why? Under what standard?\n\n[04:58] Speaker F (Naima): Because it is not alive. And you are advocating for the rights of something that is not technically a life...\n\n[05:03] Speaker A (Charlie Kirk): Got it. So what is, is something that has a...\n\n[05:05] Speaker F (Naima): ...while sacrificing the needs of the human woman who is alive.\n\n[05:09] Speaker A (Charlie Kirk): Got it. So, but a mom can survive...\n\n[05:12] Speaker F (Naima): Yes.\n\n[05:12] Speaker A (Charlie Kirk): ...without the baby in her.\n\n[05:13] Speaker F (Naima): Uh-huh.\n\n[05:14] Speaker A (Charlie Kirk): Right?\n\n[05:14] Speaker F (Naima): Yes.\n\n[05\n",
+    "text_sha256": "153bd2b8c0f6bfd67fc093ee2698dd153495e8a50ce34e47a5615b007c1936a3",
+    "character_count": 8286,
+    "empty": false
+  },
+  "methodological_notes": {
+    "transcript_status": "model_generated_not_ground_truth",
+    "speaker_labels": "anonymous_model_generated_labels",
+    "speaker_label_consistency": "requested_but_not_guaranteed",
+    "timestamps": "model_generated_approximate",
+    "overlap_detection": "requested_but_not_guaranteed",
+    "quality_note_requested": true,
+    "subtitles_submitted": false,
+    "video_submitted": false,
+    "comments_submitted": false,
+    "prior_transcript_submitted": false
+  },
+  "timing": {
+    "started_at": "2026-08-03T16:42:54Z",
+    "ended_at": "2026-08-03T16:50:29Z",
+    "duration_seconds": 455.0
+  },
+  "retry": {
+    "max_retries": 2,
+    "attempts": 1,
+    "backoff_seconds_initial": 5.0,
+    "errors": [],
+    "succeeded_after_retry": false
+  },
+  "created_at": "2026-08-03T16:50:29Z",
+  "error": null
+}
