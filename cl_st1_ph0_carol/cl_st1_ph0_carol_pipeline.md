@@ -9,7 +9,6 @@ It is not intended to be executed as a shell script. Commands should be copied a
 
 Run all commands from:
 ```
-bash
 cd cl_st1_ph0_carol
 ```
 ## Pipeline overview
@@ -31,61 +30,50 @@ cd cl_st1_ph0_carol
 
 ### Test run
 ```
-bash
 python download_jubilee_debates.py
 ```
 ### Full run
 ```
-bash
 python download_jubilee_debates.py --no-test-mode
 ```
 ### Expected outputs
 ```
-text
 corpus/01_jubilee_debates/
 ```
 ## Stage 2 — Extract Jubilee debate audio
 
 ### Test run
 ```
-bash
 python extract_jubilee_debates_audio.py
 ```
 ### Full run
 ```
-bash
 python extract_jubilee_debates_audio.py --no-test-mode
 ```
 ### Expected outputs
 ```
-text
 corpus/02_jubilee_debates_audio/
 ```
 ## Stage 3 — Speaker diarisation with Gemini
 
 ### Test run
 ```
-bash
 python speaker_diarisation_jubilee_debates.py
 ```
 ### Full run
 ```
-bash
 python speaker_diarisation_jubilee_debates.py --no-test-mode
 ```
 ### Process a single debate
 ```
-bash
 python speaker_diarisation_jubilee_debates.py --only-corpus-id CORPUS_ID
 ```
 ### Reprocess existing output
 ```
-bash
 python speaker_diarisation_jubilee_debates.py --only-corpus-id CORPUS_ID --reprocess
 ```
 ### Expected outputs
 ```
-text
 corpus/02_jubilee_debates_speaker_diarisation/
 ```
 ## Manual run log
