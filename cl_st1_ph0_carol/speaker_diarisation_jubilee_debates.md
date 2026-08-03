@@ -17,7 +17,7 @@ The programme is part of the Phase 0 speaker-diarisation test for the Jubilee de
 The programme should use the Markdown prompt template:
 
 ```plain text
-cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md
+speaker_diarisation_prompts/speaker_diarisation_v1.md
 ```
 
 
@@ -28,7 +28,7 @@ The programme should use **Gemini 3.1 Pro** by default, while allowing the model
 The programme should load `GEMINI_API_KEY` from:
 
 ```plain text
-cl_st1_ph0_carol/env/.env
+env/.env
 ```
 
 
@@ -37,27 +37,117 @@ using `python-dotenv`.
 The programme should save outputs in:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
+corpus/02_jubilee_debates_speaker_diarisation
+```
+
+
+Default paths are resolved relative to the directory containing `speaker_diarisation_jubilee_debates.py`, not necessarily relative to the shell’s current working directory.
+
+---
+
+### 2. Path-resolution policy
+
+The programme should distinguish between **default paths** and **user-provided CLI paths**.
+
+Default paths should be resolved relative to the programme directory, i.e. the directory containing:
+
+```plain text
+speaker_diarisation_jubilee_debates.py
+```
+
+
+This makes the defaults stable whether the programme is executed from:
+
+```plain text
+cl_st1_carol/
+```
+
+
+or from:
+
+```plain text
+cl_st1_carol/cl_st1_ph0_carol/
+```
+
+
+or from another working directory.
+
+For example, the default output path:
+
+```plain text
+corpus/02_jubilee_debates_speaker_diarisation
+```
+
+
+should resolve to:
+
+```plain text
+<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
+```
+
+
+User-provided CLI paths should follow normal command-line expectations:
+
+- absolute paths are used as given;
+- relative paths explicitly supplied by the user are resolved relative to the current working directory.
+
+This avoids duplicated paths such as:
+
+```plain text
+cl_st1_ph0_carol/cl_st1_ph0_carol/corpus/...
+```
+
+
+when the programme is run from inside `cl_st1_ph0_carol/`.
+
+The programme should record both the originally supplied path and the resolved absolute path in run and per-debate metadata where useful.
+
+Recommended metadata structure:
+
+```json
+{
+  "paths": {
+    "path_resolution_policy": {
+      "default_paths": "resolved_relative_to_programme_directory",
+      "cli_relative_paths": "resolved_relative_to_current_working_directory",
+      "absolute_paths": "used_as_given"
+    },
+    "programme_directory": "/home/user/project/cl_st1_ph0_carol",
+    "current_working_directory": "/home/user/project",
+    "output_dir": {
+      "supplied": "corpus/02_jubilee_debates_speaker_diarisation",
+      "resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation",
+      "source": "default"
+    }
+  }
+}
 ```
 
 
 ---
 
-### 2. Inputs
+### 3. Inputs
 
-#### 2.1 Prompt template
+#### 3.1 Prompt template
 
 The programme should read the Markdown prompt template from:
 
 ```plain text
-cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md
+speaker_diarisation_prompts/speaker_diarisation_v1.md
 ```
 
 
 Default CLI argument:
 
 ```shell script
---prompt-template cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md
+--prompt-template speaker_diarisation_prompts/speaker_diarisation_v1.md
+```
+
+
+As a default path, this should resolve to:
+
+```plain text
+<programme_directory>/speaker_diarisation_prompts/speaker_diarisation_v1.md
 ```
 
 
@@ -76,7 +166,9 @@ Recommended metadata to record:
 ```json
 {
   "prompt_template": {
-    "path": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "supplied_path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "path_source": "default",
     "sha256": "...",
     "character_count": 743
   }
@@ -86,12 +178,12 @@ Recommended metadata to record:
 
 ---
 
-#### 2.2 Environment file
+#### 3.2 Environment file
 
 The programme should load environment variables from:
 
 ```plain text
-cl_st1_ph0_carol/env/.env
+env/.env
 ```
 
 
@@ -100,7 +192,14 @@ using `python-dotenv`.
 Default CLI argument:
 
 ```shell script
---env-file cl_st1_ph0_carol/env/.env
+--env-file env/.env
+```
+
+
+As a default path, this should resolve to:
+
+```plain text
+<programme_directory>/env/.env
 ```
 
 
@@ -124,14 +223,18 @@ The programme must never write the API key to:
 - logs;
 - per-debate JSON outputs;
 - run manifests;
-- exception traces intentionally captured in output files.
+- captured exception traces intentionally written to output files.
 
 Recommended run metadata:
 
 ```json
 {
   "environment": {
-    "env_file": "cl_st1_ph0_carol/env/.env",
+    "env_file": {
+      "supplied_path": "env/.env",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/env/.env",
+      "path_source": "default"
+    },
     "dotenv_loaded": true,
     "gemini_api_key_present": true,
     "gemini_api_key_logged": false
@@ -142,19 +245,26 @@ Recommended run metadata:
 
 ---
 
-#### 2.3 Audio input directory
+#### 3.3 Audio input directory
 
 The programme should submit FLAC audio files generated for Gemini from:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac
+corpus/02_jubilee_debates_audio/gemini_flac
 ```
 
 
 Default CLI argument:
 
 ```shell script
---audio-dir cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac
+--audio-dir corpus/02_jubilee_debates_audio/gemini_flac
+```
+
+
+As a default path, this should resolve to:
+
+```plain text
+<programme_directory>/corpus/02_jubilee_debates_audio/gemini_flac
 ```
 
 
@@ -170,14 +280,14 @@ Each debate audio file is expected to be named after the debate `corpus_id`.
 Expected path pattern:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/<corpus_id>.flac
+corpus/02_jubilee_debates_audio/gemini_flac/<corpus_id>.flac
 ```
 
 
 Example:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac
+corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac
 ```
 
 
@@ -186,7 +296,8 @@ The programme should validate and hash each audio file before submission.
 Per-debate metadata should record:
 
 - filename;
-- path;
+- supplied/relative path;
+- resolved path;
 - extension;
 - SHA-256 hash;
 - byte size;
@@ -200,7 +311,8 @@ Recommended metadata:
 {
   "audio": {
     "filename": "jubilee_surrounded_001.flac",
-    "path": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
     "format": "flac",
     "sha256": "...",
     "size_bytes": 123456789,
@@ -213,19 +325,26 @@ Recommended metadata:
 
 ---
 
-#### 2.4 Audio index
+#### 3.4 Audio index
 
 The programme should use the audio index, where available, to identify planned audio files and preserve metadata:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 
 
 Default CLI argument:
 
 ```shell script
---audio-index cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+--audio-index corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+```
+
+
+As a default path, this should resolve to:
+
+```plain text
+<programme_directory>/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 
 
@@ -241,8 +360,6 @@ corpus_id
 Other metadata should be preserved where present.
 
 The programme should process debates in index row order by default.
-
-If no audio index is provided, or if an explicit option is used later, the programme may discover `.flac` files directly from the audio directory and process them in natural filename order.
 
 Recommended default behaviour:
 
@@ -267,19 +384,26 @@ Per-debate failures should be used if:
 
 ---
 
-#### 2.5 Optional source debate index
+#### 3.5 Optional source debate index
 
 The programme may optionally use the original debate metadata index to enrich reproducibility metadata:
 
 ```plain text
-cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 
 
 Recommended CLI argument:
 
 ```shell script
---debate-index cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+--debate-index corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+```
+
+
+As a default path, this should resolve to:
+
+```plain text
+<programme_directory>/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 
 
@@ -314,7 +438,7 @@ If the optional debate index is present but contains invalid NDJSON, the program
 
 ---
 
-### 3. Prompt handling
+### 4. Prompt handling
 
 For each debate, the programme should submit:
 
@@ -349,11 +473,13 @@ Recommended per-debate metadata:
 ```json
 {
   "prompt": {
-    "template_path": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
     "template_sha256": "...",
-    "request_text_sha256": "...",
+    "template_character_count": 743,
     "metadata_note_included": true,
-    "metadata_note_sha256": "..."
+    "metadata_note_sha256": "...",
+    "request_text_sha256": "..."
   }
 }
 ```
@@ -361,7 +487,7 @@ Recommended per-debate metadata:
 
 ---
 
-### 4. LLM submission
+### 5. LLM submission
 
 For each planned debate, the programme should submit the audio file and prompt to Gemini.
 
@@ -382,14 +508,6 @@ Default CLI argument:
 The model name should be configurable because Google model identifiers may differ by API version, availability, preview status, or account configuration.
 
 The programme should be designed so the default can be changed centrally if the exact Gemini 3.1 Pro API identifier differs in practice.
-
-Recommended CLI usage:
-
-```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
-  --model gemini-3.1-pro
-```
-
 
 The LLM request should include:
 
@@ -413,21 +531,28 @@ If future versions compare Gemini output against YouTube captions or other trans
 
 ---
 
-### 5. Output files
+### 6. Output files
 
 For each successfully processed debate, the programme should write:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
+corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
+corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
+```
+
+
+As default output paths, these should resolve under:
+
+```plain text
+<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
 ```
 
 
 Example:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json
+corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt
+corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json
 ```
 
 
@@ -438,6 +563,7 @@ The `.json` file should contain full reproducibility metadata, including:
 - corpus ID;
 - status;
 - input paths;
+- resolved paths;
 - source metadata;
 - prompt template path;
 - prompt template hash;
@@ -459,21 +585,51 @@ A failed `.json` file should still be written where possible.
 
 ---
 
-### 6. Per-debate JSON output
+### 7. Per-debate JSON output
 
-#### 6.1 Recommended success structure
+#### 7.1 Recommended success structure
 
 ```json
 {
   "corpus_id": "jubilee_surrounded_001",
   "status": "success",
+  "paths": {
+    "path_resolution_policy": {
+      "default_paths": "resolved_relative_to_programme_directory",
+      "cli_relative_paths": "resolved_relative_to_current_working_directory",
+      "absolute_paths": "used_as_given"
+    },
+    "programme_directory": "/home/user/project/cl_st1_ph0_carol",
+    "current_working_directory": "/home/user/project"
+  },
   "input": {
-    "audio_index": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
-    "debate_index": "cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
-    "audio_file": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
-    "prompt_template": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
-    "output_txt": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-    "output_json": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+    "audio_index": {
+      "path": "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "path_source": "default"
+    },
+    "debate_index": {
+      "path": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "path_source": "default"
+    },
+    "audio_file": {
+      "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
+    },
+    "prompt_template": {
+      "path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "path_source": "default"
+    },
+    "output_txt": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt"
+    },
+    "output_json": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+    }
   },
   "source_metadata": {
     "audio_index_row": {},
@@ -490,7 +646,8 @@ A failed `.json` file should still be written where possible.
     }
   },
   "prompt": {
-    "template_path": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
     "template_sha256": "...",
     "template_character_count": 743,
     "metadata_note_included": true,
@@ -499,7 +656,8 @@ A failed `.json` file should still be written where possible.
   },
   "audio": {
     "filename": "jubilee_surrounded_001.flac",
-    "path": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
     "format": "flac",
     "sha256": "...",
     "size_bytes": 123456789,
@@ -527,6 +685,18 @@ A failed `.json` file should still be written where possible.
     "character_count": 123456,
     "empty": false
   },
+  "methodological_notes": {
+    "transcript_status": "model_generated_not_ground_truth",
+    "speaker_labels": "anonymous_model_generated_labels",
+    "speaker_label_consistency": "requested_but_not_guaranteed",
+    "timestamps": "model_generated_approximate",
+    "overlap_detection": "requested_but_not_guaranteed",
+    "quality_note_requested": true,
+    "subtitles_submitted": false,
+    "video_submitted": false,
+    "comments_submitted": false,
+    "prior_transcript_submitted": false
+  },
   "timing": {
     "started_at": "2026-08-03T00:00:00Z",
     "ended_at": "2026-08-03T00:05:00Z",
@@ -545,18 +715,42 @@ A failed `.json` file should still be written where possible.
 
 ---
 
-#### 6.2 Recommended failure structure
+#### 7.2 Recommended failure structure
 
 ```json
 {
   "corpus_id": "jubilee_surrounded_001",
   "status": "failed",
+  "paths": {
+    "path_resolution_policy": {
+      "default_paths": "resolved_relative_to_programme_directory",
+      "cli_relative_paths": "resolved_relative_to_current_working_directory",
+      "absolute_paths": "used_as_given"
+    },
+    "programme_directory": "/home/user/project/cl_st1_ph0_carol",
+    "current_working_directory": "/home/user/project"
+  },
   "input": {
-    "audio_index": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
-    "debate_index": "cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
-    "audio_file": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
-    "prompt_template": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
-    "output_json": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+    "audio_index": {
+      "path": "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson"
+    },
+    "debate_index": {
+      "path": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
+    },
+    "audio_file": {
+      "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
+    },
+    "prompt_template": {
+      "path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md"
+    },
+    "output_json": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+    }
   },
   "source_metadata": {
     "audio_index_row": {},
@@ -564,12 +758,14 @@ A failed `.json` file should still be written where possible.
   },
   "audio": {
     "filename": "jubilee_surrounded_001.flac",
-    "path": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "path": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+    "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
     "submitted": false,
     "role": "primary_audio_evidence"
   },
   "prompt": {
-    "template_path": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+    "template_resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
     "template_sha256": "..."
   },
   "model": {
@@ -582,28 +778,35 @@ A failed `.json` file should still be written where possible.
     "duration_seconds": 2.0
   },
   "created_at": "2026-08-03T00:00:02Z",
-  "error": "Missing audio file: cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
+  "error": "Missing audio file: /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
 }
 ```
 
 
 ---
 
-### 7. Run-level outputs
+### 8. Run-level outputs
 
 The programme should write run-level logs and manifests in:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
+corpus/02_jubilee_debates_speaker_diarisation
+```
+
+
+As a default output directory, this should resolve to:
+
+```plain text
+<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
 ```
 
 
 Recommended files:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest.json
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_<RUN_ID>.json
+corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
+corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest.json
+corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_<RUN_ID>.json
 ```
 
 
@@ -614,15 +817,19 @@ The run manifest should include:
 - start time;
 - end time;
 - duration;
-- project/base directory;
-- prompt template path;
+- programme directory;
+- current working directory;
+- path-resolution policy;
+- prompt template supplied path;
+- prompt template resolved path;
 - prompt template hash;
-- environment file path;
+- environment file supplied path;
+- environment file resolved path;
 - confirmation that `GEMINI_API_KEY` was present, without exposing the value;
-- audio input directory;
-- audio index path;
-- optional debate index path;
-- output directory;
+- audio input directory supplied/resolved paths;
+- audio index supplied/resolved paths;
+- optional debate index supplied/resolved paths;
+- output directory supplied/resolved paths;
 - model configuration;
 - processing strategy;
 - number of audio index rows read;
@@ -651,7 +858,8 @@ Recommended strategy metadata:
     "timestamps": "model_generated_mm_ss_turn_timestamps",
     "subtitles_submitted": false,
     "video_submitted": false,
-    "youtube_comments_submitted": false
+    "youtube_comments_submitted": false,
+    "prior_transcript_submitted": false
   }
 }
 ```
@@ -667,17 +875,63 @@ Recommended manifest structure:
   "started_at": "2026-08-03T12:00:00Z",
   "ended_at": "2026-08-03T12:30:00Z",
   "duration_seconds": 1800.0,
+  "paths": {
+    "path_resolution_policy": {
+      "default_paths": "resolved_relative_to_programme_directory",
+      "cli_relative_paths": "resolved_relative_to_current_working_directory",
+      "absolute_paths": "used_as_given"
+    },
+    "programme_directory": "/home/user/project/cl_st1_ph0_carol",
+    "current_working_directory": "/home/user/project"
+  },
   "input": {
-    "prompt_template": "cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
-    "env_file": "cl_st1_ph0_carol/env/.env",
-    "audio_dir": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac",
-    "audio_index": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
-    "debate_index": "cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
+    "prompt_template": {
+      "path": "speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md",
+      "path_source": "default",
+      "sha256": "..."
+    },
+    "env_file": {
+      "path": "env/.env",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/env/.env",
+      "path_source": "default"
+    },
+    "audio_dir": {
+      "path": "corpus/02_jubilee_debates_audio/gemini_flac",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac",
+      "path_source": "default"
+    },
+    "audio_index": {
+      "path": "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+      "path_source": "default"
+    },
+    "debate_index": {
+      "path": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+      "path_source": "default",
+      "loaded": true
+    }
+  },
+  "environment": {
+    "dotenv_loaded": true,
+    "gemini_api_key_present": true,
+    "gemini_api_key_logged": false
   },
   "output": {
-    "output_dir": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation",
-    "log_file": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log",
-    "manifest_file": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json"
+    "output_dir": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation",
+      "path_source": "default"
+    },
+    "log_file": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log"
+    },
+    "manifest_file": {
+      "path": "corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json"
+    }
   },
   "model": {
     "provider": "google",
@@ -701,9 +955,10 @@ Recommended manifest structure:
     {
       "corpus_id": "jubilee_surrounded_001",
       "status": "success",
-      "audio_file": "cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
-      "output_txt": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-      "output_json": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+      "audio_file": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "audio_file_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "output_txt": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+      "output_json": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
     }
   ],
   "error": null
@@ -713,27 +968,31 @@ Recommended manifest structure:
 
 ---
 
-### 8. Processing order
+### 9. Processing order
 
 Debates should be processed in audio-index row order by default.
 
 Recommended processing sequence:
 
 1. Parse CLI arguments.
-2. Resolve all paths.
-3. Create output directory if needed.
-4. Configure logging.
-5. Load `.env` with `python-dotenv`.
-6. Validate `GEMINI_API_KEY`.
-7. Validate Gemini SDK availability.
-8. Load and validate prompt template.
-9. Load audio index.
-10. Optionally load debate index.
-11. Validate global input directories and output directory.
-12. Build processing plan.
-13. Apply test-mode limit if enabled.
-14. Apply `--start-corpus-id` if provided.
-15. For each debate:
+2. Determine the programme directory.
+3. Determine the current working directory.
+4. Resolve default paths relative to the programme directory.
+5. Resolve explicitly supplied relative CLI paths relative to the current working directory.
+6. Create output directory if needed.
+7. Configure logging.
+8. Load `.env` with `python-dotenv`.
+9. Validate `GEMINI_API_KEY`.
+10. Validate Gemini SDK availability.
+11. Load and validate prompt template.
+12. Load audio index.
+13. Optionally load debate index.
+14. Validate global input directories and output directory.
+15. Build processing plan.
+16. Apply test-mode limit if enabled.
+17. Apply `--start-corpus-id` if provided.
+18. Apply `--only-corpus-id` if provided.
+19. For each debate:
     - derive expected audio path;
     - validate audio file;
     - hash audio file;
@@ -745,20 +1004,20 @@ Recommended processing sequence:
     - write `.txt` output;
     - write `.json` metadata output;
     - log status.
-16. Write run manifest.
-17. Write/update latest manifest copy.
+20. Write run-specific manifest.
+21. Write/update latest manifest copy.
 
 ---
 
-### 9. Existing-output skipping
+### 10. Existing-output skipping
 
 Existing successful outputs should be skipped unless `--reprocess` is used.
 
 A debate may be skipped if both files exist:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
+corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
+corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
 ```
 
 
@@ -792,8 +1051,10 @@ Recommended skipped item:
   "corpus_id": "jubilee_surrounded_001",
   "status": "skipped_existing",
   "reason": "Existing successful output found and --reprocess was not provided.",
-  "output_txt": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-  "output_json": "cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+  "output_txt": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+  "output_txt_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+  "output_json": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+  "output_json_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
   "previous_model": "gemini-3.1-pro",
   "previous_prompt_template_sha256": "..."
 }
@@ -802,18 +1063,18 @@ Recommended skipped item:
 
 ---
 
-### 10. Command-line interface
+### 11. Command-line interface
 
 Recommended CLI arguments:
 
 | Argument | Default | Purpose |
 |---|---:|---|
-| `--prompt-template PATH` | `cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md` | Markdown diarisation prompt template |
-| `--env-file PATH` | `cl_st1_ph0_carol/env/.env` | Environment file loaded with `python-dotenv` |
-| `--audio-dir PATH` | `cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac` | Gemini-ready FLAC audio input directory |
-| `--audio-index PATH` | `cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson` | Audio index defining processing plan |
-| `--debate-index PATH` | `cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson` | Optional debate metadata index |
-| `--output-dir PATH` | `cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation` | Diarised transcript output directory |
+| `--prompt-template PATH` | `speaker_diarisation_prompts/speaker_diarisation_v1.md` | Markdown diarisation prompt template |
+| `--env-file PATH` | `env/.env` | Environment file loaded with `python-dotenv` |
+| `--audio-dir PATH` | `corpus/02_jubilee_debates_audio/gemini_flac` | Gemini-ready FLAC audio input directory |
+| `--audio-index PATH` | `corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson` | Audio index defining processing plan |
+| `--debate-index PATH` | `corpus/01_jubilee_debates/jubilee_debates_index.ndjson` | Optional debate metadata index |
+| `--output-dir PATH` | `corpus/02_jubilee_debates_speaker_diarisation` | Diarised transcript output directory |
 | `--model MODEL` | `gemini-3.1-pro` | Gemini model identifier |
 | `--temperature FLOAT` | `0` | Generation temperature |
 | `--max-output-tokens N` | `0` | Optional output-token cap; `0` means API/default maximum |
@@ -843,41 +1104,52 @@ Recommended future arguments:
 
 ---
 
-### 11. Example commands
+### 12. Example commands
 
-#### 11.1 Default test run
+#### 12.1 Default test run from inside `cl_st1_ph0_carol/`
+
+```shell script
+python speaker_diarisation_jubilee_debates.py
+```
+
+
+This should:
+
+- load `GEMINI_API_KEY` from `env/.env`;
+- read the default speaker diarisation prompt template;
+- read the default audio index;
+- process one debate in test mode;
+- submit the prompt and one `.flac` audio file to Gemini;
+- use `gemini-3.1-pro`;
+- save outputs in `corpus/02_jubilee_debates_speaker_diarisation`.
+
+---
+
+#### 12.2 Default test run from project root
 
 ```shell script
 python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py
 ```
 
 
-This should:
-
-- load `GEMINI_API_KEY` from `cl_st1_ph0_carol/env/.env`;
-- read the default speaker diarisation prompt template;
-- read the default audio index;
-- process one debate in test mode;
-- submit the prompt and one `.flac` audio file to Gemini;
-- use `gemini-3.1-pro`;
-- save outputs in `cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation`.
+This should behave the same as the previous command because default paths are resolved relative to the programme directory.
 
 ---
 
-#### 11.2 Full run
+#### 12.3 Full run
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
+python speaker_diarisation_jubilee_debates.py \
   --no-test-mode
 ```
 
 
 ---
 
-#### 11.3 Reprocess all debates
+#### 12.4 Reprocess all debates
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
+python speaker_diarisation_jubilee_debates.py \
   --no-test-mode \
   --reprocess
 ```
@@ -885,40 +1157,42 @@ python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
 
 ---
 
-#### 11.4 Use a different Gemini model
+#### 12.5 Use a different Gemini model
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
+python speaker_diarisation_jubilee_debates.py \
   --model gemini-2.5-pro
 ```
 
 
 ---
 
-#### 11.5 Use a different prompt template
+#### 12.6 Use a different prompt template
+
+When a user explicitly supplies a relative path, it is resolved relative to the current working directory:
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
-  --prompt-template cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v2.md
+python speaker_diarisation_jubilee_debates.py \
+  --prompt-template speaker_diarisation_prompts/speaker_diarisation_v2.md
 ```
 
 
 ---
 
-#### 11.6 Process only one debate
+#### 12.7 Process only one debate
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
+python speaker_diarisation_jubilee_debates.py \
   --only-corpus-id jubilee_surrounded_001
 ```
 
 
 ---
 
-#### 11.7 Resume from a specific debate
+#### 12.8 Resume from a specific debate
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
+python speaker_diarisation_jubilee_debates.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_004
 ```
@@ -926,21 +1200,21 @@ python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
 
 ---
 
-#### 11.8 Use explicit paths
+#### 12.9 Use explicit absolute paths
 
 ```shell script
-python cl_st1_ph0_carol/speaker_diarisation_jubilee_debates.py \
-  --prompt-template cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md \
-  --env-file cl_st1_ph0_carol/env/.env \
-  --audio-dir cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac \
-  --audio-index cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson \
-  --output-dir cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
+python speaker_diarisation_jubilee_debates.py \
+  --prompt-template /home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md \
+  --env-file /home/user/project/cl_st1_ph0_carol/env/.env \
+  --audio-dir /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac \
+  --audio-index /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson \
+  --output-dir /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
 ```
 
 
 ---
 
-### 12. Validation rules
+### 13. Validation rules
 
 The programme should fail before API calls if:
 
@@ -975,7 +1249,7 @@ The programme should fail early if the optional debate index is present but inva
 
 ---
 
-### 13. Per-debate failure handling
+### 14. Per-debate failure handling
 
 A debate should be marked as failed, but the run should continue, if:
 
@@ -1015,7 +1289,7 @@ failed_output_write
 
 ---
 
-### 14. API retry behaviour
+### 15. API retry behaviour
 
 The programme should retry transient API failures.
 
@@ -1080,12 +1354,12 @@ Recommended retry metadata:
 
 ---
 
-### 15. Logging
+### 16. Logging
 
 The programme should write a log file to:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
+corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
 ```
 
 
@@ -1100,6 +1374,9 @@ The log should include:
 
 - run ID;
 - start/end time;
+- programme directory;
+- current working directory;
+- path-resolution policy;
 - resolved input paths;
 - resolved output paths;
 - selected model;
@@ -1120,6 +1397,8 @@ Recommended log lines:
 
 ```plain text
 2026-08-03T12:00:00Z INFO Run started: 20260803T120000Z
+2026-08-03T12:00:00Z INFO Programme directory: /home/user/project/cl_st1_ph0_carol
+2026-08-03T12:00:00Z INFO Current working directory: /home/user/project
 2026-08-03T12:00:00Z INFO Model: gemini-3.1-pro
 2026-08-03T12:00:01Z INFO Planned debates: 10
 2026-08-03T12:00:02Z INFO Processing jubilee_surrounded_001
@@ -1131,7 +1410,7 @@ Recommended log lines:
 
 ---
 
-### 16. Output text expectations
+### 17. Output text expectations
 
 The `.txt` output should preserve the model response as cleanly as possible.
 
@@ -1171,7 +1450,7 @@ The aim is to preserve Gemini’s output for later evaluation.
 
 ---
 
-### 17. Reproducibility requirements
+### 18. Reproducibility requirements
 
 For each debate, the programme should record enough metadata to reproduce or audit the request.
 
@@ -1181,10 +1460,15 @@ Required reproducibility fields:
 - run ID;
 - created timestamp;
 - corpus ID;
-- audio path;
+- programme directory;
+- current working directory;
+- path-resolution policy;
+- audio supplied path;
+- audio resolved path;
 - audio SHA-256;
 - audio byte size;
-- prompt template path;
+- prompt template supplied path;
+- prompt template resolved path;
 - prompt template SHA-256;
 - request text SHA-256;
 - model name;
@@ -1213,7 +1497,7 @@ This matters methodologically because this programme is testing diarisation from
 
 ---
 
-### 18. Data-protection and research-integrity notes
+### 19. Data-protection and research-integrity notes
 
 The source material is public YouTube debate content, but the programme should still behave conservatively.
 
@@ -1245,7 +1529,7 @@ Recommended per-debate methodological metadata:
 
 ---
 
-### 19. Acceptance criteria
+### 20. Acceptance criteria
 
 The specification is implemented acceptably when:
 
@@ -1256,142 +1540,157 @@ speaker_diarisation_jubilee_debates.py
 ```
 
 
-2. The programme reads the default prompt template from:
+2. Default paths are resolved relative to the programme directory.
+
+3. Explicit user-provided relative CLI paths are resolved relative to the current working directory.
+
+4. Absolute CLI paths are used as given.
+
+5. The programme records supplied and resolved paths in run metadata.
+
+6. The programme reads the default prompt template from:
 
 ```plain text
-cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md
+speaker_diarisation_prompts/speaker_diarisation_v1.md
 ```
 
 
-3. The prompt template path is configurable via:
+7. The prompt template path is configurable via:
 
 ```shell script
 --prompt-template
 ```
 
 
-4. The programme uses Gemini 3.1 Pro by default.
+8. The programme uses Gemini 3.1 Pro by default.
 
-5. The model is configurable via:
+9. The model is configurable via:
 
 ```shell script
 --model
 ```
 
 
-6. The programme loads:
+10. The programme loads:
 
 ```plain text
-cl_st1_ph0_carol/env/.env
+env/.env
 ```
 
 
-   using `python-dotenv`.
+    using `python-dotenv`.
 
-7. The programme reads `GEMINI_API_KEY` from the loaded environment.
+11. The programme reads `GEMINI_API_KEY` from the loaded environment.
 
-8. The programme never logs the Gemini API key.
+12. The programme never logs the Gemini API key.
 
-9. The programme reads Gemini-ready FLAC audio files from:
+13. The programme reads Gemini-ready FLAC audio files from:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac
+corpus/02_jubilee_debates_audio/gemini_flac
 ```
 
 
-10. The audio input directory is configurable via:
+14. The audio input directory is configurable via:
 
 ```shell script
 --audio-dir
 ```
 
 
-11. The programme uses the audio index:
+15. The programme uses the audio index:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 
 
-   by default.
+    by default.
 
-12. The audio index path is configurable via:
+16. The audio index path is configurable via:
 
 ```shell script
 --audio-index
 ```
 
 
-13. The programme preserves debate/audio metadata in per-debate JSON outputs where available.
-
-14. The programme submits the prompt and one `.flac` audio file per debate to Gemini.
-
-15. The programme does not submit source video files.
-
-16. The programme does not submit existing subtitles or automatic captions.
-
-17. The programme does not submit YouTube comments.
-
-18. The programme saves `.txt` outputs in:
+17. The programme optionally uses the debate metadata index:
 
 ```plain text
-cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
+corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 
 
-19. The programme saves `.json` metadata outputs in the same directory.
+18. The programme preserves debate/audio metadata in per-debate JSON outputs where available.
 
-20. Per-debate output naming follows:
+19. The programme submits the prompt and one `.flac` audio file per debate to Gemini.
+
+20. The programme does not submit source video files.
+
+21. The programme does not submit existing subtitles or automatic captions.
+
+22. The programme does not submit YouTube comments.
+
+23. The programme saves `.txt` outputs in:
+
+```plain text
+corpus/02_jubilee_debates_speaker_diarisation
+```
+
+
+24. The programme saves `.json` metadata outputs in the same directory.
+
+25. Per-debate output naming follows:
 
 ```plain text
 <corpus_id>.txt
-   <corpus_id>.json
+    <corpus_id>.json
 ```
 
 
-21. Existing successful outputs are skipped unless `--reprocess` is used.
+26. Existing successful outputs are skipped unless `--reprocess` is used.
 
-22. Skipped debates are recorded in the run manifest.
+27. Skipped debates are recorded in the run manifest.
 
-23. Per-debate failures are logged and do not stop the whole run.
+28. Per-debate failures are logged and do not stop the whole run.
 
-24. The programme writes a run-level log.
+29. The programme writes a run-level log.
 
-25. The programme writes a run-level manifest.
+30. The programme writes a run-level manifest.
 
-26. The programme writes a run-level manifest with a run-specific filename.
+31. The programme writes a run-level manifest with a run-specific filename.
 
-27. The programme supports test mode by default.
+32. The programme supports test mode by default.
 
-28. The programme supports full-run mode via:
+33. The programme supports full-run mode via:
 
 ```shell script
 --no-test-mode
 ```
 
 
-29. The programme supports resuming from a corpus ID via:
+34. The programme supports resuming from a corpus ID via:
 
 ```shell script
 --start-corpus-id
 ```
 
 
-30. The programme supports processing a single debate via:
+35. The programme supports processing a single debate via:
 
 ```shell script
 --only-corpus-id
 ```
 
 
-31. Prompt hashes, request hashes, audio hashes, model configuration, response text, and response hashes are recorded.
+36. Prompt hashes, request hashes, audio hashes, model configuration, response text, and response hashes are recorded.
 
-32. The `.txt` response preserves Gemini’s diarised transcript without corrective post-processing.
+37. The `.txt` response preserves Gemini’s diarised transcript without corrective post-processing.
 
-33. The `.json` metadata records that the transcript is model-generated and not ground truth.
+38. The `.json` metadata records that the transcript is model-generated and not ground truth.
 
-34. The `.json` metadata records that timestamps and speaker labels are model-generated and may require later validation.
+39. The `.json` metadata records that timestamps and speaker labels are model-generated and may require later validation.
 
-35. The programme exits with a non-zero status for global validation failures.
+40. The programme exits with a non-zero status for global validation failures.
 
-36. The programme completes with a run manifest for per-debate failures where possible.
+41. The programme completes with a run manifest for per-debate failures where possible.
