@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """
-Extract full-length audio from downloaded Jubilee debate videos.
+Extract Whisper-ready audio from downloaded Jubilee debate videos.
 
-This script reads the curated Jubilee debate index produced by
-download_jubilee_debates.py, locates successfully downloaded video files, and
-extracts one full-length audio file per eligible debate using ffmpeg.
+This script reads a curated Jubilee debate index from an NDJSON file, selects
+records whose downloaded source videos are available, and extracts one full-length
+WAV audio file per eligible debate using ffmpeg.
 
-The default audio profile is "gemini_flac", which produces stereo 44.1 kHz FLAC
-audio for Gemini 1.5 Pro transcription and speaker-turn differentiation tests.
-The script also supports "gemini_wav" and "whisper_wav" profiles.
+Source debate videos are resolved from the input record's "video_file" field when
+available, or from the input directory as "<corpus_id>.mp4". Extracted audio files
+are written to the output directory as "<corpus_id>.wav".
 
-This script intentionally does not segment audio. Audio segmentation should be
-handled by a later pipeline programme so that segment duration, chapter-based
-splitting, Gemini upload constraints, and timestamp offsets can be handled
-separately.
+The output audio format is designed for Whisper, WhisperX, and pyannote.audio:
+mono, 16 kHz, signed 16-bit PCM WAV.
 
-By default, the script runs in test mode and processes up to 5 planned debates.
-Existing output audio files are skipped unless --reprocess is provided, making
-the script safe to re-run.
+By default, the script runs in test mode and attempts only the first 5 planned
+debates. Existing output audio files are skipped unless --reprocess is provided,
+making the script safe to re-run.
+
+Use --start-corpus-id to start planning extraction from a specific corpus_id
+onward.
+
+This script extracts full-length audio only. Transcription, alignment,
+segmentation, and diarisation are handled by later pipeline stages.
 
 Example:
     python extract_jubilee_debates_audio.py
@@ -25,11 +29,11 @@ Example:
 Full run:
     python extract_jubilee_debates_audio.py --no-test-mode
 
-Whisper-compatible extraction:
-    python extract_jubilee_debates_audio.py --profile whisper_wav --no-test-mode
-
-Resume from a specific debate:
+Full run from a specific debate:
     python extract_jubilee_debates_audio.py --no-test-mode --start-corpus-id jubilee_surrounded_003
+
+The script writes an append-only log file, a JSON manifest, and a curated NDJSON
+audio index describing run-level metadata and per-debate audio extraction status.
 """
 
 from __future__ import annotations
@@ -65,9 +69,6 @@ DEFAULT_AUDIO_INDEX_FILE = (
     "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson"
 )
 
-DEFAULT_PROFILE = "gemini_flac"
-SUPPORTED_PROFILES = ("gemini_flac", "gemini_wav", "whisper_wav")
-
 DEFAULT_TEST_MODE = True
 DEFAULT_TEST_LIMIT = 5
 DEFAULT_WORKERS = 1
@@ -76,76 +77,38 @@ DEFAULT_MAX_RETRIES = 1
 DEFAULT_RETRY_DELAY_SECONDS = 5
 
 INPUT_VIDEO_EXTENSION = ".mp4"
+OUTPUT_AUDIO_EXTENSION = ".wav"
 
-PROFILE_CONFIGS: dict[str, dict[str, Any]] = {
-    "gemini_flac": {
-        "output_subdir": "gemini_flac",
-        "output_extension": ".flac",
-        "output_format": "flac",
-        "audio_channels": 2,
-        "audio_sample_rate": 44100,
-        "audio_codec": "flac",
-        "audio_sample_format": None,
-        "ffmpeg_args": [
-            "-vn",
-            "-ac",
-            "2",
-            "-ar",
-            "44100",
-            "-c:a",
-            "flac",
-        ],
-    },
-    "gemini_wav": {
-        "output_subdir": "gemini_wav",
-        "output_extension": ".wav",
-        "output_format": "wav",
-        "audio_channels": 2,
-        "audio_sample_rate": 44100,
-        "audio_codec": "pcm_s16le",
-        "audio_sample_format": "s16",
-        "ffmpeg_args": [
-            "-vn",
-            "-ac",
-            "2",
-            "-ar",
-            "44100",
-            "-c:a",
-            "pcm_s16le",
-        ],
-    },
-    "whisper_wav": {
-        "output_subdir": "whisper_wav",
-        "output_extension": ".wav",
-        "output_format": "wav",
-        "audio_channels": 1,
-        "audio_sample_rate": 16000,
-        "audio_codec": "pcm_s16le",
-        "audio_sample_format": "s16",
-        "ffmpeg_args": [
-            "-vn",
-            "-ac",
-            "1",
-            "-ar",
-            "16000",
-            "-sample_fmt",
-            "s16",
-        ],
-    },
-}
+OUTPUT_AUDIO_FORMAT = "wav"
+FFMPEG_AUDIO_CHANNELS = "1"
+FFMPEG_AUDIO_SAMPLE_RATE = "16000"
+FFMPEG_AUDIO_CODEC = "pcm_s16le"
+FFMPEG_AUDIO_SAMPLE_FORMAT = "s16"
+
+FFMPEG_AUDIO_ARGS = [
+    "-vn",
+    "-ac",
+    FFMPEG_AUDIO_CHANNELS,
+    "-ar",
+    FFMPEG_AUDIO_SAMPLE_RATE,
+    "-sample_fmt",
+    FFMPEG_AUDIO_SAMPLE_FORMAT,
+]
 
 ELIGIBLE_DOWNLOAD_STATUSES = ("success", "skipped_existing")
 
-PRESERVED_INPUT_FIELDS = (
+PRESERVED_METADATA_FIELDS = (
     "corpus_id",
     "debate_format",
     "sample_group",
     "sample_order",
+    "title",
     "title_selected",
     "title_extracted",
     "youtube_id",
     "youtube_url",
     "webpage_url",
+    "channel",
     "channel_selected",
     "channel_extracted",
     "duration_seconds",
@@ -165,135 +128,57 @@ PRESERVED_INPUT_FIELDS = (
 
 
 class ConfigurationError(Exception):
-    """Raised when command-line arguments or environment configuration are invalid."""
+    """Raised when command-line options or runtime configuration are invalid."""
 
 
 def utc_now() -> datetime:
-    """Return the current timezone-aware UTC datetime."""
+    """Return the current timezone-aware UTC datetime without performing I/O."""
     return datetime.now(timezone.utc)
 
 
 def utc_timestamp() -> str:
-    """Return an ISO-8601 UTC timestamp using a trailing Z."""
-    return utc_now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    """Return an ISO-like UTC timestamp string without microseconds."""
+    return utc_now().replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def make_run_id() -> str:
-    """Return a compact UTC run identifier."""
+    """Return a compact UTC run identifier suitable for filenames."""
     return utc_now().strftime("%Y%m%dT%H%M%SZ")
-
-
-def path_to_str(path: Path | None) -> str | None:
-    """Convert a Path to a POSIX-style string, preserving None."""
-    if path is None:
-        return None
-    return path.as_posix()
-
-
-def resolve_script_relative_path(path: Path) -> Path:
-    """
-    Resolve a path relative to the programme directory.
-
-    Parameters:
-        path: Absolute or relative path.
-
-    Returns:
-        Absolute paths unchanged; relative paths resolved under SCRIPT_DIR.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        None.
-    """
-    if path.is_absolute():
-        return path
-    return SCRIPT_DIR / path
-
-
-def short_error(stderr: str, stdout: str = "", limit: int = 1000) -> str:
-    """Return a compact single-line process error summary."""
-    text = stderr.strip() or stdout.strip() or "Unknown error"
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    if not lines:
-        return "Unknown error"
-
-    interesting = [
-        line for line in lines
-        if "ERROR:" in line or "Error" in line or "error" in line
-    ]
-    selected = interesting[-1] if interesting else lines[-1]
-    return selected[:limit]
 
 
 def parse_args() -> argparse.Namespace:
     """
-    Parse command-line arguments and resolve paths.
+    Parse command-line arguments for the Jubilee debate audio extraction programme.
 
     Returns:
-        argparse.Namespace containing resolved configuration values.
+        argparse.Namespace containing raw command-line values. Paths are resolved
+        after parsing.
 
-    Performs I/O:
-        No direct file reads or writes.
+    I/O:
+        Reads command-line arguments from sys.argv via argparse.
 
     Error behaviour:
-        argparse exits for malformed CLI syntax.
+        argparse exits with code 2 for malformed command-line usage.
     """
     parser = argparse.ArgumentParser(
-        description="Extract full-length audio from downloaded Jubilee debate videos."
+        description=(
+            "Extract full-length mono 16 kHz PCM WAV audio from downloaded "
+            "Jubilee debate videos."
+        )
     )
 
-    parser.add_argument(
-        "--index",
-        type=Path,
-        default=Path(DEFAULT_INDEX_PATH),
-        help="Path to the NDJSON curated debate index.",
-    )
-    parser.add_argument(
-        "--input-dir",
-        type=Path,
-        default=Path(DEFAULT_INPUT_DIR),
-        help="Directory containing source video files.",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=Path(DEFAULT_OUTPUT_DIR),
-        help="Base output directory for extracted audio, logs, manifests, and index.",
-    )
-    parser.add_argument(
-        "--profile",
-        choices=SUPPORTED_PROFILES,
-        default=DEFAULT_PROFILE,
-        help="Audio extraction profile.",
-    )
-    parser.add_argument(
-        "--log-file",
-        type=Path,
-        default=Path(DEFAULT_LOG_FILE),
-        help="Append-only log file path.",
-    )
-    parser.add_argument(
-        "--manifest-file",
-        type=Path,
-        default=Path(DEFAULT_MANIFEST_FILE),
-        help="Latest JSON manifest file path.",
-    )
-    parser.add_argument(
-        "--audio-index-file",
-        type=Path,
-        default=Path(DEFAULT_AUDIO_INDEX_FILE),
-        help="Curated NDJSON audio index file path.",
-    )
+    parser.add_argument("--index", default=DEFAULT_INDEX_PATH, help="Path to NDJSON debate index.")
+    parser.add_argument("--input-dir", default=DEFAULT_INPUT_DIR, help="Directory containing source MP4 videos.")
+    parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR, help="Directory for extracted WAV files.")
 
-    test_group = parser.add_mutually_exclusive_group()
-    test_group.add_argument(
+    test_mode_group = parser.add_mutually_exclusive_group()
+    test_mode_group.add_argument(
         "--test-mode",
         dest="test_mode",
         action="store_true",
         help="Enable test mode.",
     )
-    test_group.add_argument(
+    test_mode_group.add_argument(
         "--no-test-mode",
         dest="test_mode",
         action="store_false",
@@ -301,74 +186,67 @@ def parse_args() -> argparse.Namespace:
     )
     parser.set_defaults(test_mode=DEFAULT_TEST_MODE)
 
-    parser.add_argument(
-        "--test-limit",
-        type=int,
-        default=DEFAULT_TEST_LIMIT,
-        help="Maximum number of planned records processed in test mode.",
-    )
-    parser.add_argument(
-        "--reprocess",
-        action="store_true",
-        help="Re-run ffmpeg and overwrite existing audio outputs.",
-    )
-    parser.add_argument(
-        "--start-corpus-id",
-        default=None,
-        help="Start planning from this corpus_id, preserving input order.",
-    )
-    parser.add_argument(
-        "--workers",
-        type=int,
-        default=DEFAULT_WORKERS,
-        help="Number of workers. Only 1 is supported in this implementation.",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=DEFAULT_TIMEOUT_SECONDS,
-        help="Maximum seconds allowed for one ffmpeg process.",
-    )
-    parser.add_argument(
-        "--max-retries",
-        type=int,
-        default=DEFAULT_MAX_RETRIES,
-        help="Number of retries after a failed ffmpeg attempt.",
-    )
-    parser.add_argument(
-        "--retry-delay",
-        type=int,
-        default=DEFAULT_RETRY_DELAY_SECONDS,
-        help="Seconds to wait between retry attempts.",
-    )
+    parser.add_argument("--test-limit", type=int, default=DEFAULT_TEST_LIMIT)
+    parser.add_argument("--reprocess", action="store_true", help="Overwrite existing output WAV files.")
+    parser.add_argument("--start-corpus-id", default=None, help="Start planning from this corpus_id.")
+
+    parser.add_argument("--log-file", default=DEFAULT_LOG_FILE)
+    parser.add_argument("--manifest-file", default=DEFAULT_MANIFEST_FILE)
+    parser.add_argument("--audio-index-file", default=DEFAULT_AUDIO_INDEX_FILE)
+
+    parser.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
+    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS)
+    parser.add_argument("--max-retries", type=int, default=DEFAULT_MAX_RETRIES)
+    parser.add_argument("--retry-delay", type=int, default=DEFAULT_RETRY_DELAY_SECONDS)
 
     args = parser.parse_args()
 
-    args.index = resolve_script_relative_path(args.index)
-    args.input_dir = resolve_script_relative_path(args.input_dir)
-    args.output_dir = resolve_script_relative_path(args.output_dir)
-    args.log_file = resolve_script_relative_path(args.log_file)
-    args.manifest_file = resolve_script_relative_path(args.manifest_file)
-    args.audio_index_file = resolve_script_relative_path(args.audio_index_file)
+    args.index = resolve_script_relative_path(Path(args.index))
+    args.input_dir = resolve_script_relative_path(Path(args.input_dir))
+    args.output_dir = resolve_script_relative_path(Path(args.output_dir))
+    args.log_file = resolve_script_relative_path(Path(args.log_file))
+    args.manifest_file = resolve_script_relative_path(Path(args.manifest_file))
+    args.audio_index_file = resolve_script_relative_path(Path(args.audio_index_file))
 
     return args
 
 
-def setup_logging(log_file: Path) -> logging.Logger:
+def resolve_script_relative_path(path: Path) -> Path:
     """
-    Configure append-only UTF-8 logging.
+    Resolve relative paths against the programme directory.
 
-    Parameters:
-        log_file: Destination log file.
+    Args:
+        path: A relative or absolute filesystem path.
 
     Returns:
-        Configured logger.
+        Absolute paths unchanged; relative paths resolved relative to SCRIPT_DIR.
 
-    Performs I/O:
-        Creates the log directory and opens the log file in append mode.
+    I/O:
+        Does not touch the filesystem.
 
     Error behaviour:
-        Lets OSError propagate if logging cannot be configured.
+        Does not raise for non-existent paths.
+    """
+    if path.is_absolute():
+        return path
+    return SCRIPT_DIR / path
+
+
+def setup_logging(log_file: Path) -> logging.Logger:
+    """
+    Configure append-only logging.
+
+    Args:
+        log_file: Path to the UTF-8 log file.
+
+    Returns:
+        Configured programme logger.
+
+    I/O:
+        Creates the parent directory if needed and appends to the log file.
+
+    Error behaviour:
+        Propagates OSError if the log directory/file cannot be created or opened.
     """
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -383,97 +261,15 @@ def setup_logging(log_file: Path) -> logging.Logger:
     )
 
     file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
-    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
 
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(formatter)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(formatter)
 
     logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    logger.addHandler(stream_handler)
+
     return logger
-
-
-def ensure_output_dirs(output_dir: Path, profile: str) -> dict[str, Path]:
-    """
-    Create the output directory structure for the selected profile.
-
-    Parameters:
-        output_dir: Base audio output directory.
-        profile: Selected audio profile name.
-
-    Returns:
-        Mapping of logical directory names to paths.
-
-    Performs I/O:
-        Creates directories if needed.
-
-    Error behaviour:
-        Lets OSError propagate if directory creation fails.
-    """
-    profile_config = get_audio_profile_config(profile)
-    dirs = {
-        "output": output_dir,
-        "profile_output": output_dir / profile_config["output_subdir"],
-    }
-
-    for directory in dirs.values():
-        directory.mkdir(parents=True, exist_ok=True)
-
-    return dirs
-
-
-def validate_args(args: argparse.Namespace) -> None:
-    """
-    Validate command-line arguments and filesystem paths.
-
-    Parameters:
-        args: Parsed command-line arguments.
-
-    Returns:
-        None.
-
-    Performs I/O:
-        Checks file and directory existence/readability.
-
-    Error behaviour:
-        Raises ConfigurationError for invalid configuration.
-    """
-    if args.profile not in SUPPORTED_PROFILES:
-        raise ConfigurationError(f"Unsupported profile: {args.profile}")
-
-    if not args.index.exists():
-        raise ConfigurationError(f"Input index file does not exist: {args.index}")
-    if not args.index.is_file():
-        raise ConfigurationError(f"Input index path is not a file: {args.index}")
-
-    try:
-        with args.index.open("r", encoding="utf-8"):
-            pass
-    except OSError as exc:
-        raise ConfigurationError(f"Input index file is unreadable: {args.index}") from exc
-
-    if not args.input_dir.exists():
-        raise ConfigurationError(f"Input video directory does not exist: {args.input_dir}")
-    if not args.input_dir.is_dir():
-        raise ConfigurationError(f"Input video path is not a directory: {args.input_dir}")
-
-    if args.test_limit <= 0:
-        raise ConfigurationError("--test-limit must be greater than zero")
-    if args.workers <= 0:
-        raise ConfigurationError("--workers must be greater than zero")
-    if args.workers != 1:
-        raise ConfigurationError("Only --workers 1 is supported in this implementation")
-    if args.timeout <= 0:
-        raise ConfigurationError("--timeout must be greater than zero")
-    if args.max_retries < 0:
-        raise ConfigurationError("--max-retries must be zero or greater")
-    if args.retry_delay < 0:
-        raise ConfigurationError("--retry-delay must be zero or greater")
-
-    if args.start_corpus_id is not None and not args.start_corpus_id.strip():
-        raise ConfigurationError("--start-corpus-id cannot be empty")
 
 
 def check_ffmpeg() -> dict[str, Any]:
@@ -481,71 +277,129 @@ def check_ffmpeg() -> dict[str, Any]:
     Check whether ffmpeg is available and return version metadata.
 
     Returns:
-        Dictionary with availability, executable, and version information.
+        Dictionary with availability flag and version string.
 
-    Performs I/O:
-        Executes "ffmpeg -version".
+    I/O:
+        Runs "ffmpeg -version" through subprocess.
 
     Error behaviour:
-        Raises ConfigurationError if ffmpeg is unavailable or fails.
+        Raises ConfigurationError if ffmpeg is not found or cannot be executed.
     """
-    executable = shutil.which("ffmpeg")
-    if executable is None:
-        raise ConfigurationError("ffmpeg is not available on the system PATH")
+    if shutil.which("ffmpeg") is None:
+        raise ConfigurationError("ffmpeg is not available on the system PATH.")
 
     try:
-        result = subprocess.run(
+        completed = subprocess.run(
             ["ffmpeg", "-version"],
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=False,
             timeout=30,
         )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ConfigurationError(f"Failed to run ffmpeg -version: {exc}") from exc
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ConfigurationError(f"Could not run ffmpeg -version: {exc}") from exc
 
-    if result.returncode != 0:
-        raise ConfigurationError(
-            f"ffmpeg -version failed: {short_error(result.stderr, result.stdout)}"
-        )
+    if completed.returncode != 0:
+        error = completed.stderr.strip() or completed.stdout.strip() or "unknown ffmpeg error"
+        raise ConfigurationError(f"ffmpeg -version failed: {error}")
 
-    version_line = result.stdout.splitlines()[0] if result.stdout.splitlines() else "unknown"
-    return {
-        "available": True,
-        "version": version_line,
-        "executable": executable,
-    }
+    version = completed.stdout.splitlines()[0] if completed.stdout.splitlines() else "unknown"
+    return {"available": True, "version": version}
+
+
+def validate_args(args: argparse.Namespace) -> None:
+    """
+    Validate command-line arguments and filesystem configuration.
+
+    Args:
+        args: Parsed and path-resolved argparse namespace.
+
+    Returns:
+        None.
+
+    I/O:
+        Checks path existence, readability, and creates the output directory.
+
+    Error behaviour:
+        Raises ConfigurationError for validation failures.
+    """
+    if args.test_limit <= 0:
+        raise ConfigurationError("--test-limit must be a positive integer.")
+
+    if args.workers <= 0:
+        raise ConfigurationError("--workers must be a positive integer.")
+
+    if args.workers != 1:
+        raise ConfigurationError("Only --workers 1 is supported in this sequential implementation.")
+
+    if args.timeout <= 0:
+        raise ConfigurationError("--timeout must be a positive integer.")
+
+    if args.max_retries < 0:
+        raise ConfigurationError("--max-retries must be zero or a positive integer.")
+
+    if args.retry_delay < 0:
+        raise ConfigurationError("--retry-delay must be zero or a positive integer.")
+
+    if args.start_corpus_id is not None and not args.start_corpus_id.strip():
+        raise ConfigurationError("--start-corpus-id must not be empty.")
+
+    if not args.index.exists():
+        raise ConfigurationError(f"Input index file does not exist: {args.index}")
+
+    if not args.index.is_file():
+        raise ConfigurationError(f"Input index path is not a file: {args.index}")
+
+    try:
+        with args.index.open("r", encoding="utf-8"):
+            pass
+    except OSError as exc:
+        raise ConfigurationError(f"Input index file is unreadable: {args.index}: {exc}") from exc
+
+    if not args.input_dir.exists():
+        raise ConfigurationError(f"Input video directory does not exist: {args.input_dir}")
+
+    if not args.input_dir.is_dir():
+        raise ConfigurationError(f"Input video path is not a directory: {args.input_dir}")
+
+    try:
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        args.log_file.parent.mkdir(parents=True, exist_ok=True)
+        args.manifest_file.parent.mkdir(parents=True, exist_ok=True)
+        args.audio_index_file.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise ConfigurationError(f"Could not create output/log/manifest directories: {exc}") from exc
 
 
 def load_debate_index(
         index_path: Path,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int, int, list[dict[str, Any]]]:
     """
-    Load and validate eligible debate records from the NDJSON source index.
+    Load and validate eligible debate metadata from an NDJSON index file.
 
-    Parameters:
-        index_path: Path to the curated debate NDJSON index.
+    Args:
+        index_path: Path to the input NDJSON debate index.
 
     Returns:
-        Tuple containing:
-            eligible valid records,
-            invalid eligible record descriptors,
-            total input record count,
-            ignored record count,
-            ignored record descriptors.
+        Tuple of:
+            eligible_records: records with eligible download_status and valid corpus_id;
+            invalid_records: eligible records missing required metadata;
+            total_records: total non-blank NDJSON records read;
+            ignored_count: count of ineligible records;
+            ignored_records: manifest records for ignored ineligible rows.
 
-    Performs I/O:
-        Reads the index file.
+    I/O:
+        Reads the NDJSON file.
 
     Error behaviour:
-        Raises ConfigurationError for invalid JSON lines.
-        Rows missing required metadata are returned as invalid records.
+        Raises ConfigurationError for invalid JSON lines or no eligible records.
     """
     eligible_records: list[dict[str, Any]] = []
     invalid_records: list[dict[str, Any]] = []
     ignored_records: list[dict[str, Any]] = []
     total_records = 0
-    ignored_count = 0
 
     with index_path.open("r", encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
@@ -559,108 +413,73 @@ def load_debate_index(
                 record = json.loads(stripped)
             except json.JSONDecodeError as exc:
                 raise ConfigurationError(
-                    f"Invalid JSON on line {line_number}: {exc}"
+                    f"Invalid JSON in index file at line {line_number}: {exc}"
                 ) from exc
 
             if not isinstance(record, dict):
-                invalid_records.append(
-                    {
-                        "line_number": line_number,
-                        "status": "failed_metadata",
-                        "error": "Line is not a JSON object",
-                        "record": record,
-                    }
+                raise ConfigurationError(
+                    f"Invalid NDJSON object at line {line_number}: expected JSON object."
                 )
-                continue
 
             download_status = record.get("download_status")
             if download_status not in ELIGIBLE_DOWNLOAD_STATUSES:
-                ignored_count += 1
                 ignored_records.append(
-                    {
-                        "line_number": line_number,
-                        "corpus_id": record.get("corpus_id"),
-                        "download_status": download_status,
+                    make_item_base(record)
+                    | {
                         "status": "ignored_not_downloaded",
-                        "record": record,
-                    }
-                )
-                continue
-
-            if not str(record.get("corpus_id", "")).strip():
-                invalid_records.append(
-                    {
+                        "error": None,
                         "line_number": line_number,
-                        "status": "failed_metadata",
-                        "error": "Missing required field: corpus_id",
-                        "record": record,
+                        "download_status": download_status,
                     }
                 )
                 continue
 
-            record["_line_number"] = line_number
+            corpus_id = record.get("corpus_id")
+            if not isinstance(corpus_id, str) or not corpus_id.strip():
+                invalid_records.append(
+                    make_item_base(record)
+                    | {
+                        "corpus_id": corpus_id,
+                        "status": "failed_metadata",
+                        "error": "Eligible record is missing non-empty corpus_id.",
+                        "line_number": line_number,
+                    }
+                )
+                continue
+
             eligible_records.append(record)
 
-    return eligible_records, invalid_records, total_records, ignored_count, ignored_records
+    if not eligible_records and not invalid_records:
+        raise ConfigurationError("No eligible records found in input index.")
 
-
-def get_audio_profile_config(profile: str) -> dict[str, Any]:
-    """
-    Return ffmpeg and output configuration for the selected audio profile.
-
-    Parameters:
-        profile: Profile name.
-
-    Returns:
-        Profile configuration dictionary.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        Raises ConfigurationError for unsupported profiles.
-    """
-    try:
-        return PROFILE_CONFIGS[profile]
-    except KeyError as exc:
-        raise ConfigurationError(f"Unsupported profile: {profile}") from exc
+    return eligible_records, invalid_records, total_records, len(ignored_records), ignored_records
 
 
 def resolve_source_video_path(record: dict[str, Any], input_dir: Path) -> Path:
     """
-    Resolve the source video path for one input record.
+    Resolve source video path using video_file or fallback input directory.
 
-    Parameters:
-        record: Input debate record.
-        input_dir: Fallback input video directory.
+    Args:
+        record: One valid eligible index record.
+        input_dir: Fallback directory containing "<corpus_id>.mp4" files.
 
     Returns:
-        Path to the expected source video.
+        Path to the preferred source video. A present and non-blank video_file is
+        used first; otherwise the fallback path is returned.
 
-    Performs I/O:
-        No.
+    I/O:
+        Does not check existence.
 
     Error behaviour:
-        None.
+        Raises KeyError if corpus_id is absent, which should not happen after
+        metadata validation.
     """
-    corpus_id = str(record["corpus_id"])
     video_file = record.get("video_file")
-
     if isinstance(video_file, str) and video_file.strip():
-        candidate = Path(video_file)
-        if candidate.is_absolute():
-            return candidate
+        video_path = Path(video_file.strip())
+        return resolve_script_relative_path(video_path)
 
-        script_relative_candidate = resolve_script_relative_path(candidate)
-        if script_relative_candidate.exists():
-            return script_relative_candidate
-
-        cwd_candidate = Path.cwd() / candidate
-        if cwd_candidate.exists():
-            return cwd_candidate
-
-        return script_relative_candidate
-
+    corpus_id = str(record["corpus_id"])
     return input_dir / f"{corpus_id}{INPUT_VIDEO_EXTENSION}"
 
 
@@ -668,91 +487,69 @@ def plan_audio_extractions(
         records: list[dict[str, Any]],
         input_dir: Path,
         output_dir: Path,
-        profile: str,
         test_mode: bool,
         test_limit: int,
         reprocess: bool,
         start_corpus_id: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     """
-    Create planned, skipped-existing, and missing-input extraction records.
+    Create planned, skipped, and missing-input debate audio extraction records.
 
-    Parameters:
-        records: Eligible valid debate records.
+    Args:
+        records: Valid eligible metadata records, in input order.
         input_dir: Fallback source video directory.
-        output_dir: Base audio output directory.
-        profile: Selected audio profile.
-        test_mode: Whether to limit planned extraction records.
-        test_limit: Maximum planned extractions in test mode.
-        reprocess: Whether to overwrite existing audio files.
-        start_corpus_id: Optional corpus_id from which to start.
+        output_dir: Destination audio directory.
+        test_mode: Whether to limit planned extraction attempts.
+        test_limit: Maximum number of extraction attempts in test mode.
+        reprocess: Whether to overwrite existing output audio.
+        start_corpus_id: Optional corpus_id from which to start planning.
 
     Returns:
-        Tuple of planned items, skipped-existing items, and missing-input items.
+        Tuple of planned extraction items, skipped-existing items, and
+        missing-input items.
 
-    Performs I/O:
+    I/O:
         Checks source and output file existence.
 
     Error behaviour:
-        Raises ConfigurationError when start_corpus_id is not found.
+        Raises ConfigurationError if start_corpus_id is not found.
     """
-    selected_records = records
-
     if start_corpus_id:
         start_index = None
         for index, record in enumerate(records):
-            if record["corpus_id"] == start_corpus_id:
+            if record.get("corpus_id") == start_corpus_id:
                 start_index = index
                 break
 
         if start_index is None:
             raise ConfigurationError(
-                f"--start-corpus-id not found among eligible records: {start_corpus_id}"
+                f"--start-corpus-id was not found among eligible records: {start_corpus_id}"
             )
 
-        selected_records = records[start_index:]
-
-    profile_config = get_audio_profile_config(profile)
-    profile_output_dir = output_dir / profile_config["output_subdir"]
+        records = records[start_index:]
 
     planned: list[dict[str, Any]] = []
     skipped_existing: list[dict[str, Any]] = []
     missing_input: list[dict[str, Any]] = []
 
-    for record in selected_records:
+    for record in records:
         corpus_id = str(record["corpus_id"])
         input_path = resolve_source_video_path(record, input_dir)
-        output_path = profile_output_dir / (
-            f"{corpus_id}{profile_config['output_extension']}"
-        )
+        output_path = output_dir / f"{corpus_id}{OUTPUT_AUDIO_EXTENSION}"
 
         item = {
             "record": record,
             "corpus_id": corpus_id,
             "input_path": input_path,
             "output_path": output_path,
-            "profile": profile,
-            "profile_config": profile_config,
         }
 
         if not input_path.exists():
-            missing_input.append(
-                {
-                    **item,
-                    "status": "missing_input",
-                    "error": f"Source video file does not exist: {input_path}",
-                }
-            )
+            missing_input.append(item)
             continue
 
         if output_path.exists() and not reprocess:
-            skipped_existing.append(
-                {
-                    **item,
-                    "status": "skipped_existing",
-                    "error": None,
-                }
-            )
+            skipped_existing.append(item)
             continue
 
         planned.append(item)
@@ -763,34 +560,29 @@ def plan_audio_extractions(
     return planned, skipped_existing, missing_input
 
 
-def build_ffmpeg_command(
-        input_path: Path,
-        output_path: Path,
-        profile_config: dict[str, Any],
-) -> list[str]:
+def build_ffmpeg_command(input_path: Path, output_path: Path) -> list[str]:
     """
-    Build the ffmpeg command for one audio extraction.
+    Build the ffmpeg command for one Whisper-ready WAV extraction.
 
-    Parameters:
+    Args:
         input_path: Source video path.
-        output_path: Destination audio path.
-        profile_config: Selected profile configuration.
+        output_path: Destination WAV path.
 
     Returns:
-        Command list suitable for subprocess.run.
+        List of subprocess arguments.
 
-    Performs I/O:
-        No.
+    I/O:
+        Does not run the command.
 
     Error behaviour:
-        None.
+        Does not validate filesystem state.
     """
     return [
         "ffmpeg",
         "-y",
         "-i",
         str(input_path),
-        *profile_config["ffmpeg_args"],
+        *FFMPEG_AUDIO_ARGS,
         str(output_path),
     ]
 
@@ -799,159 +591,171 @@ def extract_one_audio(
         corpus_id: str,
         input_path: Path,
         output_path: Path,
-        profile_config: dict[str, Any],
         timeout: int,
         max_retries: int,
         retry_delay: int,
         logger: logging.Logger,
 ) -> dict[str, Any]:
     """
-    Extract one audio file with ffmpeg.
+    Extract one Whisper-ready WAV audio file with ffmpeg.
 
-    Parameters:
-        corpus_id: Stable corpus identifier.
-        input_path: Source video file.
-        output_path: Destination audio file.
-        profile_config: Audio profile configuration.
+    Args:
+        corpus_id: Stable debate identifier.
+        input_path: Source video path.
+        output_path: Destination WAV path.
         timeout: Per-attempt timeout in seconds.
-        max_retries: Number of retries after initial failure.
-        retry_delay: Delay between retry attempts.
-        logger: Configured logger.
+        max_retries: Number of retries after the initial failed attempt.
+        retry_delay: Delay between failed attempts in seconds.
+        logger: Configured programme logger.
 
     Returns:
-        Structured item execution result.
+        Structured manifest result containing status, timing, command, attempts,
+        return code, retries used, error summary, and output file size.
 
-    Performs I/O:
-        Creates output parent directory, runs ffmpeg, and sleeps between retries.
+    I/O:
+        Runs ffmpeg as a subprocess and writes the output WAV file.
 
     Error behaviour:
-        Captures subprocess failures, timeouts, and OS errors in the result.
+        Does not raise for ffmpeg failures; returns status "failed".
     """
+    command = build_ffmpeg_command(input_path, output_path)
+    start_time = utc_timestamp()
+    monotonic_start = time.monotonic()
+    attempts: list[dict[str, Any]] = []
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    command = build_ffmpeg_command(input_path, output_path, profile_config)
-
-    attempts: list[dict[str, Any]] = []
-    overall_start = utc_now()
-    start_time = utc_timestamp()
     final_return_code: int | None = None
     final_error: str | None = None
+    retries_used = 0
+
     total_attempts = max_retries + 1
 
     for attempt_number in range(1, total_attempts + 1):
-        attempt_start = utc_now()
-        logger.info(
-            "ffmpeg attempt %s/%s for %s",
-            attempt_number,
-            total_attempts,
-            corpus_id,
-        )
+        logger.info("Attempt %s/%s for %s", attempt_number, total_attempts, corpus_id)
+        attempt_start = utc_timestamp()
+        attempt_monotonic_start = time.monotonic()
 
         try:
-            result = subprocess.run(
+            completed = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=False,
                 timeout=timeout,
             )
 
-            attempt_end = utc_now()
-            final_return_code = result.returncode
-            final_error = (
-                None if result.returncode == 0
-                else short_error(result.stderr, result.stdout)
-            )
+            attempt_duration = round(time.monotonic() - attempt_monotonic_start, 3)
+            stderr_tail = tail_text(completed.stderr)
+            stdout_tail = tail_text(completed.stdout)
 
-            attempts.append(
-                {
-                    "attempt": attempt_number,
-                    "return_code": result.returncode,
-                    "stdout_tail": result.stdout[-4000:],
-                    "stderr_tail": result.stderr[-4000:],
-                    "error": final_error,
-                    "duration_seconds": (attempt_end - attempt_start).total_seconds(),
-                }
-            )
+            attempt = {
+                "attempt": attempt_number,
+                "start_time": attempt_start,
+                "end_time": utc_timestamp(),
+                "duration_seconds": attempt_duration,
+                "return_code": completed.returncode,
+                "stdout_tail": stdout_tail,
+                "stderr_tail": stderr_tail,
+                "timed_out": False,
+                "error": None if completed.returncode == 0 else summarise_error(completed.stderr),
+            }
+            attempts.append(attempt)
 
-            if result.returncode == 0:
-                overall_end = utc_now()
-                output_file_size = (
-                    output_path.stat().st_size if output_path.exists() else None
-                )
+            final_return_code = completed.returncode
+            final_error = attempt["error"]
+
+            if completed.returncode == 0:
+                end_time = utc_timestamp()
+                duration = round(time.monotonic() - monotonic_start, 3)
+                output_size = output_path.stat().st_size if output_path.exists() else None
+
+                logger.info("SUCCESS %s -> %s", corpus_id, output_path)
+
                 return {
+                    "corpus_id": corpus_id,
+                    "input_path": str(input_path),
+                    "output_path": str(output_path),
                     "status": "success",
                     "error": None,
-                    "return_code": result.returncode,
-                    "retries": attempt_number - 1,
-                    "duration_seconds": (overall_end - overall_start).total_seconds(),
+                    "return_code": 0,
+                    "retries": retries_used,
+                    "duration_seconds": duration,
                     "start_time": start_time,
-                    "end_time": overall_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "output_file_size_bytes": output_file_size,
+                    "end_time": end_time,
+                    "output_file_size_bytes": output_size,
                     "metadata": {
                         "command": command,
                         "attempts": attempts,
                     },
                 }
 
+            logger.error("FAILED attempt %s for %s: %s", attempt_number, corpus_id, final_error)
+
         except subprocess.TimeoutExpired as exc:
-            attempt_end = utc_now()
+            attempt_duration = round(time.monotonic() - attempt_monotonic_start, 3)
             final_return_code = None
             final_error = f"ffmpeg timed out after {timeout} seconds"
+
             attempts.append(
                 {
                     "attempt": attempt_number,
+                    "start_time": attempt_start,
+                    "end_time": utc_timestamp(),
+                    "duration_seconds": attempt_duration,
                     "return_code": None,
-                    "stdout_tail": (
-                        (exc.stdout or "")[-4000:]
-                        if isinstance(exc.stdout, str)
-                        else ""
-                    ),
-                    "stderr_tail": (
-                        (exc.stderr or "")[-4000:]
-                        if isinstance(exc.stderr, str)
-                        else ""
-                    ),
+                    "stdout_tail": tail_text(exc.stdout),
+                    "stderr_tail": tail_text(exc.stderr),
+                    "timed_out": True,
                     "error": final_error,
-                    "duration_seconds": (attempt_end - attempt_start).total_seconds(),
                 }
             )
+            logger.error("TIMEOUT attempt %s for %s: %s", attempt_number, corpus_id, final_error)
 
         except OSError as exc:
-            attempt_end = utc_now()
             final_return_code = None
-            final_error = f"Failed to execute ffmpeg: {exc}"
+            final_error = f"Could not run ffmpeg: {exc}"
             attempts.append(
                 {
                     "attempt": attempt_number,
+                    "start_time": attempt_start,
+                    "end_time": utc_timestamp(),
+                    "duration_seconds": round(time.monotonic() - attempt_monotonic_start, 3),
                     "return_code": None,
                     "stdout_tail": "",
                     "stderr_tail": "",
+                    "timed_out": False,
                     "error": final_error,
-                    "duration_seconds": (attempt_end - attempt_start).total_seconds(),
                 }
             )
+            logger.error("ERROR attempt %s for %s: %s", attempt_number, corpus_id, final_error)
 
         if attempt_number < total_attempts:
-            logger.warning(
-                "Attempt %s for %s failed: %s; retrying in %s seconds",
-                attempt_number,
-                corpus_id,
-                final_error,
-                retry_delay,
-            )
-            time.sleep(retry_delay)
+            retries_used += 1
+            logger.info("Retrying %s after %s seconds", corpus_id, retry_delay)
+            if retry_delay:
+                time.sleep(retry_delay)
 
-    overall_end = utc_now()
+    end_time = utc_timestamp()
+    duration = round(time.monotonic() - monotonic_start, 3)
+    output_size = output_path.stat().st_size if output_path.exists() else None
+
+    logger.error("FAILED %s -> %s: %s", corpus_id, output_path, final_error)
+
     return {
+        "corpus_id": corpus_id,
+        "input_path": str(input_path),
+        "output_path": str(output_path),
         "status": "failed",
-        "error": final_error,
+        "error": final_error or "ffmpeg failed",
         "return_code": final_return_code,
-        "retries": max_retries,
-        "duration_seconds": (overall_end - overall_start).total_seconds(),
+        "retries": retries_used,
+        "duration_seconds": duration,
         "start_time": start_time,
-        "end_time": overall_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "output_file_size_bytes": output_path.stat().st_size if output_path.exists() else None,
+        "end_time": end_time,
+        "output_file_size_bytes": output_size,
         "metadata": {
             "command": command,
             "attempts": attempts,
@@ -959,111 +763,175 @@ def extract_one_audio(
     }
 
 
-def manifest_item_from_non_extracted(
-        item: dict[str, Any],
-        run_metadata: dict[str, Any],
-        status: str,
-        error: str | None = None,
-) -> dict[str, Any]:
-    """Create a manifest item for skipped-existing or missing-input records."""
-    record = item["record"]
-    output_path = item["output_path"]
-    input_path = item["input_path"]
+def tail_text(value: Any, limit: int = 4000) -> str:
+    """Return a compact tail string for stdout/stderr values without performing I/O."""
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        value = value.decode("utf-8", errors="replace")
+    text = str(value).strip()
+    return text[-limit:]
 
-    return {
+
+def summarise_error(stderr: str | None, limit: int = 500) -> str:
+    """Return a short stderr-derived error summary without performing I/O."""
+    if not stderr:
+        return "ffmpeg returned a non-zero exit code."
+
+    lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if not lines:
+        return "ffmpeg returned a non-zero exit code."
+
+    return lines[-1][-limit:]
+
+
+def make_item_base(record: dict[str, Any]) -> dict[str, Any]:
+    """
+    Create a metadata-preserving base item dictionary.
+
+    Args:
+        record: Input metadata record.
+
+    Returns:
+        Dictionary with selected metadata fields.
+
+    I/O:
+        None.
+
+    Error behaviour:
+        Does not raise for missing fields.
+    """
+    return {field: record.get(field) for field in PRESERVED_METADATA_FIELDS if field in record}
+
+
+def make_missing_input_result(item: dict[str, Any], logger: logging.Logger) -> dict[str, Any]:
+    """Create a manifest item for a missing input video and log the error."""
+    record = item["record"]
+    input_path = item["input_path"]
+    output_path = item["output_path"]
+    error = f"Source video file is missing: {input_path}"
+
+    logger.error("MISSING_INPUT %s: %s", item["corpus_id"], input_path)
+
+    return make_item_base(record) | {
         "corpus_id": item["corpus_id"],
-        "youtube_id": record.get("youtube_id"),
-        "youtube_url": record.get("youtube_url"),
-        "title_selected": record.get("title_selected"),
-        "title_extracted": record.get("title_extracted"),
-        "debate_format": record.get("debate_format"),
-        "input_path": path_to_str(input_path),
-        "output_path": path_to_str(output_path),
-        "profile": item["profile"],
-        "status": status,
+        "input_path": str(input_path),
+        "output_path": str(output_path),
+        "status": "missing_input",
         "error": error,
         "return_code": None,
         "retries": 0,
-        "duration_seconds": 0.0,
-        "start_time": run_metadata["start_time"],
-        "end_time": run_metadata["start_time"],
-        "output_file_size_bytes": (
-            output_path.stat().st_size if output_path.exists() else None
-        ),
+        "duration_seconds": None,
+        "start_time": None,
+        "end_time": None,
+        "output_file_size_bytes": output_path.stat().st_size if output_path.exists() else None,
         "metadata": {
-            "duration_seconds": record.get("duration_seconds"),
-            "duration_string": record.get("duration_string"),
             "command": None,
             "attempts": [],
         },
     }
 
 
-def build_audio_index_record(
-        item: dict[str, Any],
-        item_result: dict[str, Any],
-        run_metadata: dict[str, Any],
-        ffmpeg_info: dict[str, Any],
-) -> dict[str, Any]:
-    """Create one curated audio index record from input and extraction metadata."""
+def make_skipped_existing_result(item: dict[str, Any], logger: logging.Logger) -> dict[str, Any]:
+    """Create a manifest item for an existing skipped WAV and log the skip."""
     record = item["record"]
-    profile_config = item["profile_config"]
+    input_path = item["input_path"]
+    output_path = item["output_path"]
 
-    audio_record = {
-        field: record.get(field)
-        for field in PRESERVED_INPUT_FIELDS
-        if field in record
+    logger.info("SKIPPED_EXISTING %s -> %s", item["corpus_id"], output_path)
+
+    return make_item_base(record) | {
+        "corpus_id": item["corpus_id"],
+        "input_path": str(input_path),
+        "output_path": str(output_path),
+        "status": "skipped_existing",
+        "error": None,
+        "return_code": None,
+        "retries": 0,
+        "duration_seconds": 0,
+        "start_time": None,
+        "end_time": None,
+        "output_file_size_bytes": output_path.stat().st_size if output_path.exists() else None,
+        "metadata": {
+            "command": build_ffmpeg_command(input_path, output_path),
+            "attempts": [],
+        },
     }
 
-    audio_record.update(
+
+def merge_result_with_record(record: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    """Merge preserved input metadata into an extraction result without performing I/O."""
+    return make_item_base(record) | result
+
+
+def make_audio_index_record(
+        item_result: dict[str, Any],
+        run_id: str,
+        ffmpeg_info: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    Build one curated audio index record.
+
+    Args:
+        item_result: Manifest item result.
+        run_id: Current run ID.
+        ffmpeg_info: ffmpeg availability/version metadata.
+
+    Returns:
+        NDJSON-ready audio index record.
+
+    I/O:
+        None.
+
+    Error behaviour:
+        Does not raise for missing optional metadata.
+    """
+    record = {field: item_result.get(field) for field in PRESERVED_METADATA_FIELDS if field in item_result}
+
+    record.update(
         {
-            "source_video_file": path_to_str(item["input_path"]),
-            "audio_file": path_to_str(item["output_path"]),
-            "audio_profile": item["profile"],
-            "audio_format": profile_config["output_format"],
-            "audio_codec": profile_config["audio_codec"],
-            "audio_channels": profile_config["audio_channels"],
-            "audio_sample_rate": profile_config["audio_sample_rate"],
-            "audio_sample_format": profile_config["audio_sample_format"],
+            "source_video_file": item_result.get("input_path"),
+            "audio_file": item_result.get("output_path"),
+            "audio_format": OUTPUT_AUDIO_FORMAT,
+            "audio_codec": FFMPEG_AUDIO_CODEC,
+            "audio_channels": int(FFMPEG_AUDIO_CHANNELS),
+            "audio_sample_rate": int(FFMPEG_AUDIO_SAMPLE_RATE),
+            "audio_sample_format": FFMPEG_AUDIO_SAMPLE_FORMAT,
             "audio_file_size_bytes": item_result.get("output_file_size_bytes"),
             "audio_extraction_status": item_result.get("status"),
-            "audio_extraction_run_id": run_metadata.get("run_id"),
-            "audio_extracted_at_utc": run_metadata.get("end_time")
-                                      or item_result.get("end_time"),
-            "ffmpeg_version": ffmpeg_info.get("version", "unknown"),
-            "video_download_status": record.get("download_status"),
+            "audio_extraction_run_id": run_id,
+            "audio_extracted_at_utc": item_result.get("end_time"),
+            "ffmpeg_version": ffmpeg_info.get("version"),
+            "video_download_status": item_result.get("download_status"),
+            "metadata_status": item_result.get("metadata_status"),
+            "error": item_result.get("error"),
         }
     )
 
-    audio_record.setdefault("chapters", record.get("chapters") or [])
-    audio_record.setdefault("subtitles_files", record.get("subtitles_files") or [])
-    audio_record.setdefault("notes", record.get("notes"))
-
-    return audio_record
+    return record
 
 
 def write_audio_index(index_records: list[dict[str, Any]], audio_index_file: Path) -> None:
     """
     Write the curated NDJSON audio index.
 
-    Parameters:
-        index_records: Records to write.
-        audio_index_file: Destination NDJSON file.
+    Args:
+        index_records: List of JSON-serialisable index records.
+        audio_index_file: Destination NDJSON path.
 
     Returns:
         None.
 
-    Performs I/O:
-        Creates the parent directory and writes the file.
+    I/O:
+        Creates parent directory and overwrites the NDJSON file.
 
     Error behaviour:
-        Lets OSError propagate if writing fails.
+        Propagates OSError and JSON serialisation errors.
     """
     audio_index_file.parent.mkdir(parents=True, exist_ok=True)
     with audio_index_file.open("w", encoding="utf-8") as handle:
         for record in index_records:
-            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=False))
-            handle.write("\n")
+            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=False) + "\n")
 
 
 def write_manifests(
@@ -1072,126 +940,143 @@ def write_manifests(
         run_id: str,
 ) -> tuple[Path, Path]:
     """
-    Write latest and timestamped manifest files.
+    Write latest and per-run manifest files.
 
-    Parameters:
-        manifest: Full run manifest.
-        manifest_file: Latest manifest path.
-        run_id: UTC run identifier.
+    Args:
+        manifest: JSON-serialisable manifest dictionary.
+        manifest_file: Latest manifest path, overwritten each run.
+        run_id: Current run ID for the timestamped manifest filename.
 
     Returns:
-        Tuple of latest manifest path and timestamped manifest path.
+        Tuple of latest manifest path and per-run manifest path.
 
-    Performs I/O:
-        Writes JSON files.
+    I/O:
+        Writes two JSON files.
 
     Error behaviour:
-        Lets OSError propagate if writing fails.
+        Propagates OSError and JSON serialisation errors.
     """
     manifest_file.parent.mkdir(parents=True, exist_ok=True)
-    run_manifest = (
+
+    per_run_manifest_file = (
             manifest_file.parent / f"{manifest_file.stem}_{run_id}{manifest_file.suffix}"
     )
 
-    for path in (manifest_file, run_manifest):
-        with path.open("w", encoding="utf-8") as handle:
-            json.dump(manifest, handle, ensure_ascii=False, indent=2)
-            handle.write("\n")
+    manifest_json = json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=False)
 
-    return manifest_file, run_manifest
+    manifest_file.write_text(manifest_json + "\n", encoding="utf-8")
+    per_run_manifest_file.write_text(manifest_json + "\n", encoding="utf-8")
+
+    return manifest_file, per_run_manifest_file
 
 
-def make_initial_run_metadata(
+def build_run_metadata(
         args: argparse.Namespace,
         run_id: str,
         start_time: str,
-        profile_config: dict[str, Any],
-        ffmpeg_info: dict[str, Any] | None = None,
+        ffmpeg_info: dict[str, Any] | None,
+        summary: dict[str, int],
+        interrupted: bool = False,
+        end_time: str | None = None,
 ) -> dict[str, Any]:
-    """Construct initial run metadata for the manifest."""
+    """Construct the run_metadata section of the JSON manifest."""
     return {
         "run_id": run_id,
         "tool_name": TOOL_NAME,
         "tool_version": TOOL_VERSION,
         "start_time": start_time,
-        "end_time": None,
+        "end_time": end_time,
         "test_mode": args.test_mode,
         "test_limit": args.test_limit,
         "reprocess": args.reprocess,
         "workers": args.workers,
-        "index_path": path_to_str(args.index),
-        "input_dir": path_to_str(args.input_dir),
-        "output_dir": path_to_str(args.output_dir),
-        "audio_index_file": path_to_str(args.audio_index_file),
-        "log_file": path_to_str(args.log_file),
-        "manifest_file": path_to_str(args.manifest_file),
+        "index_path": str(args.index),
+        "input_dir": str(args.input_dir),
+        "output_dir": str(args.output_dir),
+        "audio_index_file": str(args.audio_index_file),
+        "log_file": str(args.log_file),
+        "manifest_file": str(args.manifest_file),
         "config": {
-            "profile": args.profile,
-            "output_format": profile_config["output_format"],
-            "audio_channels": profile_config["audio_channels"],
-            "audio_sample_rate": profile_config["audio_sample_rate"],
-            "audio_codec": profile_config["audio_codec"],
-            "audio_sample_format": profile_config["audio_sample_format"],
+            "output_format": OUTPUT_AUDIO_FORMAT,
+            "audio_channels": int(FFMPEG_AUDIO_CHANNELS),
+            "audio_sample_rate": int(FFMPEG_AUDIO_SAMPLE_RATE),
+            "audio_codec": FFMPEG_AUDIO_CODEC,
+            "audio_sample_format": FFMPEG_AUDIO_SAMPLE_FORMAT,
             "timeout_seconds": args.timeout,
             "max_retries": args.max_retries,
             "retry_delay_seconds": args.retry_delay,
             "start_corpus_id": args.start_corpus_id,
         },
         "ffmpeg": ffmpeg_info or {"available": False, "version": None},
-        "summary": {
-            "input_records": 0,
-            "eligible_records": 0,
-            "ignored_records": 0,
-            "invalid_records": 0,
-            "planned_items": 0,
-            "attempted_items": 0,
-            "succeeded": 0,
-            "failed": 0,
-            "missing_input": 0,
-            "skipped_existing": 0,
-        },
-        "interrupted": False,
+        "summary": summary,
+        "interrupted": interrupted,
+    }
+
+
+def make_summary(
+        input_records: int,
+        eligible_records: int,
+        ignored_records: int,
+        invalid_records: int,
+        planned_items: int,
+        attempted_items: int,
+        succeeded: int,
+        failed: int,
+        missing_input: int,
+        skipped_existing: int,
+) -> dict[str, int]:
+    """Create a manifest summary dictionary without performing I/O."""
+    return {
+        "input_records": input_records,
+        "eligible_records": eligible_records,
+        "ignored_records": ignored_records,
+        "invalid_records": invalid_records,
+        "planned_items": planned_items,
+        "attempted_items": attempted_items,
+        "succeeded": succeeded,
+        "failed": failed,
+        "missing_input": missing_input,
+        "skipped_existing": skipped_existing,
     }
 
 
 def main() -> int:
     """
-    Run the complete Jubilee debate audio extraction workflow.
+    Run the batch Jubilee debate audio extraction workflow.
 
     Returns:
         Process exit code:
-            0 for success,
-            1 for item/metadata failures,
-            2 for configuration errors,
+            0 for clean completion;
+            1 for per-item errors;
+            2 for configuration/validation errors;
             130 for keyboard interruption.
 
-    Performs I/O:
-        Reads the NDJSON index, creates directories, runs ffmpeg, writes logs,
-        writes the audio index, and writes manifests.
+    I/O:
+        Reads the input index, checks filesystem state, runs ffmpeg, writes WAV
+        files, appends logs, writes manifests, and writes the audio index.
 
     Error behaviour:
-        Converts expected configuration and I/O failures to documented exit codes.
+        Handles expected configuration, per-item, and keyboard interrupt errors.
     """
-    args = parse_args()
+    logger: logging.Logger | None = None
+    args: argparse.Namespace | None = None
     run_id = make_run_id()
     start_time = utc_timestamp()
-    logger: logging.Logger | None = None
+    ffmpeg_info: dict[str, Any] | None = None
 
-    profile_config = get_audio_profile_config(args.profile)
-    run_metadata = make_initial_run_metadata(args, run_id, start_time, profile_config)
+    manifest_items: list[dict[str, Any]] = []
+    invalid_records: list[dict[str, Any]] = []
+    ignored_records: list[dict[str, Any]] = []
 
-    manifest: dict[str, Any] = {
-        "run_metadata": run_metadata,
-        "items": [],
-        "invalid_records": [],
-        "ignored_records": [],
-    }
-
-    item_results: list[dict[str, Any]] = []
-    audio_index_records: list[dict[str, Any]] = []
+    total_records = 0
+    eligible_count = 0
+    ignored_count = 0
+    planned_count = 0
+    attempted_count = 0
 
     try:
-        ensure_output_dirs(args.output_dir, args.profile)
+        args = parse_args()
+        validate_args(args)
         logger = setup_logging(args.log_file)
 
         logger.info("Starting %s run_id=%s", TOOL_NAME, run_id)
@@ -1199,240 +1084,194 @@ def main() -> int:
         logger.info("Input video directory: %s", args.input_dir)
         logger.info("Output directory: %s", args.output_dir)
         logger.info(
-            "Audio profile: %s; format=%s; channels=%s; sample_rate=%s; codec=%s; sample_format=%s",
-            args.profile,
-            profile_config["output_format"],
-            profile_config["audio_channels"],
-            profile_config["audio_sample_rate"],
-            profile_config["audio_codec"],
-            profile_config["audio_sample_format"],
+            "Audio format: %s; channels=%s; sample_rate=%s; codec=%s; sample_fmt=%s",
+            OUTPUT_AUDIO_FORMAT,
+            FFMPEG_AUDIO_CHANNELS,
+            FFMPEG_AUDIO_SAMPLE_RATE,
+            FFMPEG_AUDIO_CODEC,
+            FFMPEG_AUDIO_SAMPLE_FORMAT,
         )
         logger.info("Test mode: %s; test_limit=%s", args.test_mode, args.test_limit)
         logger.info("Reprocess: %s", args.reprocess)
         logger.info("Start corpus ID: %s", args.start_corpus_id)
 
-        validate_args(args)
         ffmpeg_info = check_ffmpeg()
-        run_metadata["ffmpeg"] = ffmpeg_info
         logger.info("ffmpeg version: %s", ffmpeg_info["version"])
 
-        (
-            eligible_records,
-            invalid_records,
+        eligible_records, invalid_records, total_records, ignored_count, ignored_records = load_debate_index(
+            args.index
+        )
+        eligible_count = len(eligible_records) + len(invalid_records)
+
+        logger.info(
+            "Loaded records: input=%s eligible=%s ignored=%s invalid=%s",
             total_records,
+            eligible_count,
             ignored_count,
-            ignored_records,
-        ) = load_debate_index(args.index)
+            len(invalid_records),
+        )
 
-        if not eligible_records:
-            raise ConfigurationError("No eligible records found in input index")
-
-        if args.start_corpus_id and not any(
-                record["corpus_id"] == args.start_corpus_id
-                for record in eligible_records
-        ):
-            raise ConfigurationError(
-                f"--start-corpus-id not found among eligible records: {args.start_corpus_id}"
+        for invalid_record in invalid_records:
+            logger.error(
+                "FAILED_METADATA line=%s corpus_id=%s error=%s",
+                invalid_record.get("line_number"),
+                invalid_record.get("corpus_id"),
+                invalid_record.get("error"),
             )
 
         planned, skipped_existing, missing_input = plan_audio_extractions(
             records=eligible_records,
             input_dir=args.input_dir,
             output_dir=args.output_dir,
-            profile=args.profile,
             test_mode=args.test_mode,
             test_limit=args.test_limit,
             reprocess=args.reprocess,
             start_corpus_id=args.start_corpus_id,
         )
 
-        manifest["invalid_records"] = invalid_records
-        manifest["ignored_records"] = ignored_records
-
-        run_metadata["summary"].update(
-            {
-                "input_records": total_records,
-                "eligible_records": len(eligible_records),
-                "ignored_records": ignored_count,
-                "invalid_records": len(invalid_records),
-                "planned_items": len(planned),
-                "missing_input": len(missing_input),
-                "skipped_existing": len(skipped_existing),
-            }
-        )
-
+        planned_count = len(planned)
         logger.info(
-            "Loaded records: input=%s eligible=%s ignored=%s invalid=%s",
-            total_records,
-            len(eligible_records),
-            ignored_count,
-            len(invalid_records),
+            "Planning complete: planned=%s skipped_existing=%s missing_input=%s",
+            len(planned),
+            len(skipped_existing),
+            len(missing_input),
         )
-        logger.info("Planned extractions: %s", len(planned))
-        logger.info("Skipped existing items: %s", len(skipped_existing))
-        logger.info("Missing input files: %s", len(missing_input))
 
         for item in skipped_existing:
-            logger.info(
-                "SKIPPED existing %s -> %s",
-                item["corpus_id"],
-                item["output_path"],
-            )
-            result = manifest_item_from_non_extracted(
-                item,
-                run_metadata,
-                "skipped_existing",
-                None,
-            )
-            item_results.append(result)
-            audio_index_records.append(
-                build_audio_index_record(item, result, run_metadata, ffmpeg_info)
-            )
+            manifest_items.append(make_skipped_existing_result(item, logger))
 
         for item in missing_input:
-            logger.error(
-                "MISSING input %s expected=%s",
-                item["corpus_id"],
-                item["input_path"],
-            )
-            result = manifest_item_from_non_extracted(
-                item,
-                run_metadata,
-                "missing_input",
-                item["error"],
-            )
-            item_results.append(result)
-            audio_index_records.append(
-                build_audio_index_record(item, result, run_metadata, ffmpeg_info)
-            )
+            manifest_items.append(make_missing_input_result(item, logger))
 
         for item in planned:
-            logger.info(
-                "Extracting %s: %s -> %s",
-                item["corpus_id"],
-                item["input_path"],
-                item["output_path"],
-            )
-
+            attempted_count += 1
             result = extract_one_audio(
                 corpus_id=item["corpus_id"],
                 input_path=item["input_path"],
                 output_path=item["output_path"],
-                profile_config=profile_config,
                 timeout=args.timeout,
                 max_retries=args.max_retries,
                 retry_delay=args.retry_delay,
                 logger=logger,
             )
+            manifest_items.append(merge_result_with_record(item["record"], result))
 
-            result.update(
-                {
-                    "corpus_id": item["corpus_id"],
-                    "youtube_id": item["record"].get("youtube_id"),
-                    "youtube_url": item["record"].get("youtube_url"),
-                    "title_selected": item["record"].get("title_selected"),
-                    "title_extracted": item["record"].get("title_extracted"),
-                    "debate_format": item["record"].get("debate_format"),
-                    "input_path": path_to_str(item["input_path"]),
-                    "output_path": path_to_str(item["output_path"]),
-                    "profile": item["profile"],
-                }
-            )
-            result["metadata"].update(
-                {
-                    "duration_seconds": item["record"].get("duration_seconds"),
-                    "duration_string": item["record"].get("duration_string"),
-                }
-            )
+        succeeded = sum(1 for item in manifest_items if item.get("status") == "success")
+        failed = sum(1 for item in manifest_items if item.get("status") == "failed")
+        missing_count = sum(1 for item in manifest_items if item.get("status") == "missing_input")
+        skipped_count = sum(1 for item in manifest_items if item.get("status") == "skipped_existing")
 
-            item_results.append(result)
-            run_metadata["summary"]["attempted_items"] += 1
-
-            if result["status"] == "success":
-                logger.info("SUCCESS %s -> %s", item["corpus_id"], item["output_path"])
-            else:
-                logger.error("FAILED %s: %s", item["corpus_id"], result.get("error"))
-
-            audio_index_records.append(
-                build_audio_index_record(item, result, run_metadata, ffmpeg_info)
-            )
-
-        succeeded = sum(
-            1 for item in item_results
-            if item["status"] in {"success", "skipped_existing"}
-        )
-        failed = sum(1 for item in item_results if item["status"] == "failed")
-
-        run_metadata["summary"]["succeeded"] = succeeded
-        run_metadata["summary"]["failed"] = failed
-        run_metadata["summary"]["missing_input"] = len(missing_input)
-        run_metadata["summary"]["skipped_existing"] = len(skipped_existing)
-        run_metadata["end_time"] = utc_timestamp()
-
-        for record in audio_index_records:
-            record["audio_extracted_at_utc"] = run_metadata["end_time"]
-
-        manifest["items"] = item_results
-
+        audio_index_records = [
+            make_audio_index_record(item, run_id, ffmpeg_info)
+            for item in [*manifest_items, *invalid_records]
+            if item.get("status")
+               in {"success", "failed", "skipped_existing", "missing_input", "failed_metadata"}
+        ]
         write_audio_index(audio_index_records, args.audio_index_file)
         logger.info("Wrote audio index: %s", args.audio_index_file)
 
-        latest_manifest, run_manifest = write_manifests(
-            manifest,
-            args.manifest_file,
-            run_id,
+        summary = make_summary(
+            input_records=total_records,
+            eligible_records=eligible_count,
+            ignored_records=ignored_count,
+            invalid_records=len(invalid_records),
+            planned_items=planned_count,
+            attempted_items=attempted_count,
+            succeeded=succeeded,
+            failed=failed,
+            missing_input=missing_count,
+            skipped_existing=skipped_count,
         )
-        logger.info("Wrote latest manifest: %s", latest_manifest)
-        logger.info("Wrote run manifest: %s", run_manifest)
 
+        manifest = {
+            "run_metadata": build_run_metadata(
+                args=args,
+                run_id=run_id,
+                start_time=start_time,
+                end_time=utc_timestamp(),
+                ffmpeg_info=ffmpeg_info,
+                summary=summary,
+                interrupted=False,
+            ),
+            "items": manifest_items,
+            "invalid_records": invalid_records,
+            "ignored_records": ignored_records,
+        }
+
+        latest_manifest, per_run_manifest = write_manifests(manifest, args.manifest_file, run_id)
+        logger.info("Wrote latest manifest: %s", latest_manifest)
+        logger.info("Wrote per-run manifest: %s", per_run_manifest)
         logger.info(
             "Finished run: succeeded=%s failed=%s skipped_existing=%s missing_input=%s invalid_records=%s",
             succeeded,
             failed,
-            len(skipped_existing),
-            len(missing_input),
+            skipped_count,
+            missing_count,
             len(invalid_records),
         )
 
-        if failed > 0 or missing_input or invalid_records:
+        if failed or missing_count or invalid_records:
             return 1
 
         return 0
 
     except KeyboardInterrupt:
-        run_metadata["interrupted"] = True
-        run_metadata["end_time"] = utc_timestamp()
-        manifest["items"] = item_results
+        if logger:
+            logger.error("Interrupted by user.")
 
-        if logger is not None:
-            logger.error("Interrupted by user")
+        if args:
+            summary = make_summary(
+                input_records=total_records,
+                eligible_records=eligible_count,
+                ignored_records=ignored_count,
+                invalid_records=len(invalid_records),
+                planned_items=planned_count,
+                attempted_items=attempted_count,
+                succeeded=sum(1 for item in manifest_items if item.get("status") == "success"),
+                failed=sum(1 for item in manifest_items if item.get("status") == "failed"),
+                missing_input=sum(1 for item in manifest_items if item.get("status") == "missing_input"),
+                skipped_existing=sum(
+                    1 for item in manifest_items if item.get("status") == "skipped_existing"
+                ),
+            )
 
-        try:
-            write_manifests(manifest, args.manifest_file, run_id)
-        except OSError:
-            if logger is not None:
-                logger.exception("Failed to write interrupted manifest")
+            manifest = {
+                "run_metadata": build_run_metadata(
+                    args=args,
+                    run_id=run_id,
+                    start_time=start_time,
+                    end_time=utc_timestamp(),
+                    ffmpeg_info=ffmpeg_info,
+                    summary=summary,
+                    interrupted=True,
+                ),
+                "items": manifest_items,
+                "invalid_records": invalid_records,
+                "ignored_records": ignored_records,
+            }
+
+            try:
+                write_manifests(manifest, args.manifest_file, run_id)
+            except Exception as exc:  # noqa: BLE001 - best-effort interrupt manifest
+                if logger:
+                    logger.error("Could not write interrupted manifest: %s", exc)
 
         return 130
 
     except ConfigurationError as exc:
         message = f"Configuration error: {exc}"
-
-        if logger is not None:
+        if logger:
             logger.error(message)
         else:
             print(message, file=sys.stderr)
-
         return 2
 
-    except OSError as exc:
-        message = f"I/O error: {exc}"
-
-        if logger is not None:
+    except Exception as exc:  # noqa: BLE001 - final safety net for clear batch exit
+        message = f"Unexpected error: {exc}"
+        if logger:
             logger.exception(message)
         else:
             print(message, file=sys.stderr)
-
         return 2
 
 

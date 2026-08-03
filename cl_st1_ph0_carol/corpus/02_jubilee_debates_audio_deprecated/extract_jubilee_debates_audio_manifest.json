@@ -1,0 +1,288 @@
+{
+  "run_metadata": {
+    "run_id": "20260730T212337Z",
+    "tool_name": "extract_jubilee_debates_audio.py",
+    "tool_version": "v1",
+    "start_time": "2026-07-30T21:23:37Z",
+    "end_time": "2026-07-30T21:24:44Z",
+    "test_mode": true,
+    "test_limit": 5,
+    "reprocess": false,
+    "workers": 1,
+    "index_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+    "input_dir": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos",
+    "output_dir": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio",
+    "audio_index_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson",
+    "log_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio.log",
+    "manifest_file": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio_manifest.json",
+    "config": {
+      "profile": "gemini_flac",
+      "output_format": "flac",
+      "audio_channels": 2,
+      "audio_sample_rate": 44100,
+      "audio_codec": "flac",
+      "audio_sample_format": null,
+      "timeout_seconds": 7200,
+      "max_retries": 1,
+      "retry_delay_seconds": 5,
+      "start_corpus_id": null
+    },
+    "ffmpeg": {
+      "available": true,
+      "version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "executable": "/usr/bin/ffmpeg"
+    },
+    "summary": {
+      "input_records": 5,
+      "eligible_records": 5,
+      "ignored_records": 0,
+      "invalid_records": 0,
+      "planned_items": 5,
+      "attempted_items": 5,
+      "succeeded": 5,
+      "failed": 0,
+      "missing_input": 0,
+      "skipped_existing": 0
+    },
+    "interrupted": false
+  },
+  "items": [
+    {
+      "status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 11.305075,
+      "start_time": "2026-07-30T21:23:37Z",
+      "end_time": "2026-07-30T21:23:48Z",
+      "output_file_size_bytes": 411950549,
+      "metadata": {
+        "command": [
+          "ffmpeg",
+          "-y",
+          "-i",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "flac",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "",
+            "stderr_tail": "enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared\n  libavutil      58. 29.100 / 58. 29.100\n  libavcodec     60. 31.102 / 60. 31.102\n  libavformat    60. 16.100 / 60. 16.100\n  libavdevice    60.  3.100 / 60.  3.100\n  libavfilter     9. 12.100 /  9. 12.100\n  libswscale      7.  5.100 /  7.  5.100\n  libswresample   4. 12.100 /  4. 12.100\n  libpostproc    57.  3.100 / 57.  3.100\n[libdav1d @ 0x62bb30f21ec0] libdav1d 1.4.1\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Duration: 01:30:26.60, start: 0.000000, bitrate: 883 kb/s\n  Stream #0:0[0x1](und): Video: av1 (Main) (av01 / 0x31307661), yuv420p(tv, bt709), 1920x1080, 751 kb/s, 23.98 fps, 23.98 tbr, 24k tbn (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n  Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 127 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> flac (native))\nPress [q] to stop, [?] for help\n[flac @ 0x62bb30f24d80] encoding as 24 bits-per-sample, more is considered experimental. Add -strict experimental if you want to encode more than 24 bits-per-sample\nOutput #0, flac, to '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Stream #0:0(eng): Audio: flac, 44100 Hz, stereo, s32 (24 bit), 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n      encoder         : Lavc60.31.102 flac\nsize=       0kB time=N/A bitrate=N/A speed=N/A    \nsize=   20224kB time=00:03:51.86 bitrate= 714.5kbits/s speed= 464x    \nsize=   37632kB time=00:07:57.83 bitrate= 645.2kbits/s speed= 478x    \nsize=   56064kB time=00:12:12.99 bitrate= 626.6kbits/s speed= 489x    \nsize=   73984kB time=00:16:24.92 bitrate= 615.4kbits/s speed= 492x    \nsize=   92416kB time=00:20:32.35 bitrate= 614.3kbits/s speed= 493x    \nsize=  111104kB time=00:24:48.24 bitrate= 611.6kbits/s speed= 496x    \nsize=  130048kB time=00:29:11.14 bitrate= 608.4kbits/s speed= 500x    \nsize=  146432kB time=00:32:59.97 bitrate= 605.9kbits/s speed= 495x    \nsize=  164864kB time=00:37:16.49 bitrate= 603.9kbits/s speed= 497x    \nsize=  182784kB time=00:41:10.66 bitrate= 606.1kbits/s speed= 494x    \nsize=  200704kB time=00:45:20.28 bitrate= 604.4kbits/s speed= 495x    \nsize=  217088kB time=00:49:10.79 bitrate= 602.7kbits/s speed= 492x    \nsize=  235008kB time=00:53:29.71 bitrate= 599.8kbits/s speed= 494x    \nsize=  250368kB time=00:57:09.87 bitrate= 598.0kbits/s speed= 490x    \nsize=  267776kB time=01:01:12.29 bitrate= 597.3kbits/s speed= 490x    \nsize=  284416kB time=01:05:02.90 bitrate= 597.0kbits/s speed= 488x    \nsize=  302592kB time=01:09:14.20 bitrate= 596.7kbits/s speed= 489x    \nsize=  318208kB time=01:12:55.19 bitrate= 595.8kbits/s speed= 486x    \nsize=  334592kB time=01:16:47.26 bitrate= 594.9kbits/s speed= 485x    \nsize=  353536kB time=01:20:45.81 bitrate= 597.7kbits/s speed= 485x    \nsize=  372224kB time=01:25:16.86 bitrate= 595.9kbits/s speed= 487x    \nsize=  388352kB time=01:28:47.62 bitrate= 597.1kbits/s speed= 484x    \n[out#0/flac @ 0x62bb30f28a40] video:0kB audio:402287kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.002031%\nsize=  402295kB time=01:30:26.59 bitrate= 607.3kbits/s speed= 483x    \n",
+            "error": null,
+            "duration_seconds": 11.305051
+          }
+        ],
+        "duration_seconds": 5427,
+        "duration_string": "1:30:27"
+      },
+      "corpus_id": "jubilee_surrounded_001",
+      "youtube_id": "WV29R1M25n8",
+      "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+      "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+      "debate_format": "Surrounded",
+      "input_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
+      "output_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
+      "profile": "gemini_flac"
+    },
+    {
+      "status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 13.801998,
+      "start_time": "2026-07-30T21:23:48Z",
+      "end_time": "2026-07-30T21:24:02Z",
+      "output_file_size_bytes": 494072257,
+      "metadata": {
+        "command": [
+          "ffmpeg",
+          "-y",
+          "-i",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.mp4",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "flac",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_002.flac"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "",
+            "stderr_tail": "0 /  9. 12.100\n  libswscale      7.  5.100 /  7.  5.100\n  libswresample   4. 12.100 /  4. 12.100\n  libpostproc    57.  3.100 / 57.  3.100\n[libdav1d @ 0x579e2fe9eec0] libdav1d 1.4.1\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Duration: 01:40:53.28, start: 0.000000, bitrate: 4122 kb/s\n  Stream #0:0[0x1](und): Video: av1 (Main) (av01 / 0x31307661), yuv420p(tv, bt709), 3840x2160, 3990 kb/s, 23.98 fps, 23.98 tbr, 24k tbn (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n  Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 127 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> flac (native))\nPress [q] to stop, [?] for help\n[flac @ 0x579e2fea2940] encoding as 24 bits-per-sample, more is considered experimental. Add -strict experimental if you want to encode more than 24 bits-per-sample\nOutput #0, flac, to '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_002.flac':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Stream #0:0(eng): Audio: flac, 44100 Hz, stereo, s32 (24 bit), 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n      encoder         : Lavc60.31.102 flac\nsize=       0kB time=N/A bitrate=N/A speed=N/A    \nsize=   19200kB time=00:03:39.95 bitrate= 715.1kbits/s speed= 440x    \nsize=   37888kB time=00:07:42.78 bitrate= 670.7kbits/s speed= 463x    \nsize=   55040kB time=00:11:25.03 bitrate= 658.2kbits/s speed= 457x    \nsize=   72960kB time=00:15:14.59 bitrate= 653.5kbits/s speed= 457x    \nsize=   89344kB time=00:18:56.64 bitrate= 643.9kbits/s speed= 455x    \nsize=  110592kB time=00:23:03.02 bitrate= 655.1kbits/s speed= 461x    \nsize=  128000kB time=00:26:54.26 bitrate= 649.6kbits/s speed= 461x    \nsize=  140800kB time=00:29:41.34 bitrate= 647.5kbits/s speed= 445x    \nsize=  155648kB time=00:32:59.03 bitrate= 644.3kbits/s speed= 440x    \nsize=  173568kB time=00:36:54.87 bitrate= 642.0kbits/s speed= 443x    \nsize=  191232kB time=00:40:45.58 bitrate= 640.6kbits/s speed= 445x    \nsize=  207616kB time=00:44:05.78 bitrate= 642.8kbits/s speed= 441x    \nsize=  226304kB time=00:47:42.39 bitrate= 647.7kbits/s speed= 440x    \nsize=  242688kB time=00:51:10.32 bitrate= 647.5kbits/s speed= 439x    \nsize=  259072kB time=00:54:38.47 bitrate= 647.3kbits/s speed= 437x    \nsize=  276992kB time=00:58:32.42 bitrate= 646.0kbits/s speed= 439x    \nsize=  294656kB time=01:02:29.30 bitrate= 643.8kbits/s speed= 441x    \nsize=  312576kB time=01:06:19.28 bitrate= 643.5kbits/s speed= 442x    \nsize=  329984kB time=01:09:56.83 bitrate= 644.1kbits/s speed= 442x    \nsize=  345344kB time=01:13:18.60 bitrate= 643.2kbits/s speed= 440x    \nsize=  363520kB time=01:17:11.19 bitrate= 643.0kbits/s speed= 441x    \nsize=  380672kB time=01:20:55.11 bitrate= 642.3kbits/s speed= 441x    \nsize=  397312kB time=01:24:32.56 bitrate= 641.6kbits/s speed= 441x    \nsize=  415232kB time=01:28:14.08 bitrate= 642.5kbits/s speed= 441x    \nsize=  431872kB time=01:31:50.16 bitrate= 642.1kbits/s speed= 441x    \nsize=  449792kB time=01:35:51.11 bitrate= 640.7kbits/s speed= 442x    \nsize=  469248kB time=01:39:21.87 bitrate= 644.8kbits/s speed= 442x    \n[out#0/flac @ 0x579e2fea0f80] video:0kB audio:482484kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.001694%\nsize=  482492kB time=01:40:53.27 bitrate= 653.0kbits/s speed= 441x    \n",
+            "error": null,
+            "duration_seconds": 13.801972
+          }
+        ],
+        "duration_seconds": 6053,
+        "duration_string": "1:40:53"
+      },
+      "corpus_id": "jubilee_surrounded_002",
+      "youtube_id": "2S-WJN3L5eo",
+      "youtube_url": "https://www.youtube.com/watch?v=2S-WJN3L5eo",
+      "title_selected": "1 Progressive vs 20 Far-Right Conservatives (ft. Mehdi Hasan)",
+      "title_extracted": "1 Progressive vs 20 Far-Right Conservatives (ft. Mehdi Hasan)",
+      "debate_format": "Surrounded",
+      "input_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.mp4",
+      "output_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_002.flac",
+      "profile": "gemini_flac"
+    },
+    {
+      "status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 12.976622,
+      "start_time": "2026-07-30T21:24:02Z",
+      "end_time": "2026-07-30T21:24:15Z",
+      "output_file_size_bytes": 522511820,
+      "metadata": {
+        "command": [
+          "ffmpeg",
+          "-y",
+          "-i",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "flac",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_003.flac"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "",
+            "stderr_tail": "00\n  libavcodec     60. 31.102 / 60. 31.102\n  libavformat    60. 16.100 / 60. 16.100\n  libavdevice    60.  3.100 / 60.  3.100\n  libavfilter     9. 12.100 /  9. 12.100\n  libswscale      7.  5.100 /  7.  5.100\n  libswresample   4. 12.100 /  4. 12.100\n  libpostproc    57.  3.100 / 57.  3.100\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomiso2avc1mp41\n    encoder         : Lavf60.16.100\n  Duration: 01:38:23.42, start: 0.000000, bitrate: 2261 kb/s\n  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 2128 kb/s, 23.98 fps, 23.98 tbr, 24k tbn (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n  Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 127 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> flac (native))\nPress [q] to stop, [?] for help\n[flac @ 0x655112cb8c00] encoding as 24 bits-per-sample, more is considered experimental. Add -strict experimental if you want to encode more than 24 bits-per-sample\nOutput #0, flac, to '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_003.flac':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomiso2avc1mp41\n    encoder         : Lavf60.16.100\n  Stream #0:0(eng): Audio: flac, 44100 Hz, stereo, s32 (24 bit), 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n      encoder         : Lavc60.31.102 flac\nsize=       0kB time=N/A bitrate=N/A speed=N/A    \nsize=   22016kB time=00:03:50.71 bitrate= 781.7kbits/s speed= 461x    \nsize=   43264kB time=00:07:55.74 bitrate= 745.0kbits/s speed= 476x    \nsize=   63232kB time=00:11:55.96 bitrate= 723.5kbits/s speed= 477x    \nsize=   82944kB time=00:15:45.84 bitrate= 718.4kbits/s speed= 473x    \nsize=  103168kB time=00:19:44.49 bitrate= 713.5kbits/s speed= 474x    \nsize=  125952kB time=00:23:52.34 bitrate= 720.4kbits/s speed= 477x    \nsize=  146688kB time=00:28:02.07 bitrate= 714.4kbits/s speed= 481x    \nsize=  167680kB time=00:32:13.37 bitrate= 710.5kbits/s speed= 483x    \nsize=  187904kB time=00:36:26.03 bitrate= 704.2kbits/s speed= 486x    \nsize=  203776kB time=00:39:33.38 bitrate= 703.4kbits/s speed= 475x    \nsize=  221440kB time=00:42:25.16 bitrate= 712.7kbits/s speed= 463x    \nsize=  239104kB time=00:45:34.70 bitrate= 716.3kbits/s speed= 456x    \nsize=  259328kB time=00:49:40.36 bitrate= 712.8kbits/s speed= 458x    \nsize=  279296kB time=00:53:38.28 bitrate= 710.9kbits/s speed= 460x    \nsize=  299520kB time=00:57:37.25 bitrate= 709.7kbits/s speed= 461x    \nsize=  321024kB time=01:01:53.56 bitrate= 708.2kbits/s speed= 464x    \nsize=  341760kB time=01:05:56.29 bitrate= 707.7kbits/s speed= 465x    \nsize=  361216kB time=01:09:41.47 bitrate= 707.7kbits/s speed= 465x    \nsize=  378368kB time=01:13:05.22 bitrate= 706.8kbits/s speed= 462x    \nsize=  397824kB time=01:16:53.85 bitrate= 706.3kbits/s speed= 461x    \nsize=  415744kB time=01:20:25.75 bitrate= 705.7kbits/s speed= 460x    \nsize=  435712kB time=01:24:22.21 bitrate= 705.1kbits/s speed= 460x    \nsize=  455424kB time=01:28:08.75 bitrate= 705.4kbits/s speed= 460x    \nsize=  473088kB time=01:31:49.53 bitrate= 703.4kbits/s speed= 459x    \nsize=  491264kB time=01:35:38.57 bitrate= 701.3kbits/s speed= 459x    \n[out#0/flac @ 0x655112a10f00] video:0kB audio:510257kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.001601%\nsize=  510265kB time=01:38:23.41 bitrate= 708.1kbits/s speed= 458x    \n",
+            "error": null,
+            "duration_seconds": 12.976602
+          }
+        ],
+        "duration_seconds": 5903,
+        "duration_string": "1:38:23"
+      },
+      "corpus_id": "jubilee_surrounded_003",
+      "youtube_id": "DK-jI3BaZLc",
+      "youtube_url": "https://www.youtube.com/watch?v=DK-jI3BaZLc",
+      "title_selected": "1 Conservative vs 20 Feminists (ft. Candace Owens)",
+      "title_extracted": "1 Conservative vs 20 Feminists ft Candace Owens | Debate Podcast 🎙️",
+      "debate_format": "Surrounded",
+      "input_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4",
+      "output_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_003.flac",
+      "profile": "gemini_flac"
+    },
+    {
+      "status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 16.019991,
+      "start_time": "2026-07-30T21:24:15Z",
+      "end_time": "2026-07-30T21:24:31Z",
+      "output_file_size_bytes": 559483426,
+      "metadata": {
+        "command": [
+          "ffmpeg",
+          "-y",
+          "-i",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.mp4",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "flac",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_004.flac"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "",
+            "stderr_tail": "rpus/01_jubilee_debates/videos/jubilee_surrounded_004.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Duration: 01:53:38.42, start: 0.000000, bitrate: 3179 kb/s\n  Stream #0:0[0x1](und): Video: av1 (Main) (av01 / 0x31307661), yuv420p(tv, bt709), 3840x2160, 3046 kb/s, 23.98 fps, 23.98 tbr, 24k tbn (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n  Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 127 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> flac (native))\nPress [q] to stop, [?] for help\n[flac @ 0x57d0a090e8c0] encoding as 24 bits-per-sample, more is considered experimental. Add -strict experimental if you want to encode more than 24 bits-per-sample\nOutput #0, flac, to '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_004.flac':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Stream #0:0(eng): Audio: flac, 44100 Hz, stereo, s32 (24 bit), 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n      encoder         : Lavc60.31.102 flac\nsize=       0kB time=N/A bitrate=N/A speed=N/A    \nsize=   23040kB time=00:03:38.80 bitrate= 862.6kbits/s speed= 438x    \nsize=   38656kB time=00:07:01.19 bitrate= 751.8kbits/s speed= 421x    \nsize=   55040kB time=00:10:36.02 bitrate= 708.9kbits/s speed= 424x    \nsize=   72192kB time=00:14:09.92 bitrate= 695.8kbits/s speed= 425x    \nsize=   90368kB time=00:17:56.24 bitrate= 687.8kbits/s speed= 430x    \nsize=  110592kB time=00:21:41.73 bitrate= 696.0kbits/s speed= 434x    \nsize=  127232kB time=00:25:11.65 bitrate= 689.5kbits/s speed= 432x    \nsize=  144640kB time=00:28:53.06 bitrate= 683.7kbits/s speed= 433x    \nsize=  162560kB time=00:32:44.19 bitrate= 678.0kbits/s speed= 436x    \nsize=  180480kB time=00:36:36.68 bitrate= 673.1kbits/s speed= 439x    \nsize=  199424kB time=00:40:40.35 bitrate= 669.4kbits/s speed= 444x    \nsize=  217856kB time=00:44:15.71 bitrate= 672.0kbits/s speed= 443x    \nsize=  234752kB time=00:47:53.78 bitrate= 669.2kbits/s speed= 442x    \nsize=  248832kB time=00:50:55.49 bitrate= 667.1kbits/s speed= 436x    \nsize=  258560kB time=00:53:04.74 bitrate= 665.1kbits/s speed= 425x    \nsize=  269824kB time=00:55:29.35 bitrate= 663.9kbits/s speed= 416x    \nsize=  285952kB time=00:58:58.75 bitrate= 662.0kbits/s speed= 416x    \nsize=  302080kB time=01:02:25.22 bitrate= 660.7kbits/s speed= 416x    \nsize=  319744kB time=01:06:08.94 bitrate= 660.0kbits/s speed= 418x    \nsize=  337152kB time=01:09:51.60 bitrate= 658.9kbits/s speed= 419x    \nsize=  355072kB time=01:13:43.88 bitrate= 657.5kbits/s speed= 421x    \nsize=  372224kB time=01:17:24.88 bitrate= 656.5kbits/s speed= 422x    \nsize=  388352kB time=01:20:50.72 bitrate= 655.9kbits/s speed= 422x    \nsize=  404224kB time=01:24:20.85 bitrate= 654.3kbits/s speed= 422x    \nsize=  422400kB time=01:28:11.36 bitrate= 654.0kbits/s speed= 423x    \nsize=  439808kB time=01:31:55.49 bitrate= 653.2kbits/s speed= 424x    \nsize=  455680kB time=01:35:19.87 bitrate= 652.6kbits/s speed= 424x    \nsize=  473344kB time=01:39:03.69 bitrate= 652.4kbits/s speed= 424x    \nsize=  492032kB time=01:42:42.59 bitrate= 654.1kbits/s speed= 425x    \nsize=  509184kB time=01:46:28.61 bitrate= 652.9kbits/s speed= 426x    \nsize=  527872kB time=01:50:24.54 bitrate= 652.8kbits/s speed= 427x    \n[out#0/flac @ 0x57d0a090d600] video:0kB audio:546362kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.001496%\nsize=  546371kB time=01:53:38.42 bitrate= 656.4kbits/s speed= 427x    \n",
+            "error": null,
+            "duration_seconds": 16.019973
+          }
+        ],
+        "duration_seconds": 6818,
+        "duration_string": "1:53:38"
+      },
+      "corpus_id": "jubilee_surrounded_004",
+      "youtube_id": "odBbDQj-GRs",
+      "youtube_url": "https://www.youtube.com/watch?v=odBbDQj-GRs",
+      "title_selected": "1 Liberal Man vs 20 MAGA Women (ft. Dean Withers)",
+      "title_extracted": "1 Liberal Man vs 20 MAGA Women (ft. Dean Withers) | Surrounded",
+      "debate_format": "Surrounded",
+      "input_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.mp4",
+      "output_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_004.flac",
+      "profile": "gemini_flac"
+    },
+    {
+      "status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 13.260148,
+      "start_time": "2026-07-30T21:24:31Z",
+      "end_time": "2026-07-30T21:24:44Z",
+      "output_file_size_bytes": 484981153,
+      "metadata": {
+        "command": [
+          "ffmpeg",
+          "-y",
+          "-i",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.mp4",
+          "-vn",
+          "-ac",
+          "2",
+          "-ar",
+          "44100",
+          "-c:a",
+          "flac",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_005.flac"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "",
+            "stderr_tail": "100\n  libavdevice    60.  3.100 / 60.  3.100\n  libavfilter     9. 12.100 /  9. 12.100\n  libswscale      7.  5.100 /  7.  5.100\n  libswresample   4. 12.100 /  4. 12.100\n  libpostproc    57.  3.100 / 57.  3.100\n[libdav1d @ 0x573c501e7ec0] libdav1d 1.4.1\nInput #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.mp4':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Duration: 01:29:47.26, start: 0.000000, bitrate: 3954 kb/s\n  Stream #0:0[0x1](und): Video: av1 (Main) (av01 / 0x31307661), yuv420p(tv, bt709), 3840x2160, 3821 kb/s, 23.98 fps, 23.98 tbr, 24k tbn (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n  Stream #0:1[0x2](eng): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\nStream mapping:\n  Stream #0:1 -> #0:0 (aac (native) -> flac (native))\nPress [q] to stop, [?] for help\n[flac @ 0x573c501ec500] encoding as 24 bits-per-sample, more is considered experimental. Add -strict experimental if you want to encode more than 24 bits-per-sample\nOutput #0, flac, to '/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_005.flac':\n  Metadata:\n    major_brand     : isom\n    minor_version   : 512\n    compatible_brands: isomav01iso2mp41\n    encoder         : Lavf60.16.100\n  Stream #0:0(eng): Audio: flac, 44100 Hz, stereo, s32 (24 bit), 128 kb/s (default)\n    Metadata:\n      handler_name    : ISO Media file produced by Google Inc.\n      vendor_id       : [0][0][0][0]\n      encoder         : Lavc60.31.102 flac\nsize=       0kB time=N/A bitrate=N/A speed=N/A    \nsize=   21248kB time=00:03:27.83 bitrate= 837.5kbits/s speed= 416x    \nsize=   40704kB time=00:07:19.17 bitrate= 759.3kbits/s speed= 439x    \nsize=   59392kB time=00:10:56.30 bitrate= 741.3kbits/s speed= 437x    \nsize=   79360kB time=00:14:52.23 bitrate= 728.6kbits/s speed= 446x    \nsize=   98048kB time=00:18:30.62 bitrate= 723.2kbits/s speed= 444x    \nsize=  115456kB time=00:21:59.39 bitrate= 716.9kbits/s speed= 440x    \nsize=  134144kB time=00:25:39.44 bitrate= 713.8kbits/s speed= 440x    \nsize=  153344kB time=00:29:23.99 bitrate= 712.1kbits/s speed= 441x    \nsize=  174336kB time=00:33:23.06 bitrate= 713.0kbits/s speed= 445x    \nsize=  193792kB time=00:37:10.12 bitrate= 711.9kbits/s speed= 446x    \nsize=  212992kB time=00:40:50.49 bitrate= 712.0kbits/s speed= 445x    \nsize=  226304kB time=00:43:30.88 bitrate= 710.1kbits/s speed= 435x    \nsize=  234752kB time=00:45:09.62 bitrate= 709.7kbits/s speed= 417x    \nsize=  242944kB time=00:46:45.02 bitrate= 709.5kbits/s speed= 401x    \nsize=  255744kB time=00:49:14.86 bitrate= 709.0kbits/s speed= 394x    \nsize=  270592kB time=00:52:08.11 bitrate= 708.6kbits/s speed= 391x    \nsize=  289792kB time=00:55:52.24 bitrate= 708.2kbits/s speed= 394x    \nsize=  308224kB time=00:59:29.05 bitrate= 707.5kbits/s speed= 396x    \nsize=  327680kB time=01:03:09.11 bitrate= 708.4kbits/s speed= 399x    \nsize=  345600kB time=01:06:46.55 bitrate= 706.6kbits/s speed= 401x    \nsize=  364800kB time=01:10:35.07 bitrate= 705.6kbits/s speed= 403x    \nsize=  382208kB time=01:14:03.74 bitrate= 704.6kbits/s speed= 404x    \nsize=  401408kB time=01:17:35.22 bitrate= 706.4kbits/s speed= 405x    \nsize=  419840kB time=01:21:13.92 bitrate= 705.7kbits/s speed= 406x    \nsize=  439296kB time=01:25:04.74 bitrate= 705.0kbits/s speed= 408x    \nsize=  461312kB time=01:28:30.79 bitrate= 711.6kbits/s speed= 408x    \n[out#0/flac @ 0x573c501eb240] video:0kB audio:473606kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.001725%\nsize=  473614kB time=01:29:47.26 bitrate= 720.2kbits/s speed= 408x    \n",
+            "error": null,
+            "duration_seconds": 13.260132
+          }
+        ],
+        "duration_seconds": 5387,
+        "duration_string": "1:29:47"
+      },
+      "corpus_id": "jubilee_surrounded_005",
+      "youtube_id": "EEd5cvHnhPQ",
+      "youtube_url": "https://www.youtube.com/watch?v=EEd5cvHnhPQ",
+      "title_selected": "1 Ex-Mafia Boss vs 20 Cops (ft. Michael Franzese)",
+      "title_extracted": "1 Ex-Mafia Boss vs 20 Cops (ft. Michael Franzese) Surrounded",
+      "debate_format": "Surrounded",
+      "input_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.mp4",
+      "output_path": "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_005.flac",
+      "profile": "gemini_flac"
+    }
+  ],
+  "invalid_records": [],
+  "ignored_records": []
+}
