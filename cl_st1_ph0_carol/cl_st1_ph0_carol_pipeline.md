@@ -81,5 +81,5 @@ corpus/02_jubilee_debates_speaker_diarisation/
 | Date       | Stage   | Command                                                  | Notes |
 |------------|---------|----------------------------------------------------------|-------|
 | 2026-07-30 | Stage 1 | `python download_jubilee_debates.py --no-test-mode`      |       |
-| YYYY-MM-DD | Stage 2 | `python extract_jubilee_debates_audio.py --no-test-mode` |       |
+| 2026-08-03 | Stage 2 | `python extract_jubilee_debates_audio.py --no-test-mode` |       |
 | YYYY-MM-DD | Stage 3 | `python speaker_diarisation_jubilee_debates.py`          |       |
