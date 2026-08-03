@@ -1,6 +1,0 @@
-2026-08-03T16:03:41Z INFO Run started: 20260803T160341Z
-2026-08-03T16:03:41Z INFO Programme directory: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol
-2026-08-03T16:03:41Z INFO Current working directory: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol
-2026-08-03T16:03:41Z INFO Model: gemini-3.1-pro
-2026-08-03T16:03:41Z INFO Output directory: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
-2026-08-03T16:03:41Z ERROR Configuration error: Google Gemini Python SDK is unavailable. Install it with: pip install google-genai

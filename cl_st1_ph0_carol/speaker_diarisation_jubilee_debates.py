@@ -42,7 +42,7 @@ DEFAULT_ENV_FILE = "env/.env"
 DEFAULT_AUDIO_DIR = "corpus/02_jubilee_debates_audio/gemini_flac"
 DEFAULT_AUDIO_INDEX = "corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson"
 DEFAULT_DEBATE_INDEX = "corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
-DEFAULT_OUTPUT_DIR = "corpus/02_jubilee_debates_speaker_diarisation"
+DEFAULT_OUTPUT_DIR = "corpus/03_jubilee_debates_speaker_diarisation"
 
 DEFAULT_MODEL = "gemini-3.1-pro"
 DEFAULT_TEMPERATURE = 0.0

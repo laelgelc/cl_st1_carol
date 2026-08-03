@@ -37,7 +37,7 @@ using `python-dotenv`.
 The programme should save outputs in:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation
+corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
@@ -75,14 +75,14 @@ or from another working directory.
 For example, the default output path:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation
+corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
 should resolve to:
 
 ```plain text
-<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
+<programme_directory>/corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
@@ -115,8 +115,8 @@ Recommended metadata structure:
     "programme_directory": "/home/user/project/cl_st1_ph0_carol",
     "current_working_directory": "/home/user/project",
     "output_dir": {
-      "supplied": "corpus/02_jubilee_debates_speaker_diarisation",
-      "resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation",
+      "supplied": "corpus/03_jubilee_debates_speaker_diarisation",
+      "resolved": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation",
       "source": "default"
     }
   }
@@ -536,23 +536,23 @@ If future versions compare Gemini output against YouTube captions or other trans
 For each successfully processed debate, the programme should write:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
-corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
+corpus/03_jubilee_debates_speaker_diarisation/<corpus_id>.txt
+corpus/03_jubilee_debates_speaker_diarisation/<corpus_id>.json
 ```
 
 
 As default output paths, these should resolve under:
 
 ```plain text
-<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
+<programme_directory>/corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
 Example:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt
-corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json
+corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt
+corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json
 ```
 
 
@@ -623,12 +623,12 @@ A failed `.json` file should still be written where possible.
       "path_source": "default"
     },
     "output_txt": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt"
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt"
     },
     "output_json": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
     }
   },
   "source_metadata": {
@@ -748,8 +748,8 @@ A failed `.json` file should still be written where possible.
       "resolved_path": "/home/user/project/cl_st1_ph0_carol/speaker_diarisation_prompts/speaker_diarisation_v1.md"
     },
     "output_json": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
     }
   },
   "source_metadata": {
@@ -790,23 +790,23 @@ A failed `.json` file should still be written where possible.
 The programme should write run-level logs and manifests in:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation
+corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
 As a default output directory, this should resolve to:
 
 ```plain text
-<programme_directory>/corpus/02_jubilee_debates_speaker_diarisation
+<programme_directory>/corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
 Recommended files:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
-corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest.json
-corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_<RUN_ID>.json
+corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
+corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest.json
+corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_<RUN_ID>.json
 ```
 
 
@@ -920,17 +920,17 @@ Recommended manifest structure:
   },
   "output": {
     "output_dir": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation",
+      "path": "corpus/03_jubilee_debates_speaker_diarisation",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation",
       "path_source": "default"
     },
     "log_file": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log"
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log"
     },
     "manifest_file": {
-      "path": "corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json",
-      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json"
+      "path": "corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json",
+      "resolved_path": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates_manifest_20260803T120000Z.json"
     }
   },
   "model": {
@@ -957,8 +957,8 @@ Recommended manifest structure:
       "status": "success",
       "audio_file": "corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
       "audio_file_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac/jubilee_surrounded_001.flac",
-      "output_txt": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-      "output_json": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
+      "output_txt": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+      "output_json": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json"
     }
   ],
   "error": null
@@ -1016,8 +1016,8 @@ Existing successful outputs should be skipped unless `--reprocess` is used.
 A debate may be skipped if both files exist:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.txt
-corpus/02_jubilee_debates_speaker_diarisation/<corpus_id>.json
+corpus/03_jubilee_debates_speaker_diarisation/<corpus_id>.txt
+corpus/03_jubilee_debates_speaker_diarisation/<corpus_id>.json
 ```
 
 
@@ -1051,10 +1051,10 @@ Recommended skipped item:
   "corpus_id": "jubilee_surrounded_001",
   "status": "skipped_existing",
   "reason": "Existing successful output found and --reprocess was not provided.",
-  "output_txt": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-  "output_txt_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
-  "output_json": "corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
-  "output_json_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+  "output_txt": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+  "output_txt_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.txt",
+  "output_json": "corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
+  "output_json_resolved": "/home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation/jubilee_surrounded_001.json",
   "previous_model": "gemini-3.1-pro",
   "previous_prompt_template_sha256": "..."
 }
@@ -1074,7 +1074,7 @@ Recommended CLI arguments:
 | `--audio-dir PATH` | `corpus/02_jubilee_debates_audio/gemini_flac` | Gemini-ready FLAC audio input directory |
 | `--audio-index PATH` | `corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson` | Audio index defining processing plan |
 | `--debate-index PATH` | `corpus/01_jubilee_debates/jubilee_debates_index.ndjson` | Optional debate metadata index |
-| `--output-dir PATH` | `corpus/02_jubilee_debates_speaker_diarisation` | Diarised transcript output directory |
+| `--output-dir PATH` | `corpus/03_jubilee_debates_speaker_diarisation` | Diarised transcript output directory |
 | `--model MODEL` | `gemini-3.1-pro` | Gemini model identifier |
 | `--temperature FLOAT` | `0` | Generation temperature |
 | `--max-output-tokens N` | `0` | Optional output-token cap; `0` means API/default maximum |
@@ -1121,7 +1121,7 @@ This should:
 - process one debate in test mode;
 - submit the prompt and one `.flac` audio file to Gemini;
 - use `gemini-3.1-pro`;
-- save outputs in `corpus/02_jubilee_debates_speaker_diarisation`.
+- save outputs in `corpus/03_jubilee_debates_speaker_diarisation`.
 
 ---
 
@@ -1208,7 +1208,7 @@ python speaker_diarisation_jubilee_debates.py \
   --env-file /home/user/project/cl_st1_ph0_carol/env/.env \
   --audio-dir /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/gemini_flac \
   --audio-index /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson \
-  --output-dir /home/user/project/cl_st1_ph0_carol/corpus/02_jubilee_debates_speaker_diarisation
+  --output-dir /home/user/project/cl_st1_ph0_carol/corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
@@ -1359,7 +1359,7 @@ Recommended retry metadata:
 The programme should write a log file to:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
+corpus/03_jubilee_debates_speaker_diarisation/speaker_diarisation_jubilee_debates.log
 ```
 
 
@@ -1634,7 +1634,7 @@ corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 23. The programme saves `.txt` outputs in:
 
 ```plain text
-corpus/02_jubilee_debates_speaker_diarisation
+corpus/03_jubilee_debates_speaker_diarisation
 ```
 
 
