@@ -28,7 +28,7 @@ GPU: NVIDIA A10G
 GPU memory: 24 GB VRAM
 Architecture: x86_64
 Operating system: Ubuntu
-AMI: AWS Deep Learning AMI GPU Ubuntu
+AMI: Deep Learning Base AMI with Single CUDA (Ubuntu 24.04)
 EBS storage: 100–200 GB
 Workers: 1
 ```
@@ -900,7 +900,7 @@ python qc_jubilee_debates_speaker_diarisation.py --no-test-mode
 
 ```plain text
 EC2 instance: g5.xlarge initially
-AMI: AWS Deep Learning AMI GPU Ubuntu
+AMI: Deep Learning Base AMI with Single CUDA (Ubuntu 24.04)
 GPU: NVIDIA A10G, 24 GB VRAM
 Storage: 100–200 GB EBS
 Python environment: conda, Python 3.11
