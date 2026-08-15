@@ -34,6 +34,11 @@ Full run from a specific debate:
 
 The script writes an append-only log file, a JSON manifest, and a curated NDJSON
 audio index describing run-level metadata and per-debate audio extraction status.
+
+For portability, curated index paths under the project phase directory are written
+relative to SCRIPT_DIR instead of as machine-specific absolute paths. This allows
+the generated audio index to work both locally and on EC2 when the project layout
+is preserved.
 """
 
 from __future__ import annotations
@@ -230,6 +235,47 @@ def resolve_script_relative_path(path: Path) -> Path:
     if path.is_absolute():
         return path
     return SCRIPT_DIR / path
+
+
+def path_for_index(path_value: Any) -> str | None:
+    """
+    Convert a path to a portable string for curated index files.
+
+    Paths located inside the project phase directory are stored relative to
+    SCRIPT_DIR, for example:
+
+        corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+
+    Paths outside SCRIPT_DIR are preserved as originally supplied. This avoids
+    converting genuinely external paths into misleading project-relative paths.
+
+    Args:
+        path_value: Path-like value or string.
+
+    Returns:
+        Project-relative path string when possible; otherwise original/resolved
+        path string. Returns None for None input.
+
+    I/O:
+        Does not require path existence. Path.resolve(strict=False) is used.
+
+    Error behaviour:
+        Falls back to str(path) if path resolution fails.
+    """
+    if path_value is None:
+        return None
+
+    path = Path(str(path_value))
+
+    try:
+        resolved = path.resolve(strict=False)
+    except OSError:
+        return str(path)
+
+    try:
+        return str(resolved.relative_to(SCRIPT_DIR))
+    except ValueError:
+        return str(path)
 
 
 def setup_logging(log_file: Path) -> logging.Logger:
@@ -890,8 +936,8 @@ def make_audio_index_record(
 
     record.update(
         {
-            "source_video_file": item_result.get("input_path"),
-            "audio_file": item_result.get("output_path"),
+            "source_video_file": path_for_index(item_result.get("input_path")),
+            "audio_file": path_for_index(item_result.get("output_path")),
             "audio_format": OUTPUT_AUDIO_FORMAT,
             "audio_codec": FFMPEG_AUDIO_CODEC,
             "audio_channels": int(FFMPEG_AUDIO_CHANNELS),

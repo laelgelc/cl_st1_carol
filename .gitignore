@@ -222,4 +222,5 @@ __marimo__/
 cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/*.mp4
 !cl_st1_ph0_carol/**/*.log
 cl_st1_ph0_carol/corpus/02_jubilee_debates_audio_deprecated/gemini_flac/*.flac
+cl_st1_ph0_carol/corpus/02_jubilee_debates_audio_deprecated_2/*.wav
 cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/*.wav
