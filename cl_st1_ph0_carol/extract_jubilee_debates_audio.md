@@ -15,18 +15,15 @@ The purpose of this programme is to prepare full-length audio files suitable for
 - pyannote.audio speaker diarisation.
 
 The programme reads the curated Jubilee debate index:
-```
-text
+```text
 corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 Each record in this index represents one selected Jubilee debate. The programme must process only records where the downloaded video is available, indicated by:
-```
-text
+```text
 download_status = success
 ```
 or:
-```
-text
+```text
 download_status = skipped_existing
 ```
 For each eligible row, the programme uses:
@@ -37,33 +34,27 @@ For each eligible row, the programme uses:
 - `corpus_id` again to name the extracted audio file.
 
 The source debate video files are expected in:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/
 ```
 The extracted audio files must be written to:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/
 ```
 Each extracted audio file must be saved as:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/<corpus_id>.wav
 ```
 The base audio extraction command is:
-```
-bash
+```bash
 ffmpeg -y -i "jubilee_surrounded_001.mp4" -vn -ac 1 -ar 16000 -sample_fmt s16 "jubilee_surrounded_001.wav"
 ```
 The programme must generalise this command so that each eligible debate audio file is extracted as:
-```
-bash
+```bash
 ffmpeg -y -i "<input_video>" -vn -ac 1 -ar 16000 -sample_fmt s16 "<output_dir>/<corpus_id>.wav"
 ```
 For example:
-```
-bash
+```bash
 ffmpeg -y \
   -i "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4" \
   -vn \
@@ -80,6 +71,23 @@ The output audio format is designed to be convenient for Whisper, WhisperX, and 
 - signed 16-bit PCM sample format.
 
 The programme extracts **full-length audio only**. It must not split, trim, segment, diarise, transcribe, or otherwise analyse the audio. Segmentation, transcription, alignment, and diarisation are separate downstream pipeline stages.
+
+The curated audio index must be portable. File paths inside the project phase directory should be written as project-relative paths, for example:
+```text
+corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+```
+rather than machine-specific absolute paths such as:
+```text
+/home/<user>/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+```
+This portability is important because later processing stages may be run on a different machine, such as an EC2 GPU server.
+
+The curated audio index must also preserve source media duration correctly:
+
+- `duration_seconds` must remain the source video/audio duration inherited from the download index;
+- `audio_extraction_duration_seconds` must store how long the ffmpeg extraction command took to run.
+
+The programme must not overwrite source media duration with ffmpeg runtime duration.
 
 ---
 
@@ -121,6 +129,9 @@ The programme must implement the following behaviours:
   - a timestamped per-run manifest;
   - a latest manifest that is overwritten on each run.
 - Write a curated audio index for downstream pipeline stages.
+- Write project-internal paths in the curated audio index as project-relative paths.
+- Preserve source media duration as `duration_seconds`.
+- Store ffmpeg runtime as `audio_extraction_duration_seconds`.
 - Exit with status code `0` only when all attempted audio extractions succeed or are skipped, and there are no missing inputs or invalid eligible metadata rows.
 - Exit with a non-zero status code if one or more attempted extractions fail, source videos are missing, eligible metadata rows are invalid, or there is a configuration/validation error.
 
@@ -131,44 +142,62 @@ The programme must implement the following behaviours:
 The programme must resolve its default paths relative to the directory where `extract_jubilee_debates_audio.py` is located, not relative to the current working directory.
 
 If the script is located at:
-```
-text
+```text
 cl_st1_ph0_carol/extract_jubilee_debates_audio.py
 ```
 then the default index path:
-```
-text
+```text
 corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 must resolve to:
-```
-text
+```text
 cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 This policy ensures that the programme works correctly whether executed from:
-```
-text
+```text
 cl_st1_carol/
 ```
 or:
-```
-text
+```text
 cl_st1_carol/cl_st1_ph0_carol/
 ```
 or from another current working directory.
 
-### Internal path base
+### 3.1 Internal path base
 
 The implementation should define a script directory equivalent to:
-```
-python
+```python
 SCRIPT_DIR = Path(__file__).resolve().parent
 ```
 Relative default paths and relative command-line paths should be resolved against `SCRIPT_DIR`.
 
-### Absolute paths
+### 3.2 Absolute paths
 
 If the user supplies an absolute path for arguments such as `--index`, `--input-dir`, `--output-dir`, `--log-file`, `--manifest-file`, or `--audio-index-file`, the programme must preserve that absolute path.
+
+### 3.3 Portable paths in curated outputs
+
+Although the programme may resolve paths internally as absolute paths, curated index files should store project-internal paths as paths relative to `SCRIPT_DIR`.
+
+This applies to audio index fields such as:
+
+- `source_video_file`;
+- `audio_file`;
+- `raw_metadata_file`;
+- `description_file`;
+- `subtitles_files`.
+
+For example, if the programme internally resolves:
+```text
+/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+```
+the audio index should store:
+```text
+corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+```
+Paths outside the project phase directory may be preserved as supplied, because converting genuinely external paths to project-relative paths would be misleading.
+
+The manifest may contain resolved paths for debugging, but curated index files intended for downstream stages should prefer portable project-relative paths.
 
 ---
 
@@ -179,8 +208,7 @@ If the user supplies an absolute path for arguments such as `--index`, `--input-
 ### Input index file
 
 Default path:
-```
-text
+```text
 corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 The file is expected to be in **NDJSON** format, meaning one JSON object per line.
@@ -201,44 +229,43 @@ The source video path is resolved using:
 | `video_file` | optional    | Preferred local path to the downloaded video file when present and usable |
 
 If `video_file` is absent, blank, or unusable, the programme must fall back to:
-```
-text
+```text
 <input_dir>/<corpus_id>.mp4
 ```
 ### Recommended metadata fields to preserve
 
 The programme should preserve these fields in the manifest and audio index when present:
 
-| Field               | Description                               |
-|---------------------|-------------------------------------------|
-| `debate_format`     | Debate format, e.g. `Surrounded`          |
-| `sample_group`      | Sample group, e.g. `carol_initial_sample` |
-| `sample_order`      | Order in the selected sample              |
-| `title`             | Selected title, if present                |
-| `title_selected`    | Title from the selected sample            |
-| `title_extracted`   | Title extracted by the download stage     |
-| `youtube_id`        | YouTube video ID                          |
-| `youtube_url`       | Original YouTube URL                      |
-| `webpage_url`       | Canonical YouTube URL                     |
-| `channel`           | Selected channel, if present              |
-| `channel_selected`  | Expected channel from sample              |
-| `channel_extracted` | Extracted channel                         |
-| `duration_seconds`  | Video duration in seconds                 |
-| `duration_string`   | Human-readable duration                   |
-| `chapters`          | Chapter metadata                          |
-| `subtitles_files`   | Downloaded subtitle files                 |
-| `raw_metadata_file` | Raw `.info.json` file                     |
-| `description_file`  | Downloaded description file               |
-| `download_run_id`   | Run ID from the video download stage      |
-| `downloaded_at_utc` | Timestamp from the video download stage   |
-| `yt_dlp_version`    | `yt-dlp` version from the download stage  |
-| `selected_by`       | Selector, e.g. `Carol`                    |
-| `selection_source`  | Selection source                          |
-| `notes`             | Optional notes                            |
+| Field               | Description                                                                           |
+|---------------------|---------------------------------------------------------------------------------------|
+| `debate_format`     | Debate format, e.g. `Surrounded`                                                      |
+| `sample_group`      | Sample group, e.g. `carol_initial_sample`                                             |
+| `sample_order`      | Order in the selected sample                                                          |
+| `title`             | Selected title, if present                                                            |
+| `title_selected`    | Title from the selected sample                                                        |
+| `title_extracted`   | Title extracted by the download stage                                                 |
+| `youtube_id`        | YouTube video ID                                                                      |
+| `youtube_url`       | Original YouTube URL                                                                  |
+| `webpage_url`       | Canonical YouTube URL                                                                 |
+| `channel`           | Selected channel, if present                                                          |
+| `channel_selected`  | Expected channel from sample                                                          |
+| `channel_extracted` | Extracted channel                                                                     |
+| `duration_seconds`  | Source video/audio duration in seconds; must not be overwritten by extraction runtime |
+| `duration_string`   | Human-readable source duration                                                        |
+| `chapters`          | Chapter metadata                                                                      |
+| `subtitles_files`   | Downloaded subtitle files                                                             |
+| `raw_metadata_file` | Raw `.info.json` file                                                                 |
+| `description_file`  | Downloaded description file                                                           |
+| `download_run_id`   | Run ID from the video download stage                                                  |
+| `downloaded_at_utc` | Timestamp from the video download stage                                               |
+| `yt_dlp_version`    | `yt-dlp` version from the download stage                                              |
+| `selected_by`       | Selector, e.g. `Carol`                                                                |
+| `selection_source`  | Selection source                                                                      |
+| `notes`             | Optional notes                                                                        |
+| `metadata_status`   | Metadata status from the download stage                                               |
 
 Example record:
-```
-json
+```json
 {
   "corpus_id": "jubilee_surrounded_001",
   "debate_format": "Surrounded",
@@ -278,8 +305,7 @@ The programme must:
 ### Ineligible download statuses
 
 The following values should not be eligible:
-```
-text
+```text
 failed
 not_requested
 failed_metadata
@@ -309,8 +335,7 @@ Invalid JSON lines are configuration errors and must cause exit code `2`.
 ### Audio output directory
 
 Default path:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/
 ```
 The programme must create this directory if it does not already exist.
@@ -318,13 +343,11 @@ The programme must create this directory if it does not already exist.
 ### Per-debate audio output
 
 Each extracted audio file must be saved as:
-```
-text
+```text
 <output_dir>/<corpus_id>.wav
 ```
 Examples:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
 corpus/02_jubilee_debates_audio/jubilee_surrounded_002.wav
 corpus/02_jubilee_debates_audio/jubilee_surrounded_003.wav
@@ -332,18 +355,15 @@ corpus/02_jubilee_debates_audio/jubilee_surrounded_003.wav
 ### Source debate video input directory
 
 Default path:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/
 ```
 Each fallback source video is expected to exist as:
-```
-text
+```text
 <input_dir>/<corpus_id>.mp4
 ```
 Examples:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4
 corpus/01_jubilee_debates/videos/jubilee_surrounded_002.mp4
 corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4
@@ -351,8 +371,7 @@ corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4
 ### Log file
 
 Default path:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio.log
 ```
 The log file must be:
@@ -369,8 +388,7 @@ The programme must write two manifest files.
 #### Latest manifest
 
 Default path:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio_manifest.json
 ```
 This file is overwritten at the end of each run.
@@ -380,20 +398,17 @@ This file is overwritten at the end of each run.
 A timestamped copy must also be written using the run ID.
 
 Filename pattern:
-```
-text
+```text
 extract_jubilee_debates_audio_manifest_<run_id>.json
 ```
 Example:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio_manifest_20260730T210000Z.json
 ```
 ### Audio index file
 
 Default path:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 The audio index is an NDJSON file containing one JSON object per processed, skipped, missing, or failed eligible debate item.
@@ -405,13 +420,11 @@ The audio index is an NDJSON file containing one JSON object per processed, skip
 ## 5.1 Default usage
 
 The script may be run from inside `cl_st1_ph0_carol/`:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py
 ```
 or from the project root:
-```
-bash
+```bash
 python cl_st1_ph0_carol/extract_jubilee_debates_audio.py
 ```
 Both commands should resolve default paths correctly.
@@ -444,13 +457,11 @@ However, all important paths and processing controls must be configurable.
 ## 5.3 Optional arguments
 
 ### Input index file
-```
-bash
+```bash
 --index PATH
 ```
 Default:
-```
-text
+```text
 corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 Description:
@@ -462,13 +473,11 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Input video directory
-```
-bash
+```bash
 --input-dir PATH
 ```
 Default:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/
 ```
 Description:
@@ -482,13 +491,11 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Output directory
-```
-bash
+```bash
 --output-dir PATH
 ```
 Default:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/
 ```
 Description:
@@ -500,14 +507,12 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Test mode
-```
-bash
+```bash
 --test-mode
 --no-test-mode
 ```
 Default:
-```
-text
+```text
 --test-mode
 ```
 Description:
@@ -517,13 +522,11 @@ When test mode is enabled, the programme processes only a limited number of plan
 ---
 
 ### Test limit
-```
-bash
+```bash
 --test-limit N
 ```
 Default:
-```
-text
+```text
 5
 ```
 Description:
@@ -533,20 +536,17 @@ Maximum number of debates to attempt when test mode is enabled.
 Must be a positive integer.
 
 Example:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py --test-limit 3
 ```
 ---
 
 ### Reprocess existing audio files
-```
-bash
+```bash
 --reprocess
 ```
 Default:
-```
-text
+```text
 False
 ```
 Description:
@@ -556,20 +556,17 @@ When omitted, the programme skips any debate whose output `.wav` file already ex
 When provided, the programme extracts the audio again and overwrites the existing output file.
 
 Example:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py --no-test-mode --reprocess
 ```
 ---
 
 ### Start corpus ID
-```
-bash
+```bash
 --start-corpus-id CORPUS_ID
 ```
 Default:
-```
-text
+```text
 None
 ```
 Description:
@@ -581,8 +578,7 @@ When this option is provided, the programme must preserve metadata order but ign
 This is useful for resuming a long extraction run from a known point without relying only on existing-file detection.
 
 Example:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
@@ -592,13 +588,11 @@ If the requested `corpus_id` is not found among eligible metadata rows, the prog
 ---
 
 ### Log file
-```
-bash
+```bash
 --log-file PATH
 ```
 Default:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio.log
 ```
 Description:
@@ -610,13 +604,11 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Manifest file
-```
-bash
+```bash
 --manifest-file PATH
 ```
 Default:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio_manifest.json
 ```
 Description:
@@ -628,13 +620,11 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Audio index file
-```
-bash
+```bash
 --audio-index-file PATH
 ```
 Default:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 Description:
@@ -646,13 +636,11 @@ Relative paths are resolved relative to the programme directory.
 ---
 
 ### Workers
-```
-bash
+```bash
 --workers N
 ```
 Default:
-```
-text
+```text
 1
 ```
 Description:
@@ -666,13 +654,11 @@ Must be a positive integer.
 ---
 
 ### Timeout
-```
-bash
+```bash
 --timeout SECONDS
 ```
 Default suggestion:
-```
-text
+```text
 7200
 ```
 Description:
@@ -691,13 +677,11 @@ If the timeout is reached:
 ---
 
 ### Maximum retries
-```
-bash
+```bash
 --max-retries N
 ```
 Default suggestion:
-```
-text
+```text
 1
 ```
 Description:
@@ -714,13 +698,11 @@ Must be zero or a positive integer.
 ---
 
 ### Retry delay
-```
-bash
+```bash
 --retry-delay SECONDS
 ```
 Default suggestion:
-```
-text
+```text
 5
 ```
 Description:
@@ -734,37 +716,31 @@ Must be zero or a positive integer.
 ## 5.4 Example commands
 
 ### Small default test run
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py
 ```
 ### Test run with 3 debates
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py --test-limit 3
 ```
 ### Test run from a specific corpus ID
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --test-limit 2 \
   --start-corpus-id jubilee_surrounded_003
 ```
 ### Full production run
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py --no-test-mode
 ```
 ### Full production run from a specific corpus ID
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
 ```
 ### Full production run with explicit paths
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --index corpus/01_jubilee_debates/jubilee_debates_index.ndjson \
   --input-dir corpus/01_jubilee_debates/videos \
@@ -772,8 +748,7 @@ python extract_jubilee_debates_audio.py \
   --no-test-mode
 ```
 ### Re-extract audio even if files already exist
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --no-test-mode \
   --reprocess
@@ -805,8 +780,7 @@ The programme must fail fast with a clear message if:
 The programme should check for `ffmpeg` availability before processing begins.
 
 Suggested check:
-```
-bash
+```bash
 ffmpeg -version
 ```
 A validation error should:
@@ -822,8 +796,7 @@ A validation error should:
 This programme does not require API keys or secret environment variables.
 
 The programme depends on the external command-line tool:
-```
-text
+```text
 ffmpeg
 ```
 The implementation must verify that `ffmpeg` is available before starting extraction.
@@ -901,10 +874,14 @@ The programme must follow this workflow:
      - capture stdout, stderr, return code, timing, and any exception;
      - retry according to `--max-retries`;
      - mark the item as `success` or `failed`;
-     - record output file size when available.
+     - record output file size when available;
+     - record ffmpeg runtime as `audio_extraction_duration_seconds`.
 
 5. **Audio index generation**
    - Combine input metadata with audio extraction metadata.
+   - Preserve source media `duration_seconds`.
+   - Write ffmpeg runtime as `audio_extraction_duration_seconds`.
+   - Write project-internal paths as project-relative strings.
    - Write `jubilee_debates_audio_index.ndjson`.
 
 6. **End-of-run summary**
@@ -938,49 +915,46 @@ The programme must follow this workflow:
 The implementation should be organised around the following responsibilities.
 
 ### CLI parsing
-```
-python
+```python
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments for the Jubilee debate audio extraction programme."""
 ```
 ### Path resolution
-```
-python
+```python
 def resolve_script_relative_path(path: Path) -> Path:
     """Resolve relative paths against the programme directory."""
 ```
-### Validation
+### Portable index paths
+```python
+def path_for_index(path_value: Any) -> str | None:
+    """Convert project-internal paths to portable project-relative strings for curated indices."""
 ```
-python
+### Validation
+```python
 def validate_args(args: argparse.Namespace) -> None:
     """Validate command-line arguments and external dependencies before processing."""
 ```
 ### Logging
-```
-python
+```python
 def setup_logging(log_file: Path) -> logging.Logger:
     """Configure append-only logging."""
 ```
 ### ffmpeg availability
-```
-python
+```python
 def check_ffmpeg() -> dict:
     """Check whether ffmpeg is available and return version metadata."""
 ```
 ### Index loading
-```
-python
+```python
 def load_debate_index(index_path: Path) -> tuple[list[dict], list[dict], int, int, list[dict]]:
     """Load and validate eligible debate metadata from an NDJSON index file."""
 ```
 Suggested return values:
-```
-text
+```text
 eligible_records, invalid_records, total_records, ignored_count, ignored_records
 ```
 ### Planning
-```
-python
+```python
 def plan_audio_extractions(
     records: list[dict],
     input_dir: Path,
@@ -993,25 +967,21 @@ def plan_audio_extractions(
     """Create planned, skipped, and missing-input debate audio extraction records."""
 ```
 Suggested return values:
-```
-text
+```text
 planned, skipped_existing, missing_input
 ```
 ### Source video resolution
-```
-python
+```python
 def resolve_source_video_path(record: dict, input_dir: Path) -> Path:
     """Resolve source video path using video_file or fallback input directory."""
 ```
 ### Command building
-```
-python
+```python
 def build_ffmpeg_command(input_path: Path, output_path: Path) -> list[str]:
     """Build the ffmpeg command for one Whisper-ready WAV extraction."""
 ```
 ### Core audio extraction function
-```
-python
+```python
 def extract_one_audio(
     corpus_id: str,
     input_path: Path,
@@ -1023,15 +993,22 @@ def extract_one_audio(
 ) -> dict:
     """Extract one Whisper-ready WAV audio file with ffmpeg and return a structured result."""
 ```
-### Audio index writing
+### Audio index record building
+```python
+def make_audio_index_record(
+    item_result: dict,
+    run_id: str,
+    ffmpeg_info: dict
+) -> dict:
+    """Build one curated audio index record without corrupting source duration metadata."""
 ```
-python
+### Audio index writing
+```python
 def write_audio_index(index_records: list[dict], audio_index_file: Path) -> None:
     """Write the curated NDJSON audio index."""
 ```
 ### Manifest writing
-```
-python
+```python
 def write_manifests(
     manifest: dict,
     manifest_file: Path,
@@ -1040,8 +1017,7 @@ def write_manifests(
     """Write latest and per-run manifest files."""
 ```
 ### Main orchestration
-```
-python
+```python
 def main() -> int:
     """Run the batch Jubilee debate audio extraction workflow and return an exit code."""
 ```
@@ -1052,13 +1028,11 @@ def main() -> int:
 ## 9.1 Base command
 
 For each eligible debate, the programme must run:
-```
-bash
+```bash
 ffmpeg -y -i "<input_path>" -vn -ac 1 -ar 16000 -sample_fmt s16 "<output_path>"
 ```
 Example generated command:
-```
-bash
+```bash
 ffmpeg -y \
   -i "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4" \
   -vn \
@@ -1070,8 +1044,7 @@ ffmpeg -y \
 The command must be built as a list of arguments for `subprocess`, not as a shell string.
 
 Conceptually:
-```
-python
+```python
 command = [
     "ffmpeg",
     "-y",
@@ -1119,18 +1092,15 @@ The source video path should be resolved in this order:
    ```
 
 Given:
-```
-text
+```text
 corpus_id = jubilee_surrounded_001
 ```
 the fallback input file must be:
-```
-text
+```text
 jubilee_surrounded_001.mp4
 ```
 The full default fallback input path must be:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4
 ```
 ---
@@ -1140,18 +1110,15 @@ corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4
 The output filename must be derived from `corpus_id`, with `.wav` as the extension.
 
 Given:
-```
-text
+```text
 corpus_id = jubilee_surrounded_001
 ```
 the output file must be:
-```
-text
+```text
 jubilee_surrounded_001.wav
 ```
 The full default output path must be:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
 ```
 ---
@@ -1160,13 +1127,14 @@ corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
 
 The output audio must use the following format:
 
-| Property      |             Value | ffmpeg option           |
-|---------------|------------------:|-------------------------|
-| Container     |               WAV | output extension `.wav` |
-| Video stream  |           omitted | `-vn`                   |
-| Channels      |              mono | `-ac 1`                 |
-| Sample rate   |          16000 Hz | `-ar 16000`             |
-| Sample format | signed 16-bit PCM | `-sample_fmt s16`       |
+| Property      |                           Value | ffmpeg option           |
+|---------------|--------------------------------:|-------------------------|
+| Container     |                             WAV | output extension `.wav` |
+| Video stream  |                         omitted | `-vn`                   |
+| Channels      |                            mono | `-ac 1`                 |
+| Sample rate   |                        16000 Hz | `-ar 16000`             |
+| Sample format |               signed 16-bit PCM | `-sample_fmt s16`       |
+| Codec         | PCM signed 16-bit little-endian | `pcm_s16le`             |
 
 This format is intended to be suitable for Whisper, WhisperX, and pyannote.audio.
 
@@ -1248,17 +1216,74 @@ Retry behaviour:
 A simple fixed delay between retries is acceptable for the initial implementation.
 
 Default retry delay:
-```
-text
+```text
 5 seconds
+```
+---
+
+## 9.11 Duration metadata policy
+
+The programme must distinguish between **source media duration** and **extraction runtime**.
+
+### Source media duration
+
+The field:
+```text
+duration_seconds
+```
+must preserve the source media duration inherited from the input download index.
+
+For example:
+```json
+"duration_seconds": 5427
+```
+This means the video/audio content duration is 5,427 seconds, equivalent to:
+```text
+1:30:27
+```
+This field is used by downstream stages for transcription, alignment, diarisation, and QC coverage calculations.
+
+### Extraction runtime
+
+The field:
+```text
+audio_extraction_duration_seconds
+```
+must store the runtime of the ffmpeg extraction command.
+
+For example:
+```json
+"audio_extraction_duration_seconds": 7.038
+```
+This means ffmpeg took approximately 7.038 seconds to extract the WAV file.
+
+### Required rule
+
+The programme must not overwrite:
+```text
+duration_seconds
+```
+with ffmpeg runtime.
+
+The following is incorrect:
+```json
+"duration_seconds": 7.038
+```
+when the source video duration is actually:
+```json
+"duration_seconds": 5427
+```
+The correct representation is:
+```json
+"duration_seconds": 5427,
+"audio_extraction_duration_seconds": 7.038
 ```
 ---
 
 # 10. Audio Index Design
 
 The programme must write a curated audio index file:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
 Each line should contain one JSON object combining:
@@ -1274,47 +1299,51 @@ Each line should contain one JSON object combining:
 
 Each audio index record should contain:
 
-| Field                     | Source      | Description                          |
-|---------------------------|-------------|--------------------------------------|
-| `corpus_id`               | input       | Internal stable corpus ID            |
-| `debate_format`           | input       | e.g. `Surrounded`                    |
-| `sample_group`            | input       | e.g. `carol_initial_sample`          |
-| `sample_order`            | input       | Sample order                         |
-| `title`                   | input       | Selected title, if present           |
-| `title_selected`          | input       | Title from selected sample           |
-| `title_extracted`         | input       | Extracted YouTube title              |
-| `youtube_id`              | input       | YouTube ID                           |
-| `youtube_url`             | input       | Original YouTube URL                 |
-| `webpage_url`             | input       | Canonical URL                        |
-| `duration_seconds`        | input       | Video duration in seconds            |
-| `duration_string`         | input       | Human-readable duration              |
-| `chapters`                | input       | Chapter metadata                     |
-| `source_video_file`       | local/input | Local video file used for extraction |
-| `audio_file`              | local       | Extracted WAV audio file             |
-| `audio_format`            | programme   | `wav`                                |
-| `audio_codec`             | programme   | `pcm_s16le`                          |
-| `audio_channels`          | programme   | `1`                                  |
-| `audio_sample_rate`       | programme   | `16000`                              |
-| `audio_sample_format`     | programme   | `s16`                                |
-| `audio_file_size_bytes`   | local       | Size of output audio file            |
-| `audio_extraction_status` | programme   | `success`, `failed`, etc.            |
-| `audio_extraction_run_id` | programme   | Run ID                               |
-| `audio_extracted_at_utc`  | programme   | Extraction timestamp                 |
-| `ffmpeg_version`          | programme   | `ffmpeg` version                     |
-| `download_run_id`         | input       | Previous stage run ID                |
-| `downloaded_at_utc`       | input       | Previous stage timestamp             |
-| `video_download_status`   | input       | Previous stage status                |
-| `metadata_status`         | input       | Previous stage metadata status       |
-| `raw_metadata_file`       | input       | Raw `.info.json` file                |
-| `description_file`        | input       | Description file                     |
-| `subtitles_files`         | input       | Subtitle files                       |
-| `selected_by`             | input       | e.g. `Carol`                         |
-| `selection_source`        | input       | e.g. `email`                         |
-| `notes`                   | input       | Optional notes                       |
+| Field                               | Source          | Description                                                                           |
+|-------------------------------------|-----------------|---------------------------------------------------------------------------------------|
+| `corpus_id`                         | input           | Internal stable corpus ID                                                             |
+| `debate_format`                     | input           | e.g. `Surrounded`                                                                     |
+| `sample_group`                      | input           | e.g. `carol_initial_sample`                                                           |
+| `sample_order`                      | input           | Sample order                                                                          |
+| `title`                             | input           | Selected title, if present                                                            |
+| `title_selected`                    | input           | Title from selected sample                                                            |
+| `title_extracted`                   | input           | Extracted YouTube title                                                               |
+| `youtube_id`                        | input           | YouTube ID                                                                            |
+| `youtube_url`                       | input           | Original YouTube URL                                                                  |
+| `webpage_url`                       | input           | Canonical URL                                                                         |
+| `channel`                           | input           | Selected channel, if present                                                          |
+| `channel_selected`                  | input           | Expected channel from sample                                                          |
+| `channel_extracted`                 | input           | Extracted channel                                                                     |
+| `duration_seconds`                  | input           | Source video/audio duration in seconds; must remain unchanged from the download index |
+| `duration_string`                   | input           | Human-readable source duration                                                        |
+| `chapters`                          | input           | Chapter metadata                                                                      |
+| `source_video_file`                 | local/input     | Project-relative local video file used for extraction                                 |
+| `audio_file`                        | local           | Project-relative extracted WAV audio file                                             |
+| `audio_format`                      | programme       | `wav`                                                                                 |
+| `audio_codec`                       | programme       | `pcm_s16le`                                                                           |
+| `audio_channels`                    | programme       | `1`                                                                                   |
+| `audio_sample_rate`                 | programme       | `16000`                                                                               |
+| `audio_sample_format`               | programme       | `s16`                                                                                 |
+| `audio_file_size_bytes`             | local           | Size of output audio file                                                             |
+| `audio_extraction_status`           | programme       | `success`, `failed`, `skipped_existing`, etc.                                         |
+| `audio_extraction_run_id`           | programme       | Run ID                                                                                |
+| `audio_extracted_at_utc`            | programme       | Extraction timestamp                                                                  |
+| `audio_extraction_duration_seconds` | programme       | Runtime of ffmpeg extraction, not source media duration                               |
+| `ffmpeg_version`                    | programme       | `ffmpeg` version                                                                      |
+| `download_run_id`                   | input           | Previous stage run ID                                                                 |
+| `downloaded_at_utc`                 | input           | Previous stage timestamp                                                              |
+| `video_download_status`             | input/programme | Previous stage video download status, if available                                    |
+| `metadata_status`                   | input           | Previous stage metadata status                                                        |
+| `raw_metadata_file`                 | input           | Project-relative raw `.info.json` file                                                |
+| `description_file`                  | input           | Project-relative description file                                                     |
+| `subtitles_files`                   | input           | Project-relative subtitle files                                                       |
+| `selected_by`                       | input           | e.g. `Carol`                                                                          |
+| `selection_source`                  | input           | e.g. `email`                                                                          |
+| `notes`                             | input           | Optional notes                                                                        |
+| `error`                             | programme       | Error message, if any                                                                 |
 
 ## 10.2 Example audio index record
-```
-json
+```json
 {
   "corpus_id": "jubilee_surrounded_001",
   "debate_format": "Surrounded",
@@ -1327,7 +1356,13 @@ json
   "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
   "duration_seconds": 5427,
   "duration_string": "1:30:27",
-  "chapters": [],
+  "chapters": [
+    {
+      "start_time": 0,
+      "title": "Intro",
+      "end_time": 45
+    }
+  ],
   "source_video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
   "audio_file": "corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
   "audio_format": "wav",
@@ -1335,21 +1370,26 @@ json
   "audio_channels": 1,
   "audio_sample_rate": 16000,
   "audio_sample_format": "s16",
-  "audio_file_size_bytes": 173664000,
+  "audio_file_size_bytes": 173651160,
   "audio_extraction_status": "success",
-  "audio_extraction_run_id": "20260730T210000Z",
-  "audio_extracted_at_utc": "2026-07-30T21:00:00Z",
-  "ffmpeg_version": "ffmpeg version ...",
-  "download_run_id": "20260730T194409Z",
-  "downloaded_at_utc": "2026-07-30T19:56:01Z",
-  "video_download_status": "success",
-  "metadata_status": "success",
+  "audio_extraction_run_id": "20260817T190013Z",
+  "audio_extracted_at_utc": "2026-08-17T19:00:20Z",
+  "audio_extraction_duration_seconds": 7.038,
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "download_run_id": "20260817T182305Z",
+  "downloaded_at_utc": "2026-08-17T18:23:05Z",
+  "video_download_status": "skipped_existing",
+  "metadata_status": "skipped_existing",
   "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json",
   "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_001.description",
-  "subtitles_files": [],
+  "subtitles_files": [
+    "corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en-orig.vtt",
+    "corpus/01_jubilee_debates/subtitles/jubilee_surrounded_001.en.vtt"
+  ],
   "selected_by": "Carol",
   "selection_source": "email",
-  "notes": null
+  "notes": null,
+  "error": null
 }
 ```
 ---
@@ -1359,18 +1399,17 @@ json
 ## 11.1 Manifest structure
 
 The manifest must use this general structure:
-```
-json
+```json
 {
   "run_metadata": {
-    "run_id": "20260730T210000Z",
+    "run_id": "20260817T190013Z",
     "tool_name": "extract_jubilee_debates_audio.py",
     "tool_version": "v1",
-    "start_time": "2026-07-30T21:00:00Z",
-    "end_time": "2026-07-30T21:30:00Z",
-    "test_mode": true,
+    "start_time": "2026-08-17T19:00:13Z",
+    "end_time": "2026-08-17T19:01:01Z",
+    "test_mode": false,
     "test_limit": 5,
-    "reprocess": false,
+    "reprocess": true,
     "workers": 1,
     "index_path": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
     "input_dir": "corpus/01_jubilee_debates/videos",
@@ -1391,7 +1430,7 @@ json
     },
     "ffmpeg": {
       "available": true,
-      "version": "ffmpeg version ..."
+      "version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
     },
     "summary": {
       "input_records": 5,
@@ -1415,19 +1454,19 @@ json
       "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
       "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
       "debate_format": "Surrounded",
+      "duration_seconds": 5427,
+      "duration_string": "1:30:27",
       "input_path": "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
       "output_path": "corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
       "status": "success",
       "error": null,
       "return_code": 0,
       "retries": 0,
-      "duration_seconds": 240.5,
-      "start_time": "2026-07-30T21:01:00Z",
-      "end_time": "2026-07-30T21:05:00Z",
-      "output_file_size_bytes": 173664000,
+      "audio_extraction_duration_seconds": 7.038,
+      "start_time": "2026-08-17T19:00:13Z",
+      "end_time": "2026-08-17T19:00:20Z",
+      "output_file_size_bytes": 173651160,
       "metadata": {
-        "duration_seconds": 5427,
-        "duration_string": "1:30:27",
         "command": [
           "ffmpeg",
           "-y",
@@ -1451,11 +1490,10 @@ json
 }
 ```
 If no start corpus ID is provided, the manifest should record:
-```
-json
+```json
 "start_corpus_id": null
 ```
----
+The manifest item field `duration_seconds` should preserve source media duration. The field `audio_extraction_duration_seconds` should record ffmpeg runtime.
 
 ## 11.2 Required item statuses
 
@@ -1483,8 +1521,7 @@ The `error` field must be:
 For `ffmpeg` failures, the error should usually be derived from `stderr`.
 
 Example:
-```
-json
+```json
 {
   "corpus_id": "jubilee_surrounded_001",
   "input_path": "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
@@ -1502,20 +1539,17 @@ json
 The programme must write an append-only log file.
 
 Default:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio.log
 ```
 ## Log format
 
 Each line should follow this format:
-```
-text
+```text
 [YYYY-MM-DD HH:MM:SS] LEVEL  message
 ```
 Example:
-```
-text
+```text
 [2026-07-30 21:00:00] INFO  Starting extract_jubilee_debates_audio.py run_id=20260730T210000Z
 ```
 ## Required log events
@@ -1557,8 +1591,7 @@ The programme must log:
 - validation/configuration errors.
 
 ## Example log lines
-```
-text
+```text
 [2026-07-30 21:00:00] INFO  Starting extract_jubilee_debates_audio.py run_id=20260730T210000Z
 [2026-07-30 21:00:00] INFO  Input index: corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 [2026-07-30 21:00:00] INFO  Input video directory: corpus/01_jubilee_debates/videos
@@ -1635,8 +1668,7 @@ If the user interrupts the programme with `Ctrl+C`, the programme must:
 - exit with code `130`.
 
 The manifest should include:
-```
-json
+```json
 "interrupted": true
 ```
 inside `run_metadata`.
@@ -1678,11 +1710,13 @@ At the top of `extract_jubilee_debates_audio.py`, include a module-level docstri
 - resumability behaviour;
 - start-corpus-ID support;
 - full-length extraction only;
+- portable curated index paths;
+- source-duration preservation;
+- separate extraction-runtime metadata;
 - example commands.
 
 Suggested module docstring:
-```
-python
+```python
 """
 Extract Whisper-ready audio from downloaded Jubilee debate videos.
 
@@ -1718,6 +1752,12 @@ Full run from a specific debate:
 
 The script writes an append-only log file, a JSON manifest, and a curated NDJSON
 audio index describing run-level metadata and per-debate audio extraction status.
+
+For portability, curated index paths under the project phase directory are written
+relative to SCRIPT_DIR instead of as machine-specific absolute paths.
+
+The curated audio index preserves source media duration in "duration_seconds" and
+records ffmpeg runtime separately as "audio_extraction_duration_seconds".
 """
 ```
 ---
@@ -1736,6 +1776,7 @@ At minimum, docstrings are required for:
 
 - `parse_args`
 - `resolve_script_relative_path`
+- `path_for_index`
 - `validate_args`
 - `setup_logging`
 - `check_ffmpeg`
@@ -1744,6 +1785,7 @@ At minimum, docstrings are required for:
 - `plan_audio_extractions`
 - `build_ffmpeg_command`
 - `extract_one_audio`
+- `make_audio_index_record`
 - `write_audio_index`
 - `write_manifests`
 - `main`
@@ -1753,8 +1795,7 @@ At minimum, docstrings are required for:
 # 15. Suggested Constants
 
 The implementation should define constants near the top of the file:
-```
-python
+```python
 TOOL_NAME = "extract_jubilee_debates_audio.py"
 TOOL_VERSION = "v1"
 
@@ -1822,7 +1863,10 @@ The first implementation should prioritise:
 - safe resumability;
 - optional start-corpus-ID support;
 - clear error handling;
-- script-relative path resolution.
+- script-relative path resolution;
+- portable project-relative paths in the curated audio index;
+- preserving source media duration;
+- separating extraction runtime from media duration.
 
 Parallel extraction can be prepared architecturally but does not need to be implemented in the first version.
 
@@ -1965,13 +2009,51 @@ The programme is considered complete when the following conditions are met:
     - extraction run ID;
     - extraction timestamp.
 
-26. The programme exits with:
+26. The audio index writes project-internal file paths as project-relative paths, for example:
+
+    ```text
+    corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+    ```
+
+    rather than:
+
+    ```text
+    /home/<user>/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
+    ```
+
+27. The audio index preserves source media duration in:
+
+    ```text
+    duration_seconds
+    ```
+
+    For example:
+
+    ```json
+    "duration_seconds": 5427
+    ```
+
+28. The audio index records ffmpeg runtime separately in:
+
+    ```text
+    audio_extraction_duration_seconds
+    ```
+
+    For example:
+
+    ```json
+    "audio_extraction_duration_seconds": 7.038
+    ```
+
+29. The programme must not overwrite source media `duration_seconds` with ffmpeg runtime duration.
+
+30. The programme exits with:
     - `0` if all attempted audio extractions succeed or are skipped and there are no missing inputs or invalid eligible metadata rows;
     - `1` if any attempted extraction fails, any eligible input video is missing, or any eligible metadata row is invalid;
     - `2` for configuration errors;
     - `130` for keyboard interruption.
 
-27. The programme does not segment, transcribe, align, diarise, or analyse audio.
+31. The programme does not segment, transcribe, align, diarise, or analyse audio.
 
 ---
 
@@ -1984,35 +2066,29 @@ The following section can be added to project documentation.
 The `extract_jubilee_debates_audio.py` programme extracts Whisper-ready audio from downloaded Jubilee debate videos.
 
 It reads the curated debate index:
-```
-text
+```text
 corpus/01_jubilee_debates/jubilee_debates_index.ndjson
 ```
 Only records whose `download_status` indicates that the source video is available are processed.
 
 Source videos are resolved from the `video_file` field when available. Otherwise, videos are read from:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/
 ```
 Each fallback source video is expected to exist as:
-```
-text
+```text
 corpus/01_jubilee_debates/videos/<corpus_id>.mp4
 ```
 Audio files are written to:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/
 ```
 Each audio file is named after its `corpus_id`:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/<corpus_id>.wav
 ```
 The generated audio extraction command is equivalent to:
-```
-bash
+```bash
 ffmpeg -y -i "<input_video>" -vn -ac 1 -ar 16000 -sample_fmt s16 "corpus/02_jubilee_debates_audio/<corpus_id>.wav"
 ```
 The resulting audio is suitable for Whisper, WhisperX, and pyannote.audio:
@@ -2022,21 +2098,22 @@ The resulting audio is suitable for Whisper, WhisperX, and pyannote.audio:
 - 16 kHz;
 - signed 16-bit PCM.
 
+The generated audio index uses portable project-relative paths.
+
+The field `duration_seconds` preserves the original media duration. The field `audio_extraction_duration_seconds` records how long ffmpeg took to extract the WAV file.
+
 Default test run:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py
 ```
 This processes up to 5 eligible debates.
 
 Full run:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py --no-test-mode
 ```
 To resume planning from a specific corpus ID onward, use:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
@@ -2044,15 +2121,13 @@ python extract_jubilee_debates_audio.py \
 The programme is safe to re-run: existing audio files are skipped by default.
 
 To force re-extraction, use:
-```
-bash
+```bash
 python extract_jubilee_debates_audio.py \
   --no-test-mode \
   --reprocess
 ```
 The programme writes:
-```
-text
+```text
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio.log
 corpus/02_jubilee_debates_audio/extract_jubilee_debates_audio_manifest.json
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
@@ -2063,18 +2138,63 @@ This programme extracts full-length audio only. Transcription, alignment, segmen
 
 ---
 
-# 19. Design Decision Summary
+# 19. Validation Commands
 
-| Decision                            | Rationale                                                                                 |
-|-------------------------------------|-------------------------------------------------------------------------------------------|
-| Extract WAV only                    | Keeps the programme focused on WhisperX and pyannote.audio preparation                    |
-| Use mono audio                      | Common ASR/diarisation preprocessing format                                               |
-| Use 16 kHz sample rate              | Standard and efficient for Whisper-family pipelines                                       |
-| Use signed 16-bit PCM               | Broad compatibility and stable downstream handling                                        |
-| Extract full-length audio only      | Keeps this stage simple, auditable, and reproducible                                      |
-| Defer segmentation                  | Segmentation has separate concerns around timestamps, chunk manifests, and reconstruction |
-| Defer transcription and diarisation | Those are downstream analytical stages                                                    |
-| Use `corpus_id` for filenames       | Stable, clean, research-oriented naming                                                   |
-| Use script-relative path resolution | Prevents accidental path errors when running from different directories                   |
-| Write an audio index                | Makes downstream WhisperX and pyannote.audio stages easier                                |
-| Write logs and manifests            | Supports reproducibility and auditability                                                 |
+After running full audio extraction, the following checks are recommended.
+
+## Check extraction statuses
+```bash
+grep -o '"audio_extraction_status": "[^"]*"' corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+```
+Expected values should be:
+```text
+"audio_extraction_status": "success"
+```
+or, on a safe rerun:
+```text
+"audio_extraction_status": "skipped_existing"
+```
+## Check source media durations
+```bash
+grep -o '"duration_seconds": [0-9.]*' corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+```
+Expected values for the current five-debate sample are approximately:
+```text
+5427
+6053
+5903
+6818
+5387
+```
+## Check ffmpeg runtime values
+```bash
+grep -o '"audio_extraction_duration_seconds": [0-9.]*' corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+```
+These values should be much smaller than source media duration and represent the runtime of the extraction process.
+
+## Check portability
+```bash
+grep -n '/home/' corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+```
+Expected result: no output.
+
+---
+
+# 20. Design Decision Summary
+
+| Decision                                        | Rationale                                                                                 |
+|-------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Extract WAV only                                | Keeps the programme focused on WhisperX and pyannote.audio preparation                    |
+| Use mono audio                                  | Common ASR/diarisation preprocessing format                                               |
+| Use 16 kHz sample rate                          | Standard and efficient for Whisper-family pipelines                                       |
+| Use signed 16-bit PCM                           | Broad compatibility and stable downstream handling                                        |
+| Extract full-length audio only                  | Keeps this stage simple, auditable, and reproducible                                      |
+| Defer segmentation                              | Segmentation has separate concerns around timestamps, chunk manifests, and reconstruction |
+| Defer transcription and diarisation             | Those are downstream analytical stages                                                    |
+| Use `corpus_id` for filenames                   | Stable, clean, research-oriented naming                                                   |
+| Use script-relative path resolution             | Prevents accidental path errors when running from different directories                   |
+| Write an audio index                            | Makes downstream WhisperX and pyannote.audio stages easier                                |
+| Write project-relative paths in the audio index | Makes downstream metadata portable between local machines and EC2                         |
+| Preserve source `duration_seconds`              | Keeps duration-based transcription, diarisation, and QC metrics meaningful                |
+| Store extraction runtime separately             | Allows ffmpeg performance tracking without corrupting source media metadata               |
+| Write logs and manifests                        | Supports reproducibility and auditability                                                 |
