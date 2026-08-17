@@ -60,7 +60,7 @@ python extract_jubilee_debates_audio.py --no-test-mode
 ```
 corpus/02_jubilee_debates_audio/
 ```
-## Stage 3 — Speaker diarisation with Gemini
+## Stage 3 — Speaker diarisation with Gemini (deprecated)
 
 ### Test run
 ```
