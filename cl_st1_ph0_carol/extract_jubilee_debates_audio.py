@@ -39,6 +39,9 @@ For portability, curated index paths under the project phase directory are writt
 relative to SCRIPT_DIR instead of as machine-specific absolute paths. This allows
 the generated audio index to work both locally and on EC2 when the project layout
 is preserved.
+
+The curated audio index preserves source media duration in "duration_seconds" and
+records ffmpeg runtime separately as "audio_extraction_duration_seconds".
 """
 
 from __future__ import annotations
@@ -273,7 +276,7 @@ def path_for_index(path_value: Any) -> str | None:
         return str(path)
 
     try:
-        return str(resolved.relative_to(SCRIPT_DIR))
+        return resolved.relative_to(SCRIPT_DIR).as_posix()
     except ValueError:
         return str(path)
 
@@ -656,7 +659,8 @@ def extract_one_audio(
 
     Returns:
         Structured manifest result containing status, timing, command, attempts,
-        return code, retries used, error summary, and output file size.
+        return code, retries used, extraction runtime, error summary, and output
+        file size.
 
     I/O:
         Runs ffmpeg as a subprocess and writes the output WAV file.
@@ -715,7 +719,7 @@ def extract_one_audio(
 
             if completed.returncode == 0:
                 end_time = utc_timestamp()
-                duration = round(time.monotonic() - monotonic_start, 3)
+                extraction_duration = round(time.monotonic() - monotonic_start, 3)
                 output_size = output_path.stat().st_size if output_path.exists() else None
 
                 logger.info("SUCCESS %s -> %s", corpus_id, output_path)
@@ -728,7 +732,7 @@ def extract_one_audio(
                     "error": None,
                     "return_code": 0,
                     "retries": retries_used,
-                    "duration_seconds": duration,
+                    "audio_extraction_duration_seconds": extraction_duration,
                     "start_time": start_time,
                     "end_time": end_time,
                     "output_file_size_bytes": output_size,
@@ -785,7 +789,7 @@ def extract_one_audio(
                 time.sleep(retry_delay)
 
     end_time = utc_timestamp()
-    duration = round(time.monotonic() - monotonic_start, 3)
+    extraction_duration = round(time.monotonic() - monotonic_start, 3)
     output_size = output_path.stat().st_size if output_path.exists() else None
 
     logger.error("FAILED %s -> %s: %s", corpus_id, output_path, final_error)
@@ -798,7 +802,7 @@ def extract_one_audio(
         "error": final_error or "ffmpeg failed",
         "return_code": final_return_code,
         "retries": retries_used,
-        "duration_seconds": duration,
+        "audio_extraction_duration_seconds": extraction_duration,
         "start_time": start_time,
         "end_time": end_time,
         "output_file_size_bytes": output_size,
@@ -867,7 +871,7 @@ def make_missing_input_result(item: dict[str, Any], logger: logging.Logger) -> d
         "error": error,
         "return_code": None,
         "retries": 0,
-        "duration_seconds": None,
+        "audio_extraction_duration_seconds": None,
         "start_time": None,
         "end_time": None,
         "output_file_size_bytes": output_path.stat().st_size if output_path.exists() else None,
@@ -894,7 +898,7 @@ def make_skipped_existing_result(item: dict[str, Any], logger: logging.Logger) -
         "error": None,
         "return_code": None,
         "retries": 0,
-        "duration_seconds": 0,
+        "audio_extraction_duration_seconds": 0,
         "start_time": None,
         "end_time": None,
         "output_file_size_bytes": output_path.stat().st_size if output_path.exists() else None,
@@ -947,6 +951,7 @@ def make_audio_index_record(
             "audio_extraction_status": item_result.get("status"),
             "audio_extraction_run_id": run_id,
             "audio_extracted_at_utc": item_result.get("end_time"),
+            "audio_extraction_duration_seconds": item_result.get("audio_extraction_duration_seconds"),
             "ffmpeg_version": ffmpeg_info.get("version"),
             "video_download_status": item_result.get("download_status"),
             "metadata_status": item_result.get("metadata_status"),
