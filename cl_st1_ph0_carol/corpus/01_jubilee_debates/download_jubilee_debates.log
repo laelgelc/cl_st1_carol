@@ -37,3 +37,29 @@
 [2026-08-17 14:14:24] INFO  Wrote latest manifest: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
 [2026-08-17 14:14:24] INFO  Wrote run manifest: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest_20260817T170458Z.json
 [2026-08-17 14:14:24] INFO  Finished run: succeeded=3 failed=2 skipped_existing=0 invalid_records=0
+[2026-08-17 15:01:17] INFO  Starting download_jubilee_debates.py run_id=20260817T180117Z
+[2026-08-17 15:01:17] INFO  Metadata path: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/00_sources/jubilee_debates_samples.ndjson
+[2026-08-17 15:01:17] INFO  Output directory: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates
+[2026-08-17 15:01:17] INFO  Index file: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+[2026-08-17 15:01:17] INFO  Test mode: False; test_limit=5
+[2026-08-17 15:01:17] INFO  Metadata-only: False
+[2026-08-17 15:01:17] INFO  Skip metadata: False
+[2026-08-17 15:01:17] INFO  Reprocess: False
+[2026-08-17 15:01:17] INFO  Cookies file provided: True
+[2026-08-17 15:01:17] INFO  Start corpus ID: jubilee_surrounded_002
+[2026-08-17 15:01:17] INFO  yt-dlp version: 2026.07.04
+[2026-08-17 15:01:17] INFO  Loaded records: input=5 valid=5 invalid=0 duplicates=0
+[2026-08-17 15:01:17] INFO  Planned items: 2
+[2026-08-17 15:01:17] INFO  Skipped existing items: 2
+[2026-08-17 15:01:17] INFO  SKIPPED existing jubilee_surrounded_004: video and metadata exist
+[2026-08-17 15:01:17] INFO  SKIPPED existing jubilee_surrounded_005: video and metadata exist
+[2026-08-17 15:01:17] INFO  Processing jubilee_surrounded_002 https://www.youtube.com/watch?v=2S-WJN3L5eo
+[2026-08-17 15:01:17] INFO  Attempt 1/2 for jubilee_surrounded_002
+[2026-08-17 15:04:25] INFO  SUCCESS jubilee_surrounded_002
+[2026-08-17 15:04:25] INFO  Processing jubilee_surrounded_003 https://www.youtube.com/watch?v=DK-jI3BaZLc
+[2026-08-17 15:04:25] INFO  Attempt 1/2 for jubilee_surrounded_003
+[2026-08-17 15:09:19] INFO  SUCCESS jubilee_surrounded_003
+[2026-08-17 15:09:19] INFO  Wrote curated index: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/jubilee_debates_index.ndjson
+[2026-08-17 15:09:19] INFO  Wrote latest manifest: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest.json
+[2026-08-17 15:09:19] INFO  Wrote run manifest: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/download_jubilee_debates_manifest_20260817T180117Z.json
+[2026-08-17 15:09:19] INFO  Finished run: succeeded=4 failed=0 skipped_existing=2 invalid_records=0

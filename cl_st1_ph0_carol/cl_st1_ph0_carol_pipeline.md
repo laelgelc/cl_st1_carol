@@ -36,6 +36,12 @@ python download_jubilee_debates.py
 ```
 python download_jubilee_debates.py --no-test-mode
 ```
+### Full run with cookies
+```
+python download_jubilee_debates.py \
+  --no-test-mode \
+  --cookies env/youtube_cookies.txt
+```
 ### Expected outputs
 ```
 corpus/01_jubilee_debates/
