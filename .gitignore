@@ -219,6 +219,7 @@ __marimo__/
 
 # cl_st_carol
 !cl_st1_ph0_carol/env
+cl_st1_ph0_carol/corpus/01_jubilee_debates_deprecated/videos/*.mp4
 cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/*.mp4
 !cl_st1_ph0_carol/**/*.log
 cl_st1_ph0_carol/corpus/02_jubilee_debates_audio_deprecated/gemini_flac/*.flac

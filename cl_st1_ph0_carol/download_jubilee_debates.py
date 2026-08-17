@@ -19,15 +19,15 @@ cookies file was provided, but never logs cookies contents.
 Use --metadata-only to fetch or refresh yt-dlp metadata without downloading
 video media. Use --start-corpus-id to resume planning from a specific corpus item.
 
+Curated index paths are written as project-relative paths whenever they are inside
+the project phase directory. This keeps the index portable between local machines
+and EC2, provided the project directory structure is preserved.
+
 Examples:
     python download_jubilee_debates.py
-
     python download_jubilee_debates.py --metadata-only
-
     python download_jubilee_debates.py --no-test-mode
-
     python download_jubilee_debates.py --no-test-mode --cookies env/youtube_cookies.txt
-
     python download_jubilee_debates.py --no-test-mode --start-corpus-id jubilee_surrounded_003
 
 Exit codes:
@@ -50,7 +50,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 TOOL_NAME = "download_jubilee_debates.py"
 TOOL_VERSION = "v1"
 
@@ -66,9 +65,7 @@ DEFAULT_SUBTITLES_DIR_NAME = "subtitles"
 DEFAULT_COMMENTS_DIR_NAME = "comments"
 
 DEFAULT_LOG_FILE = "corpus/01_jubilee_debates/download_jubilee_debates.log"
-DEFAULT_MANIFEST_FILE = (
-    "corpus/01_jubilee_debates/download_jubilee_debates_manifest.json"
-)
+DEFAULT_MANIFEST_FILE = "corpus/01_jubilee_debates/download_jubilee_debates_manifest.json"
 DEFAULT_INDEX_FILE = "corpus/01_jubilee_debates/jubilee_debates_index.ndjson"
 
 DEFAULT_TEST_MODE = True
@@ -115,30 +112,42 @@ def path_to_str(path: Path | None) -> str | None:
     return path.as_posix()
 
 
-def resolve_script_relative_path(path: Path) -> Path:
+def path_for_index(path_value: Any) -> str | None:
     """
-    Resolve a path relative to the script directory when it is not absolute.
+    Convert a path to a portable string for curated index files.
 
-    This makes default paths stable whether the programme is executed from the
-    project root, from cl_st1_ph0_carol/, or from another working directory.
+    Paths located inside the project phase directory are stored relative to
+    SCRIPT_DIR, for example:
+
+        corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4
+
+    Paths outside SCRIPT_DIR are preserved as originally supplied.
     """
+    if path_value is None:
+        return None
+
+    path = Path(str(path_value))
+
+    try:
+        resolved = path.resolve(strict=False)
+    except OSError:
+        return str(path)
+
+    try:
+        return resolved.relative_to(SCRIPT_DIR).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def resolve_script_relative_path(path: Path) -> Path:
+    """Resolve a path relative to the script directory when it is not absolute."""
     if path.is_absolute():
         return path
     return SCRIPT_DIR / path
 
 
 def short_error(stderr: str, stdout: str = "", limit: int = 1000) -> str:
-    """
-    Extract a short error message from process stderr/stdout.
-
-    Parameters:
-        stderr: Captured standard error text.
-        stdout: Captured standard output text used as fallback.
-        limit: Maximum returned character count.
-
-    Returns:
-        A compact single-line error summary.
-    """
+    """Extract a short error message from process stderr/stdout."""
     text = stderr.strip() or stdout.strip() or "Unknown error"
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     if not lines:
@@ -153,18 +162,7 @@ def short_error(stderr: str, stdout: str = "", limit: int = 1000) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    """
-    Parse command-line arguments.
-
-    Returns:
-        argparse.Namespace containing all command-line configuration.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        argparse handles malformed arguments by printing usage and exiting.
-    """
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="Download selected Jubilee debate videos and metadata with yt-dlp."
     )
@@ -201,130 +199,36 @@ def parse_args() -> argparse.Namespace:
     )
 
     test_group = parser.add_mutually_exclusive_group()
-    test_group.add_argument(
-        "--test-mode",
-        dest="test_mode",
-        action="store_true",
-        help="Enable test mode.",
-    )
-    test_group.add_argument(
-        "--no-test-mode",
-        dest="test_mode",
-        action="store_false",
-        help="Disable test mode.",
-    )
+    test_group.add_argument("--test-mode", dest="test_mode", action="store_true")
+    test_group.add_argument("--no-test-mode", dest="test_mode", action="store_false")
     parser.set_defaults(test_mode=DEFAULT_TEST_MODE)
 
-    parser.add_argument(
-        "--test-limit",
-        type=int,
-        default=DEFAULT_TEST_LIMIT,
-        help="Maximum number of planned items to process in test mode.",
-    )
-    parser.add_argument(
-        "--reprocess",
-        action="store_true",
-        help="Reprocess existing files instead of skipping them.",
-    )
-    parser.add_argument(
-        "--metadata-only",
-        action="store_true",
-        help="Fetch metadata without downloading video media.",
-    )
-    parser.add_argument(
-        "--skip-metadata",
-        action="store_true",
-        help="Do not request fresh yt-dlp metadata; rely on existing files.",
-    )
-    parser.add_argument(
-        "--cookies",
-        type=Path,
-        default=None,
-        help="Optional Netscape-format cookies file for yt-dlp.",
-    )
-    parser.add_argument(
-        "--start-corpus-id",
-        default=None,
-        help="Start planning from this corpus_id, preserving input order.",
-    )
-    parser.add_argument(
-        "--workers",
-        type=int,
-        default=DEFAULT_WORKERS,
-        help="Number of workers. Only 1 is supported in this implementation.",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=DEFAULT_TIMEOUT_SECONDS,
-        help="Maximum seconds allowed for one yt-dlp process.",
-    )
-    parser.add_argument(
-        "--max-retries",
-        type=int,
-        default=DEFAULT_MAX_RETRIES,
-        help="Number of retries after a failed yt-dlp attempt.",
-    )
-    parser.add_argument(
-        "--retry-delay",
-        type=int,
-        default=DEFAULT_RETRY_DELAY_SECONDS,
-        help="Seconds to wait between retry attempts.",
-    )
+    parser.add_argument("--test-limit", type=int, default=DEFAULT_TEST_LIMIT)
+    parser.add_argument("--reprocess", action="store_true")
+    parser.add_argument("--metadata-only", action="store_true")
+    parser.add_argument("--skip-metadata", action="store_true")
+    parser.add_argument("--cookies", type=Path, default=None)
+    parser.add_argument("--start-corpus-id", default=None)
 
-    parser.add_argument(
-        "--write-description",
-        dest="write_description",
-        action="store_true",
-        help="Write video descriptions.",
-    )
-    parser.add_argument(
-        "--no-write-description",
-        dest="write_description",
-        action="store_false",
-        help="Do not write video descriptions.",
-    )
+    parser.add_argument("--workers", type=int, default=DEFAULT_WORKERS)
+    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS)
+    parser.add_argument("--max-retries", type=int, default=DEFAULT_MAX_RETRIES)
+    parser.add_argument("--retry-delay", type=int, default=DEFAULT_RETRY_DELAY_SECONDS)
+
+    parser.add_argument("--write-description", dest="write_description", action="store_true")
+    parser.add_argument("--no-write-description", dest="write_description", action="store_false")
     parser.set_defaults(write_description=DEFAULT_WRITE_DESCRIPTION)
 
-    parser.add_argument(
-        "--write-subs",
-        dest="write_subs",
-        action="store_true",
-        help="Write manually uploaded subtitles.",
-    )
-    parser.add_argument(
-        "--no-write-subs",
-        dest="write_subs",
-        action="store_false",
-        help="Do not write manually uploaded subtitles.",
-    )
+    parser.add_argument("--write-subs", dest="write_subs", action="store_true")
+    parser.add_argument("--no-write-subs", dest="write_subs", action="store_false")
     parser.set_defaults(write_subs=DEFAULT_WRITE_SUBS)
 
-    parser.add_argument(
-        "--write-auto-subs",
-        dest="write_auto_subs",
-        action="store_true",
-        help="Write automatic captions.",
-    )
-    parser.add_argument(
-        "--no-write-auto-subs",
-        dest="write_auto_subs",
-        action="store_false",
-        help="Do not write automatic captions.",
-    )
+    parser.add_argument("--write-auto-subs", dest="write_auto_subs", action="store_true")
+    parser.add_argument("--no-write-auto-subs", dest="write_auto_subs", action="store_false")
     parser.set_defaults(write_auto_subs=DEFAULT_WRITE_AUTO_SUBS)
 
-    parser.add_argument(
-        "--write-comments",
-        action="store_true",
-        default=DEFAULT_WRITE_COMMENTS,
-        help="Write YouTube comments. Disabled by default.",
-    )
-    parser.add_argument(
-        "--sub-langs",
-        default=DEFAULT_SUB_LANGS,
-        help="Subtitle language selector passed to yt-dlp.",
-    )
+    parser.add_argument("--write-comments", action="store_true", default=DEFAULT_WRITE_COMMENTS)
+    parser.add_argument("--sub-langs", default=DEFAULT_SUB_LANGS)
 
     args = parser.parse_args()
 
@@ -341,21 +245,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def setup_logging(log_file: Path) -> logging.Logger:
-    """
-    Configure append-only UTF-8 logging.
-
-    Parameters:
-        log_file: Path to the log file.
-
-    Returns:
-        Configured logger.
-
-    Performs I/O:
-        Creates the log directory and opens the log file in append mode.
-
-    Error behaviour:
-        Lets OSError propagate if logging cannot be configured.
-    """
+    """Configure append-only UTF-8 logging."""
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     logger = logging.getLogger(TOOL_NAME)
@@ -382,21 +272,7 @@ def setup_logging(log_file: Path) -> logging.Logger:
 
 
 def ensure_output_dirs(output_dir: Path) -> dict[str, Path]:
-    """
-    Create output directory structure.
-
-    Parameters:
-        output_dir: Base output directory.
-
-    Returns:
-        Mapping of logical directory names to Paths.
-
-    Performs I/O:
-        Creates directories if needed.
-
-    Error behaviour:
-        Lets OSError propagate if directories cannot be created.
-    """
+    """Create output directory structure."""
     dirs = {
         "output": output_dir,
         "videos": output_dir / DEFAULT_VIDEOS_DIR_NAME,
@@ -411,21 +287,7 @@ def ensure_output_dirs(output_dir: Path) -> dict[str, Path]:
 
 
 def validate_args(args: argparse.Namespace) -> None:
-    """
-    Validate command-line arguments and paths.
-
-    Parameters:
-        args: Parsed command-line arguments.
-
-    Returns:
-        None.
-
-    Performs I/O:
-        Checks file and directory path existence.
-
-    Error behaviour:
-        Raises ConfigurationError for invalid configuration.
-    """
+    """Validate command-line arguments and paths."""
     if not args.metadata.exists():
         raise ConfigurationError(f"Metadata file does not exist: {args.metadata}")
     if not args.metadata.is_file():
@@ -458,18 +320,7 @@ def validate_args(args: argparse.Namespace) -> None:
 
 
 def check_yt_dlp() -> dict[str, Any]:
-    """
-    Check whether yt-dlp is available and return version metadata.
-
-    Returns:
-        Dictionary with availability and version information.
-
-    Performs I/O:
-        Executes "yt-dlp --version".
-
-    Error behaviour:
-        Raises ConfigurationError if yt-dlp is unavailable or fails.
-    """
+    """Check whether yt-dlp is available and return version metadata."""
     executable = shutil.which("yt-dlp")
     if executable is None:
         raise ConfigurationError("yt-dlp is not available on the system PATH")
@@ -500,26 +351,7 @@ def check_yt_dlp() -> dict[str, Any]:
 def load_samples(
         metadata_path: Path,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], int]:
-    """
-    Load, validate, and deduplicate debate sample records from NDJSON.
-
-    Parameters:
-        metadata_path: Path to the NDJSON sample file.
-
-    Returns:
-        A tuple:
-            unique valid records,
-            invalid record descriptors,
-            duplicate record descriptors,
-            total input line count.
-
-    Performs I/O:
-        Reads the metadata file.
-
-    Error behaviour:
-        Raises ConfigurationError for invalid JSON lines.
-        Invalid rows with missing required fields are returned as invalid records.
-    """
+    """Load, validate, and deduplicate debate sample records from NDJSON."""
     records: list[dict[str, Any]] = []
     invalid_records: list[dict[str, Any]] = []
     duplicates: list[dict[str, Any]] = []
@@ -587,22 +419,7 @@ def load_samples(
 
 
 def output_paths_for_record(record: dict[str, Any], output_dir: Path) -> dict[str, Path]:
-    """
-    Compute expected output paths for one record.
-
-    Parameters:
-        record: Valid input metadata record.
-        output_dir: Base output directory.
-
-    Returns:
-        Dictionary of local output paths.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        None.
-    """
+    """Compute expected output paths for one record."""
     corpus_id = str(record["corpus_id"])
     return {
         "video_file": output_dir / DEFAULT_VIDEOS_DIR_NAME / f"{corpus_id}.mp4",
@@ -623,24 +440,7 @@ def item_outputs_satisfied(
         paths: dict[str, Path],
         args: argparse.Namespace,
 ) -> tuple[bool, str]:
-    """
-    Determine whether requested outputs already exist.
-
-    Parameters:
-        paths: Output paths for a planned item.
-        args: Parsed command-line arguments.
-
-    Returns:
-        Tuple of:
-            all requested outputs exist,
-            explanatory reason.
-
-    Performs I/O:
-        Checks path existence.
-
-    Error behaviour:
-        None.
-    """
+    """Determine whether requested outputs already exist."""
     metadata_exists = paths["raw_metadata_file"].exists()
     video_exists = paths["video_file"].exists()
 
@@ -668,25 +468,7 @@ def plan_items(
         output_dir: Path,
         args: argparse.Namespace,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """
-    Create planned and skipped processing items.
-
-    Parameters:
-        records: Unique valid input records.
-        output_dir: Base output directory.
-        args: Parsed command-line arguments.
-
-    Returns:
-        Tuple of:
-            planned items,
-            skipped items.
-
-    Performs I/O:
-        Checks whether expected output files exist.
-
-    Error behaviour:
-        Raises ConfigurationError if --start-corpus-id is provided but not found.
-    """
+    """Create planned and skipped processing items."""
     selected_records = records
 
     if args.start_corpus_id:
@@ -749,23 +531,7 @@ def build_yt_dlp_command(
         args: argparse.Namespace,
         output_paths: dict[str, Path],
 ) -> list[str]:
-    """
-    Build the yt-dlp command for one corpus item.
-
-    Parameters:
-        item: Planned item.
-        args: Parsed command-line arguments.
-        output_paths: Computed local output paths.
-
-    Returns:
-        Command list suitable for subprocess.run.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        None.
-    """
+    """Build the yt-dlp command for one corpus item."""
     corpus_id = str(item["corpus_id"])
     url = str(item["youtube_url"])
 
@@ -819,26 +585,7 @@ def run_yt_dlp_command(
         logger: logging.Logger,
         corpus_id: str,
 ) -> dict[str, Any]:
-    """
-    Run yt-dlp with retries and return structured execution metadata.
-
-    Parameters:
-        command: yt-dlp command list.
-        timeout: Per-attempt timeout in seconds.
-        max_retries: Number of retries after an initial failure.
-        retry_delay: Delay between failed attempts.
-        logger: Configured logger.
-        corpus_id: Corpus item identifier for logging.
-
-    Returns:
-        Structured result dictionary.
-
-    Performs I/O:
-        Executes external yt-dlp subprocesses and sleeps between retries.
-
-    Error behaviour:
-        Captures subprocess failures, timeouts, and OS errors in the result.
-    """
+    """Run yt-dlp with retries and return structured execution metadata."""
     attempts: list[dict[str, Any]] = []
     overall_start = utc_now()
     start_time = utc_timestamp()
@@ -849,12 +596,7 @@ def run_yt_dlp_command(
 
     for attempt_number in range(1, total_attempts + 1):
         attempt_start = utc_now()
-        logger.info(
-            "Attempt %s/%s for %s",
-            attempt_number,
-            total_attempts,
-            corpus_id,
-        )
+        logger.info("Attempt %s/%s for %s", attempt_number, total_attempts, corpus_id)
 
         try:
             result = subprocess.run(
@@ -894,9 +636,7 @@ def run_yt_dlp_command(
                     "attempts": attempts,
                     "start_time": start_time,
                     "end_time": overall_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "duration_seconds": (
-                            overall_end - overall_start
-                    ).total_seconds(),
+                    "duration_seconds": (overall_end - overall_start).total_seconds(),
                 }
 
         except subprocess.TimeoutExpired as exc:
@@ -918,9 +658,7 @@ def run_yt_dlp_command(
                         else ""
                     ),
                     "error": final_error,
-                    "duration_seconds": (
-                            attempt_end - attempt_start
-                    ).total_seconds(),
+                    "duration_seconds": (attempt_end - attempt_start).total_seconds(),
                 }
             )
 
@@ -935,9 +673,7 @@ def run_yt_dlp_command(
                     "stdout_tail": "",
                     "stderr_tail": "",
                     "error": final_error,
-                    "duration_seconds": (
-                            attempt_end - attempt_start
-                    ).total_seconds(),
+                    "duration_seconds": (attempt_end - attempt_start).total_seconds(),
                 }
             )
 
@@ -965,22 +701,7 @@ def run_yt_dlp_command(
 
 
 def move_if_exists(source: Path, destination: Path) -> bool:
-    """
-    Move a file if it exists.
-
-    Parameters:
-        source: Candidate source file.
-        destination: Destination file.
-
-    Returns:
-        True if the file was moved or destination already exists, else False.
-
-    Performs I/O:
-        May move a file and create destination parent directory.
-
-    Error behaviour:
-        Lets OSError propagate.
-    """
+    """Move a file if it exists."""
     if destination.exists():
         return True
 
@@ -997,23 +718,7 @@ def normalise_sidecar_files(
         output_paths: dict[str, Path],
         args: argparse.Namespace,
 ) -> dict[str, Any]:
-    """
-    Move or identify yt-dlp sidecar files in the expected project layout.
-
-    Parameters:
-        item: Processed item.
-        output_paths: Expected local paths.
-        args: Parsed command-line arguments.
-
-    Returns:
-        Dictionary with discovered local sidecar paths.
-
-    Performs I/O:
-        Moves metadata, description, comments, and subtitle files where possible.
-
-    Error behaviour:
-        Lets OSError propagate if moving files fails.
-    """
+    """Move or identify yt-dlp sidecar files in the expected project layout."""
     corpus_id = str(item["corpus_id"])
     video_dir = output_paths["video_file"].parent
     metadata_dir = output_paths["raw_metadata_file"].parent
@@ -1087,21 +792,7 @@ def normalise_sidecar_files(
 
 
 def load_raw_metadata(raw_metadata_path: Path | None) -> dict[str, Any]:
-    """
-    Load a raw yt-dlp info JSON file if available.
-
-    Parameters:
-        raw_metadata_path: Path to the raw metadata file, or None.
-
-    Returns:
-        Parsed metadata dictionary, or empty dict if unavailable/unreadable.
-
-    Performs I/O:
-        Reads the metadata file if it exists.
-
-    Error behaviour:
-        Returns an empty dictionary on read or JSON parsing failure.
-    """
+    """Load a raw yt-dlp info JSON file if available."""
     if raw_metadata_path is None or not raw_metadata_path.exists():
         return {}
 
@@ -1120,25 +811,7 @@ def extract_curated_metadata(
         run_metadata: dict[str, Any],
         item_result: dict[str, Any],
 ) -> dict[str, Any]:
-    """
-    Create one curated corpus index record.
-
-    Parameters:
-        input_record: Original input record.
-        raw_metadata_path: Path to raw yt-dlp info JSON, if available.
-        local_paths: Dictionary of discovered local files.
-        run_metadata: Run-level metadata.
-        item_result: Per-item processing result.
-
-    Returns:
-        Curated metadata dictionary suitable for NDJSON output.
-
-    Performs I/O:
-        Reads raw metadata JSON if available.
-
-    Error behaviour:
-        Missing raw metadata fields are represented with null, empty lists, or false.
-    """
+    """Create one curated corpus index record."""
     raw = load_raw_metadata(raw_metadata_path)
 
     subtitles = raw.get("subtitles")
@@ -1175,9 +848,7 @@ def extract_curated_metadata(
         "duration_seconds": raw.get("duration"),
         "duration_string": raw.get("duration_string"),
         "view_count_at_selection": input_record.get("views_reported_numeric_approx"),
-        "view_count_reported_by_selector": input_record.get(
-            "views_reported_by_selector"
-        ),
+        "view_count_reported_by_selector": input_record.get("views_reported_by_selector"),
         "view_count_at_download": raw.get("view_count"),
         "like_count_at_download": raw.get("like_count"),
         "comment_count_at_download": raw.get("comment_count"),
@@ -1191,11 +862,11 @@ def extract_curated_metadata(
         "availability": raw.get("availability"),
         "age_limit": raw.get("age_limit"),
         "live_status": raw.get("live_status"),
-        "video_file": path_to_str(video_file),
-        "raw_metadata_file": path_to_str(raw_metadata_path),
-        "description_file": path_to_str(description_file),
-        "subtitles_files": [path_to_str(path) for path in subtitles_files],
-        "comments_file": path_to_str(comments_file),
+        "video_file": path_for_index(video_file),
+        "raw_metadata_file": path_for_index(raw_metadata_path),
+        "description_file": path_for_index(description_file),
+        "subtitles_files": [path_for_index(path) for path in subtitles_files],
+        "comments_file": path_for_index(comments_file),
         "download_status": item_result.get("video_status"),
         "metadata_status": item_result.get("metadata_status"),
         "download_run_id": run_metadata.get("run_id"),
@@ -1208,22 +879,7 @@ def extract_curated_metadata(
 
 
 def write_index(index_records: list[dict[str, Any]], index_file: Path) -> None:
-    """
-    Write the curated NDJSON corpus index.
-
-    Parameters:
-        index_records: Curated metadata records.
-        index_file: Destination NDJSON file.
-
-    Returns:
-        None.
-
-    Performs I/O:
-        Creates parent directory and writes the index file.
-
-    Error behaviour:
-        Lets OSError propagate if writing fails.
-    """
+    """Write the curated NDJSON corpus index."""
     index_file.parent.mkdir(parents=True, exist_ok=True)
     with index_file.open("w", encoding="utf-8") as handle:
         for record in index_records:
@@ -1236,25 +892,7 @@ def write_manifests(
         manifest_file: Path,
         run_id: str,
 ) -> tuple[Path, Path]:
-    """
-    Write latest and timestamped manifest files.
-
-    Parameters:
-        manifest: Full run manifest.
-        manifest_file: Latest manifest path.
-        run_id: UTC run identifier.
-
-    Returns:
-        Tuple of:
-            latest manifest path,
-            timestamped manifest path.
-
-    Performs I/O:
-        Writes JSON files.
-
-    Error behaviour:
-        Lets OSError propagate if writing fails.
-    """
+    """Write latest and timestamped manifest files."""
     manifest_file.parent.mkdir(parents=True, exist_ok=True)
     run_manifest = (
             manifest_file.parent / f"{manifest_file.stem}_{run_id}{manifest_file.suffix}"
@@ -1274,24 +912,7 @@ def make_initial_run_metadata(
         start_time: str,
         yt_dlp_info: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """
-    Construct the initial run metadata dictionary.
-
-    Parameters:
-        args: Parsed command-line arguments.
-        run_id: Run identifier.
-        start_time: ISO-8601 UTC start time.
-        yt_dlp_info: yt-dlp availability/version metadata, if available.
-
-    Returns:
-        Run metadata dictionary.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        None.
-    """
+    """Construct the initial run metadata dictionary."""
     return {
         "run_id": run_id,
         "tool_name": TOOL_NAME,
@@ -1303,11 +924,11 @@ def make_initial_run_metadata(
         "metadata_only": args.metadata_only,
         "reprocess": args.reprocess,
         "workers": args.workers,
-        "metadata_path": path_to_str(args.metadata),
-        "output_dir": path_to_str(args.output_dir),
-        "index_file": path_to_str(args.index_file),
-        "log_file": path_to_str(args.log_file),
-        "manifest_file": path_to_str(args.manifest_file),
+        "metadata_path": path_for_index(args.metadata),
+        "output_dir": path_for_index(args.output_dir),
+        "index_file": path_for_index(args.index_file),
+        "log_file": path_for_index(args.log_file),
+        "manifest_file": path_for_index(args.manifest_file),
         "config": {
             "yt_dlp_format": YT_DLP_FORMAT,
             "timeout_seconds": args.timeout,
@@ -1342,22 +963,7 @@ def item_result_from_skipped(
         item: dict[str, Any],
         run_metadata: dict[str, Any],
 ) -> dict[str, Any]:
-    """
-    Create a manifest item result for an existing skipped item.
-
-    Parameters:
-        item: Skipped item from planning.
-        run_metadata: Run metadata.
-
-    Returns:
-        Per-item manifest result.
-
-    Performs I/O:
-        No.
-
-    Error behaviour:
-        None.
-    """
+    """Create a manifest item result for an existing skipped item."""
     paths = item["paths"]
     return {
         "corpus_id": item["corpus_id"],
@@ -1365,9 +971,9 @@ def item_result_from_skipped(
         "youtube_url": item["youtube_url"],
         "title_selected": item["title_selected"],
         "debate_format": item["debate_format"],
-        "video_file": path_to_str(paths["video_file"]),
-        "raw_metadata_file": path_to_str(paths["raw_metadata_file"]),
-        "description_file": path_to_str(paths["description_file"]),
+        "video_file": path_for_index(paths["video_file"]),
+        "raw_metadata_file": path_for_index(paths["raw_metadata_file"]),
+        "description_file": path_for_index(paths["description_file"]),
         "status": "skipped_existing",
         "video_status": item.get("video_status", "skipped_existing"),
         "metadata_status": item.get("metadata_status", "skipped_existing"),
@@ -1386,25 +992,7 @@ def process_item(
         args: argparse.Namespace,
         logger: logging.Logger,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Process one planned item with yt-dlp.
-
-    Parameters:
-        item: Planned item.
-        args: Parsed command-line arguments.
-        logger: Configured logger.
-
-    Returns:
-        Tuple of:
-            per-item manifest result,
-            local sidecar path metadata.
-
-    Performs I/O:
-        Runs yt-dlp and normalises sidecar files.
-
-    Error behaviour:
-        Converts processing errors into failed item results where possible.
-    """
+    """Process one planned item with yt-dlp."""
     paths = item["paths"]
     command = build_yt_dlp_command(item, args, paths)
 
@@ -1452,9 +1040,9 @@ def process_item(
         "youtube_url": item["youtube_url"],
         "title_selected": item["title_selected"],
         "debate_format": item["debate_format"],
-        "video_file": path_to_str(paths["video_file"]),
-        "raw_metadata_file": path_to_str(paths["raw_metadata_file"]),
-        "description_file": path_to_str(paths["description_file"]),
+        "video_file": path_for_index(paths["video_file"]),
+        "raw_metadata_file": path_for_index(paths["raw_metadata_file"]),
+        "description_file": path_for_index(paths["description_file"]),
         "status": status,
         "video_status": video_status,
         "metadata_status": metadata_status,
@@ -1503,23 +1091,7 @@ def process_item(
 
 
 def main() -> int:
-    """
-    Run the complete Jubilee debate download workflow.
-
-    Returns:
-        Process exit code.
-
-    Performs I/O:
-        Reads NDJSON metadata, creates directories, runs yt-dlp, writes logs,
-        writes manifests, and writes the curated index.
-
-    Error behaviour:
-        Returns:
-            0 for success,
-            1 for completed runs with item/metadata failures,
-            2 for configuration errors,
-            130 for keyboard interruption.
-    """
+    """Run the complete Jubilee debate download workflow."""
     args = parse_args()
     run_id = make_run_id()
     start_time = utc_timestamp()
@@ -1682,8 +1254,7 @@ def main() -> int:
         logger.info("Wrote run manifest: %s", run_manifest)
 
         logger.info(
-            "Finished run: succeeded=%s failed=%s skipped_existing=%s "
-            "invalid_records=%s",
+            "Finished run: succeeded=%s failed=%s skipped_existing=%s invalid_records=%s",
             succeeded,
             failed,
             len(skipped),
