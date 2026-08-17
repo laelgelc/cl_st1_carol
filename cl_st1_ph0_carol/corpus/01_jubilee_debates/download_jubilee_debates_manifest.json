@@ -1,0 +1,308 @@
+{
+  "run_metadata": {
+    "run_id": "20260817T170458Z",
+    "tool_name": "download_jubilee_debates.py",
+    "tool_version": "v1",
+    "start_time": "2026-08-17T17:04:58Z",
+    "end_time": "2026-08-17T17:14:24Z",
+    "test_mode": false,
+    "test_limit": 5,
+    "metadata_only": false,
+    "reprocess": false,
+    "workers": 1,
+    "metadata_path": "corpus/00_sources/jubilee_debates_samples.ndjson",
+    "output_dir": "corpus/01_jubilee_debates",
+    "index_file": "corpus/01_jubilee_debates/jubilee_debates_index.ndjson",
+    "log_file": "corpus/01_jubilee_debates/download_jubilee_debates.log",
+    "manifest_file": "corpus/01_jubilee_debates/download_jubilee_debates_manifest.json",
+    "config": {
+      "yt_dlp_format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+      "timeout_seconds": 7200,
+      "max_retries": 1,
+      "retry_delay_seconds": 5,
+      "cookies_provided": false,
+      "start_corpus_id": null,
+      "write_description": true,
+      "write_subs": true,
+      "write_auto_subs": true,
+      "write_comments": false,
+      "sub_langs": "en.*",
+      "skip_metadata": false
+    },
+    "yt_dlp": {
+      "available": true,
+      "version": "2026.07.04",
+      "executable": "/home/eyamrog/anaconda3/envs/my_env/bin/yt-dlp"
+    },
+    "summary": {
+      "input_records": 5,
+      "valid_records": 5,
+      "invalid_records": 0,
+      "unique_corpus_items": 5,
+      "planned_items": 5,
+      "attempted_items": 5,
+      "succeeded": 3,
+      "failed": 2,
+      "skipped_existing": 0
+    },
+    "interrupted": false
+  },
+  "items": [
+    {
+      "corpus_id": "jubilee_surrounded_001",
+      "youtube_id": "WV29R1M25n8",
+      "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+      "debate_format": "Surrounded",
+      "video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4",
+      "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_001.info.json",
+      "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_001.description",
+      "status": "success",
+      "video_status": "success",
+      "metadata_status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 1,
+      "duration_seconds": 73.275526,
+      "start_time": "2026-08-17T17:04:58Z",
+      "end_time": "2026-08-17T17:06:11Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--no-overwrites",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "--write-description",
+          "--write-subs",
+          "--write-auto-subs",
+          "--sub-langs",
+          "en.*",
+          "https://www.youtube.com/watch?v=WV29R1M25n8",
+          "-o",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.%(ext)s"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 1,
+            "stdout_tail": "[youtube] Extracting URL: https://www.youtube.com/watch?v=WV29R1M25n8\n[youtube] WV29R1M25n8: Downloading webpage\n[youtube] WV29R1M25n8: Downloading android vr player API JSON\n[info] WV29R1M25n8: Downloading subtitles: en-orig, en\n[info] WV29R1M25n8: Downloading 1 format(s): 399+140\n[info] Writing video description to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.description\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.en-orig.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.en-orig.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    1.46MiB/s (00:00:00)\n[download]    7.00KiB at    2.36MiB/s (00:00:00)\n[download]   15.00KiB at    4.04MiB/s (00:00:00)\n[download]   31.00KiB at    7.00MiB/s (00:00:00)\n[download]   63.00KiB at   12.47MiB/s (00:00:00)\n[download]  127.00KiB at   14.37MiB/s (00:00:00)\n[download]  255.00KiB at    4.03MiB/s (00:00:00)\n[download]  511.00KiB at    4.01MiB/s (00:00:00)\n[download]  952.30KiB at    5.27MiB/s (00:00:00)\n[download] 100% of  952.30KiB in 00:00:00 at 2.96MiB/s\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.en.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.en.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    1.85MiB/s (00:00:00)\n[download]    7.00KiB at    2.97MiB/s (00:00:00)\n[download]   15.00KiB at    4.98MiB/s (00:00:00)\n[download]   31.00KiB at    8.25MiB/s (00:00:00)\n[download]   63.00KiB at   14.32MiB/s (00:00:00)\n[download]  127.00KiB at    7.07MiB/s (00:00:00)\n[download]  255.00KiB at    2.99MiB/s (00:00:00)\n[download]  511.00KiB at    3.09MiB/s (00:00:00)\n[download]  952.30KiB at    4.23MiB/s (00:00:00)\n[download] 100% of  952.30KiB in 00:00:00 at 2.57MiB/s\n[info] Writing video metadata as JSON to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.info.json\n",
+            "stderr_tail": "WARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nWARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nERROR: unable to download video data: HTTP Error 403: Forbidden\n",
+            "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+            "duration_seconds": 2.646772
+          },
+          {
+            "attempt": 2,
+            "return_code": 0,
+            "stdout_tail": "[download]  58.7% of   83.76MiB at    3.35MiB/s ETA 00:10\n[download]  58.7% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  58.7% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  58.7% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  58.7% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  58.7% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  58.7% of   83.76MiB at   37.46MiB/s ETA 00:00  \n[download]  58.8% of   83.76MiB at   33.52MiB/s ETA 00:01\n[download]  59.0% of   83.76MiB at   30.27MiB/s ETA 00:01\n[download]  59.3% of   83.76MiB at   30.05MiB/s ETA 00:01\n[download]  59.9% of   83.76MiB at    1.15MiB/s ETA 00:29\n[download]  60.6% of   83.76MiB at    1.75MiB/s ETA 00:18\n[download]  62.0% of   83.76MiB at    2.81MiB/s ETA 00:11\n[download]  64.8% of   83.76MiB at    2.71MiB/s ETA 00:10\n[download]  67.9% of   83.76MiB at    3.74MiB/s ETA 00:07\n[download]  70.5% of   83.76MiB at    3.66MiB/s ETA 00:06\n[download]  70.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  70.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  70.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  70.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  70.5% of   83.76MiB at   23.93MiB/s ETA 00:01  \n[download]  70.5% of   83.76MiB at   39.41MiB/s ETA 00:00\n[download]  70.6% of   83.76MiB at   34.37MiB/s ETA 00:00\n[download]  70.8% of   83.76MiB at   21.11MiB/s ETA 00:01\n[download]  71.1% of   83.76MiB at   25.93MiB/s ETA 00:00\n[download]  71.7% of   83.76MiB at    1.56MiB/s ETA 00:15\n[download]  72.6% of   83.76MiB at    2.61MiB/s ETA 00:08\n[download]  74.5% of   83.76MiB at    2.41MiB/s ETA 00:08\n[download]  77.2% of   83.76MiB at    3.41MiB/s ETA 00:05\n[download]  81.9% of   83.76MiB at    3.40MiB/s ETA 00:04\n[download]  81.9% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  81.9% of   83.76MiB at    2.12MiB/s ETA 00:07  \n[download]  81.9% of   83.76MiB at    3.71MiB/s ETA 00:04\n[download]  81.9% of   83.76MiB at    6.67MiB/s ETA 00:02\n[download]  82.0% of   83.76MiB at   11.96MiB/s ETA 00:01\n[download]  82.0% of   83.76MiB at   21.21MiB/s ETA 00:00\n[download]  82.1% of   83.76MiB at   37.99MiB/s ETA 00:00\n[download]  82.2% of   83.76MiB at   22.23MiB/s ETA 00:00\n[download]  82.5% of   83.76MiB at   25.39MiB/s ETA 00:00\n[download]  83.1% of   83.76MiB at   26.26MiB/s ETA 00:00\n[download]  84.3% of   83.76MiB at    1.20MiB/s ETA 00:10\n[download]  85.0% of   83.76MiB at    1.51MiB/s ETA 00:08\n[download]  86.5% of   83.76MiB at    2.10MiB/s ETA 00:05\n[download]  89.4% of   83.76MiB at    2.33MiB/s ETA 00:03\n[download]  92.8% of   83.76MiB at    3.06MiB/s ETA 00:01\n[download]  93.5% of   83.76MiB at    2.80MiB/s ETA 00:01\n[download]  93.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  93.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  93.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  93.5% of   83.76MiB at  Unknown B/s ETA Unknown\n[download]  93.6% of   83.76MiB at   22.89MiB/s ETA 00:00  \n[download]  93.6% of   83.76MiB at   34.93MiB/s ETA 00:00\n[download]  93.7% of   83.76MiB at   34.24MiB/s ETA 00:00\n[download]  93.8% of   83.76MiB at   28.74MiB/s ETA 00:00\n[download]  94.1% of   83.76MiB at   24.99MiB/s ETA 00:00\n[download]  94.7% of   83.76MiB at   24.50MiB/s ETA 00:00\n[download]  95.9% of   83.76MiB at    3.04MiB/s ETA 00:01\n[download]  97.8% of   83.76MiB at    4.72MiB/s ETA 00:00\n[download] 100.0% of   83.76MiB at    2.87MiB/s ETA 00:00\n[download] 100% of   83.76MiB in 00:00:25 at 3.27MiB/s   \n[Merger] Merging formats into \"/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.mp4\"\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.f399.mp4 (pass -k to keep)\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_001.f140.m4a (pass -k to keep)\n",
+            "stderr_tail": "",
+            "error": null,
+            "duration_seconds": 65.628348
+          }
+        ]
+      }
+    },
+    {
+      "corpus_id": "jubilee_surrounded_002",
+      "youtube_id": "2S-WJN3L5eo",
+      "youtube_url": "https://www.youtube.com/watch?v=2S-WJN3L5eo",
+      "title_selected": "1 Progressive vs 20 Far-Right Conservatives (ft. Mehdi Hasan)",
+      "debate_format": "Surrounded",
+      "video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_002.mp4",
+      "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_002.info.json",
+      "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_002.description",
+      "status": "failed",
+      "video_status": "failed",
+      "metadata_status": "failed",
+      "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+      "return_code": 1,
+      "retries": 1,
+      "duration_seconds": 10.109658,
+      "start_time": "2026-08-17T17:06:11Z",
+      "end_time": "2026-08-17T17:06:21Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--no-overwrites",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "--write-description",
+          "--write-subs",
+          "--write-auto-subs",
+          "--sub-langs",
+          "en.*",
+          "https://www.youtube.com/watch?v=2S-WJN3L5eo",
+          "-o",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.%(ext)s"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 1,
+            "stdout_tail": "les: en-orig, en\n[info] 2S-WJN3L5eo: Downloading 1 format(s): 401+140\n[info] Writing video description to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.description\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.en-orig.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.en-orig.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    1.41MiB/s (00:00:00)\n[download]    7.00KiB at    2.24MiB/s (00:00:00)\n[download]   15.00KiB at    4.14MiB/s (00:00:00)\n[download]   31.00KiB at    8.11MiB/s (00:00:00)\n[download]   63.00KiB at   15.54MiB/s (00:00:00)\n[download]  127.00KiB at    6.89MiB/s (00:00:00)\n[download]  255.00KiB at    3.03MiB/s (00:00:00)\n[download]  511.00KiB at    3.40MiB/s (00:00:00)\n[download] 1023.00KiB at    5.06MiB/s (00:00:00)\n[download]    1.19MiB at    5.53MiB/s (00:00:00)\n[download] 100% of    1.19MiB in 00:00:00 at 2.95MiB/s\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.en.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.en.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    1.43MiB/s (00:00:00)\n[download]    7.00KiB at    2.22MiB/s (00:00:00)\n[download]   15.00KiB at    3.69MiB/s (00:00:00)\n[download]   31.00KiB at    6.42MiB/s (00:00:00)\n[download]   63.00KiB at   12.24MiB/s (00:00:00)\n[download]  127.00KiB at    3.32MiB/s (00:00:00)\n[download]  255.00KiB at    2.57MiB/s (00:00:00)\n[download]  511.00KiB at    2.98MiB/s (00:00:00)\n[download] 1023.00KiB at    4.38MiB/s (00:00:00)\n[download]    1.19MiB at    4.87MiB/s (00:00:00)\n[download] 100% of    1.19MiB in 00:00:00 at 2.86MiB/s\n[info] Writing video metadata as JSON to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.info.json\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_002.f401.mp4\n\n[download]   0.0% of    2.81GiB at  Unknown B/s ETA Unknown\n[download]   0.0% of    2.81GiB at    1.35MiB/s ETA 35:43  \n[download]   0.0% of    2.81GiB at    1.87MiB/s ETA 25:47\n[download]   0.0% of    2.81GiB at    3.35MiB/s ETA 14:22\n[download]   0.0% of    2.81GiB at    6.03MiB/s ETA 07:58\n[download]   0.0% of    2.81GiB at   10.75MiB/s ETA 04:28\n[download]   0.0% of    2.81GiB at   13.39MiB/s ETA 03:35\n[download]   0.0% of    2.81GiB at   16.39MiB/s ETA 02:55\n[download]   0.0% of    2.81GiB at   17.84MiB/s ETA 02:41\n[download]   0.0% of    2.81GiB at   15.81MiB/s ETA 03:02\n[download]   0.1% of    2.81GiB at   15.43MiB/s ETA 03:06\n[download]   0.1% of    2.81GiB at   19.22MiB/s ETA 02:29\n[download]   0.3% of    2.81GiB at   22.53MiB/s ETA 02:07\n[download]   0.3% of    2.81GiB at   23.11MiB/s ETA 02:04\n[download]   0.3% of    2.81GiB at  Unknown B/s ETA Unknown\n[download]   0.3% of    2.81GiB at  Unknown B/s ETA Unknown\n[download]   0.3% of    2.81GiB at  Unknown B/s ETA Unknown\n[download]   0.3% of    2.81GiB at  Unknown B/s ETA Unknown\n[download]   0.3% of    2.81GiB at   26.57MiB/s ETA 01:48  \n[download]   0.3% of    2.81GiB at   39.41MiB/s ETA 01:13\n[download]   0.3% of    2.81GiB at   35.07MiB/s ETA 01:21\n[download]   0.3% of    2.81GiB at   32.22MiB/s ETA 01:29\n[download]   0.4% of    2.81GiB at   31.57MiB/s ETA 01:30\n[download]   0.4% of    2.81GiB at   29.83MiB/s ETA 01:36\n[download]   0.4% of    2.81GiB at   28.45MiB/s ETA 01:40\n[download]   0.5% of    2.81GiB at   26.82MiB/s ETA 01:46\n[download]   0.6% of    2.81GiB at   26.87MiB/s ETA 01:46\n[download]   0.7% of    2.81GiB at   26.82MiB/s ETA 01:46",
+            "stderr_tail": "WARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nWARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nERROR: unable to download video data: HTTP Error 403: Forbidden\n",
+            "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+            "duration_seconds": 3.425078
+          },
+          {
+            "attempt": 2,
+            "return_code": 1,
+            "stdout_tail": "[youtube] Extracting URL: https://www.youtube.com/watch?v=2S-WJN3L5eo\n[youtube] 2S-WJN3L5eo: Downloading webpage\n[youtube] 2S-WJN3L5eo: Downloading android vr player API JSON\n[info] 2S-WJN3L5eo: Downloading subtitles: en-orig, en\n[info] 2S-WJN3L5eo: Downloading 1 format(s): 401+140\n[info] Video description is already present\n[info] Video subtitle en-orig.vtt is already present\n[info] Video subtitle en.vtt is already present\n[info] Video metadata is already present\n[download] Resuming download at byte 20345151\n",
+            "stderr_tail": "ERROR: unable to download video data: HTTP Error 403: Forbidden\n",
+            "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+            "duration_seconds": 1.684178
+          }
+        ]
+      }
+    },
+    {
+      "corpus_id": "jubilee_surrounded_003",
+      "youtube_id": "DK-jI3BaZLc",
+      "youtube_url": "https://www.youtube.com/watch?v=DK-jI3BaZLc",
+      "title_selected": "1 Conservative vs 20 Feminists (ft. Candace Owens)",
+      "debate_format": "Surrounded",
+      "video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_003.mp4",
+      "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_003.info.json",
+      "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_003.description",
+      "status": "failed",
+      "video_status": "failed",
+      "metadata_status": "failed",
+      "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+      "return_code": 1,
+      "retries": 1,
+      "duration_seconds": 13.883097,
+      "start_time": "2026-08-17T17:06:21Z",
+      "end_time": "2026-08-17T17:06:35Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--no-overwrites",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "--write-description",
+          "--write-subs",
+          "--write-auto-subs",
+          "--sub-langs",
+          "en.*",
+          "https://www.youtube.com/watch?v=DK-jI3BaZLc",
+          "-o",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.%(ext)s"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 1,
+            "stdout_tail": "[youtube] Extracting URL: https://www.youtube.com/watch?v=DK-jI3BaZLc\n[youtube] DK-jI3BaZLc: Downloading webpage\n[youtube] DK-jI3BaZLc: Downloading android vr player API JSON\n[info] DK-jI3BaZLc: Downloading subtitles: en-orig, en\n[info] DK-jI3BaZLc: Downloading 1 format(s): 137+140\n[info] Writing video description to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.description\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.en-orig.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.en-orig.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    2.71MiB/s (00:00:00)\n[download]    7.00KiB at    3.92MiB/s (00:00:00)\n[download]   15.00KiB at    6.11MiB/s (00:00:00)\n[download]   31.00KiB at    9.88MiB/s (00:00:00)\n[download]   63.00KiB at   16.53MiB/s (00:00:00)\n[download]  127.00KiB at    4.74MiB/s (00:00:00)\n[download]  255.00KiB at    2.52MiB/s (00:00:00)\n[download]  511.00KiB at    2.86MiB/s (00:00:00)\n[download] 1009.05KiB at    4.10MiB/s (00:00:00)\n[download] 100% of 1009.05KiB in 00:00:00 at 1.89MiB/s\n[info] Writing video subtitles to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.en.vtt\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.en.vtt\n\n[download]    1.00KiB at  Unknown B/s (00:00:00)\n[download]    3.00KiB at    2.05MiB/s (00:00:00)\n[download]    7.00KiB at    3.50MiB/s (00:00:00)\n[download]   15.00KiB at    5.87MiB/s (00:00:00)\n[download]   31.00KiB at    9.38MiB/s (00:00:00)\n[download]   63.00KiB at   15.43MiB/s (00:00:00)\n[download]  127.00KiB at    5.15MiB/s (00:00:00)\n[download]  255.00KiB at    2.93MiB/s (00:00:00)\n[download]  511.00KiB at    3.20MiB/s (00:00:00)\n[download] 1009.05KiB at    4.69MiB/s (00:00:00)\n[download] 100% of 1009.05KiB in 00:00:00 at 2.70MiB/s\n[info] Writing video metadata as JSON to: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.info.json\n[download] Destination: /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_003.f137.mp4\n\n[download]   0.0% of    1.46GiB at  Unknown B/s ETA Unknown\n[download]   0.0% of    1.46GiB at  Unknown B/s ETA Unknown\n[download]   0.0% of    1.46GiB at    5.72MiB/s ETA 04:23  \n[download]   0.0% of    1.46GiB at   10.13MiB/s ETA 02:28\n[download]   0.0% of    1.46GiB at   14.10MiB/s ETA 01:46\n[download]   0.0% of    1.46GiB at   12.27MiB/s ETA 02:02\n[download]   0.0% of    1.46GiB at   17.41MiB/s ETA 01:26\n[download]   0.0% of    1.46GiB at   17.92MiB/s ETA 01:23\n[download]   0.0% of    1.46GiB at   15.80MiB/s ETA 01:34\n[download]   0.1% of    1.46GiB at   15.55MiB/s ETA 01:36\n[download]   0.1% of    1.46GiB at    7.48MiB/s ETA 03:20\n[download]   0.3% of    1.46GiB at    9.90MiB/s ETA 02:30\n[download]   0.5% of    1.46GiB at   14.09MiB/s ETA 01:45\n[download]   0.7% of    1.46GiB at    3.35MiB/s ETA 07:24",
+            "stderr_tail": "WARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nWARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nERROR: unable to download video data: HTTP Error 403: Forbidden\n",
+            "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+            "duration_seconds": 6.107761
+          },
+          {
+            "attempt": 2,
+            "return_code": 1,
+            "stdout_tail": "[youtube] Extracting URL: https://www.youtube.com/watch?v=DK-jI3BaZLc\n[youtube] DK-jI3BaZLc: Downloading webpage\n[youtube] DK-jI3BaZLc: Downloading android vr player API JSON\n[youtube] DK-jI3BaZLc: Downloading player 1812d523-main\n[youtube] [jsc:deno] Solving JS challenges using deno\n[youtube] DK-jI3BaZLc: Downloading m3u8 information\n[info] DK-jI3BaZLc: Downloading subtitles: en-orig, en\n[info] DK-jI3BaZLc: Downloading 1 format(s): 137+140\n[info] Video description is already present\n[info] Video subtitle en-orig.vtt is already present\n[info] Video subtitle en.vtt is already present\n[info] Video metadata is already present\n[download] Resuming download at byte 10450182\n",
+            "stderr_tail": "ERROR: unable to download video data: HTTP Error 403: Forbidden\n",
+            "error": "ERROR: unable to download video data: HTTP Error 403: Forbidden",
+            "duration_seconds": 2.77483
+          }
+        ]
+      }
+    },
+    {
+      "corpus_id": "jubilee_surrounded_004",
+      "youtube_id": "odBbDQj-GRs",
+      "youtube_url": "https://www.youtube.com/watch?v=odBbDQj-GRs",
+      "title_selected": "1 Liberal Man vs 20 MAGA Women (ft. Dean Withers)",
+      "debate_format": "Surrounded",
+      "video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_004.mp4",
+      "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_004.info.json",
+      "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_004.description",
+      "status": "success",
+      "video_status": "success",
+      "metadata_status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 262.401875,
+      "start_time": "2026-08-17T17:06:35Z",
+      "end_time": "2026-08-17T17:10:57Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--no-overwrites",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "--write-description",
+          "--write-subs",
+          "--write-auto-subs",
+          "--sub-langs",
+          "en.*",
+          "https://www.youtube.com/watch?v=odBbDQj-GRs",
+          "-o",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.%(ext)s"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "B/s ETA 00:10\n[download]  59.1% of  105.24MiB at    2.22MiB/s ETA 00:19\n[download]  60.6% of  105.24MiB at    2.98MiB/s ETA 00:13\n[download]  63.5% of  105.24MiB at    3.58MiB/s ETA 00:10\n[download]  64.6% of  105.24MiB at    3.51MiB/s ETA 00:10\n[download]  64.6% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  64.6% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  64.7% of  105.24MiB at    4.75MiB/s ETA 00:07  \n[download]  64.7% of  105.24MiB at    7.64MiB/s ETA 00:04\n[download]  64.7% of  105.24MiB at   12.52MiB/s ETA 00:02\n[download]  64.7% of  105.24MiB at   20.77MiB/s ETA 00:01\n[download]  64.8% of  105.24MiB at   34.63MiB/s ETA 00:01\n[download]  64.9% of  105.24MiB at   41.16MiB/s ETA 00:00\n[download]  65.1% of  105.24MiB at   35.79MiB/s ETA 00:01\n[download]  65.6% of  105.24MiB at   30.37MiB/s ETA 00:01\n[download]  66.5% of  105.24MiB at   13.73MiB/s ETA 00:02\n[download]  68.4% of  105.24MiB at   11.81MiB/s ETA 00:02\n[download]  72.2% of  105.24MiB at    9.37MiB/s ETA 00:03\n[download]  74.1% of  105.24MiB at    2.84MiB/s ETA 00:09\n[download]  74.1% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  74.1% of  105.24MiB at    1.72MiB/s ETA 00:15  \n[download]  74.1% of  105.24MiB at    2.82MiB/s ETA 00:09\n[download]  74.1% of  105.24MiB at    4.70MiB/s ETA 00:05\n[download]  74.1% of  105.24MiB at    8.08MiB/s ETA 00:03\n[download]  74.2% of  105.24MiB at   14.19MiB/s ETA 00:01\n[download]  74.2% of  105.24MiB at   25.08MiB/s ETA 00:01\n[download]  74.3% of  105.24MiB at   29.55MiB/s ETA 00:00\n[download]  74.6% of  105.24MiB at   29.62MiB/s ETA 00:00\n[download]  75.1% of  105.24MiB at   27.93MiB/s ETA 00:00\n[download]  76.0% of  105.24MiB at   26.39MiB/s ETA 00:00\n[download]  77.9% of  105.24MiB at   15.40MiB/s ETA 00:01\n[download]  81.7% of  105.24MiB at   11.82MiB/s ETA 00:01\n[download]  83.4% of  105.24MiB at   13.14MiB/s ETA 00:01\n[download]  83.4% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  83.4% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  83.4% of  105.24MiB at    4.70MiB/s ETA 00:03  \n[download]  83.4% of  105.24MiB at    7.60MiB/s ETA 00:02\n[download]  83.4% of  105.24MiB at   12.51MiB/s ETA 00:01\n[download]  83.5% of  105.24MiB at   21.09MiB/s ETA 00:00\n[download]  83.5% of  105.24MiB at   35.02MiB/s ETA 00:00\n[download]  83.6% of  105.24MiB at   37.12MiB/s ETA 00:00\n[download]  83.9% of  105.24MiB at   32.16MiB/s ETA 00:00\n[download]  84.4% of  105.24MiB at   29.93MiB/s ETA 00:00\n[download]  85.3% of  105.24MiB at   21.88MiB/s ETA 00:00\n[download]  87.2% of  105.24MiB at   17.25MiB/s ETA 00:00\n[download]  91.0% of  105.24MiB at   14.68MiB/s ETA 00:00\n[download]  92.5% of  105.24MiB at   12.60MiB/s ETA 00:00\n[download]  92.5% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  92.5% of  105.24MiB at  Unknown B/s ETA Unknown\n[download]  92.5% of  105.24MiB at    4.44MiB/s ETA 00:01  \n[download]  92.5% of  105.24MiB at    6.99MiB/s ETA 00:01\n[download]  92.6% of  105.24MiB at   11.56MiB/s ETA 00:00\n[download]  92.6% of  105.24MiB at   19.78MiB/s ETA 00:00\n[download]  92.6% of  105.24MiB at   33.64MiB/s ETA 00:00\n[download]  92.8% of  105.24MiB at   41.47MiB/s ETA 00:00\n[download]  93.0% of  105.24MiB at   34.56MiB/s ETA 00:00\n[download]  93.5% of  105.24MiB at    4.66MiB/s ETA 00:01\n[download]  94.4% of  105.24MiB at    6.27MiB/s ETA 00:00\n[download]  96.3% of  105.24MiB at    8.93MiB/s ETA 00:00\n[download] 100.0% of  105.24MiB at   10.58MiB/s ETA 00:00\n[download] 100% of  105.24MiB in 00:00:17 at 5.85MiB/s   \n[Merger] Merging formats into \"/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.mp4\"\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.f401.mp4 (pass -k to keep)\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_004.f140.m4a (pass -k to keep)\n",
+            "stderr_tail": "WARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nWARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\n",
+            "error": null,
+            "duration_seconds": 262.401828
+          }
+        ]
+      }
+    },
+    {
+      "corpus_id": "jubilee_surrounded_005",
+      "youtube_id": "EEd5cvHnhPQ",
+      "youtube_url": "https://www.youtube.com/watch?v=EEd5cvHnhPQ",
+      "title_selected": "1 Ex-Mafia Boss vs 20 Cops (ft. Michael Franzese)",
+      "debate_format": "Surrounded",
+      "video_file": "corpus/01_jubilee_debates/videos/jubilee_surrounded_005.mp4",
+      "raw_metadata_file": "corpus/01_jubilee_debates/metadata_raw/jubilee_surrounded_005.info.json",
+      "description_file": "corpus/01_jubilee_debates/descriptions/jubilee_surrounded_005.description",
+      "status": "success",
+      "video_status": "success",
+      "metadata_status": "success",
+      "error": null,
+      "return_code": 0,
+      "retries": 0,
+      "duration_seconds": 206.884982,
+      "start_time": "2026-08-17T17:10:57Z",
+      "end_time": "2026-08-17T17:14:24Z",
+      "metadata": {
+        "command": [
+          "yt-dlp",
+          "--no-overwrites",
+          "--write-info-json",
+          "-f",
+          "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
+          "--write-description",
+          "--write-subs",
+          "--write-auto-subs",
+          "--sub-langs",
+          "en.*",
+          "https://www.youtube.com/watch?v=EEd5cvHnhPQ",
+          "-o",
+          "/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.%(ext)s"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "return_code": 0,
+            "stdout_tail": "MiB/s ETA 00:18\n[download]  52.2% of   83.15MiB at    3.32MiB/s ETA 00:11\n[download]  56.2% of   83.15MiB at    3.45MiB/s ETA 00:10\n[download]  58.3% of   83.15MiB at    2.62MiB/s ETA 00:13\n[download]  58.3% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  58.3% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  58.3% of   83.15MiB at    4.95MiB/s ETA 00:07  \n[download]  58.3% of   83.15MiB at    7.74MiB/s ETA 00:04\n[download]  58.3% of   83.15MiB at   12.63MiB/s ETA 00:02\n[download]  58.4% of   83.15MiB at   21.14MiB/s ETA 00:01\n[download]  58.5% of   83.15MiB at   36.11MiB/s ETA 00:00\n[download]  58.6% of   83.15MiB at   35.39MiB/s ETA 00:00\n[download]  58.9% of   83.15MiB at   32.68MiB/s ETA 00:01\n[download]  59.5% of   83.15MiB at   29.38MiB/s ETA 00:01\n[download]  60.7% of   83.15MiB at    3.53MiB/s ETA 00:09\n[download]  63.0% of   83.15MiB at    4.84MiB/s ETA 00:06\n[download]  67.5% of   83.15MiB at    4.39MiB/s ETA 00:06\n[download]  70.1% of   83.15MiB at    4.48MiB/s ETA 00:05\n[download]  70.1% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  70.1% of   83.15MiB at    2.47MiB/s ETA 00:10  \n[download]  70.1% of   83.15MiB at    3.53MiB/s ETA 00:07\n[download]  70.1% of   83.15MiB at    5.73MiB/s ETA 00:04\n[download]  70.1% of   83.15MiB at    9.33MiB/s ETA 00:02\n[download]  70.2% of   83.15MiB at   15.93MiB/s ETA 00:01\n[download]  70.3% of   83.15MiB at   27.47MiB/s ETA 00:00\n[download]  70.4% of   83.15MiB at   45.24MiB/s ETA 00:00\n[download]  70.7% of   83.15MiB at   29.42MiB/s ETA 00:00\n[download]  71.3% of   83.15MiB at   28.77MiB/s ETA 00:00\n[download]  72.5% of   83.15MiB at    2.20MiB/s ETA 00:10\n[download]  73.9% of   83.15MiB at    3.19MiB/s ETA 00:06\n[download]  76.6% of   83.15MiB at    4.97MiB/s ETA 00:03\n[download]  81.5% of   83.15MiB at    3.58MiB/s ETA 00:04\n[download]  81.6% of   83.15MiB at    3.62MiB/s ETA 00:04\n[download]  81.6% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  81.6% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  81.6% of   83.15MiB at    6.75MiB/s ETA 00:02  \n[download]  81.7% of   83.15MiB at   11.79MiB/s ETA 00:01\n[download]  81.7% of   83.15MiB at   12.03MiB/s ETA 00:01\n[download]  81.7% of   83.15MiB at   20.57MiB/s ETA 00:00\n[download]  81.8% of   83.15MiB at  771.30KiB/s ETA 00:20\n[download]  81.9% of   83.15MiB at    1.44MiB/s ETA 00:10\n[download]  82.2% of   83.15MiB at    2.66MiB/s ETA 00:05\n[download]  82.8% of   83.15MiB at    4.48MiB/s ETA 00:03\n[download]  84.0% of   83.15MiB at    6.89MiB/s ETA 00:01\n[download]  86.4% of   83.15MiB at    5.40MiB/s ETA 00:02\n[download]  91.3% of   83.15MiB at    4.13MiB/s ETA 00:01\n[download]  93.2% of   83.15MiB at    3.10MiB/s ETA 00:01\n[download]  93.2% of   83.15MiB at  Unknown B/s ETA Unknown\n[download]  93.2% of   83.15MiB at    2.72MiB/s ETA 00:02  \n[download]  93.2% of   83.15MiB at    3.84MiB/s ETA 00:01\n[download]  93.2% of   83.15MiB at    5.93MiB/s ETA 00:00\n[download]  93.2% of   83.15MiB at    9.51MiB/s ETA 00:00\n[download]  93.3% of   83.15MiB at   16.00MiB/s ETA 00:00\n[download]  93.3% of   83.15MiB at   27.47MiB/s ETA 00:00\n[download]  93.5% of   83.15MiB at   37.81MiB/s ETA 00:00\n[download]  93.8% of   83.15MiB at   35.10MiB/s ETA 00:00\n[download]  94.4% of   83.15MiB at    1.32MiB/s ETA 00:03\n[download]  95.2% of   83.15MiB at    2.05MiB/s ETA 00:01\n[download]  96.8% of   83.15MiB at    2.44MiB/s ETA 00:01\n[download] 100.0% of   83.15MiB at    2.90MiB/s ETA 00:00\n[download] 100% of   83.15MiB in 00:00:22 at 3.74MiB/s   \n[Merger] Merging formats into \"/home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.mp4\"\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.f140.m4a (pass -k to keep)\nDeleting original file /home/eyamrog/PycharmProjects/cl_st1_carol/cl_st1_ph0_carol/corpus/01_jubilee_debates/videos/jubilee_surrounded_005.f401.mp4 (pass -k to keep)\n",
+            "stderr_tail": "WARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\nWARNING: The extractor specified to use impersonation for this download, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies\n",
+            "error": null,
+            "duration_seconds": 206.88494
+          }
+        ]
+      }
+    }
+  ],
+  "invalid_records": [],
+  "duplicates": []
+}
