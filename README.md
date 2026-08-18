@@ -245,105 +245,71 @@ This stage performs alignment only. Transcription, diarisation, speaker assignme
 The `diarise_jubilee_debates_pyannote.py` programme performs speaker diarisation on extracted Jubilee debate WAV audio using pyannote.audio.
 
 It reads the audio index:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 Only records whose `audio_extraction_status` indicates available audio are processed.
 
 Source audio files are resolved from the `audio_file` field when available. Otherwise, audio is read from:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 Each fallback source audio file is expected as:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/<corpus_id>.wav
 ```
-
-
 Diarisation outputs are written to:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 Each successful diarisation writes:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/<corpus_id>.rttm
 corpus/05_jubilee_debates_diarisation/<corpus_id>.diarisation.json
 corpus/05_jubilee_debates_diarisation/<corpus_id>.segments.ndjson
 ```
-
-
 Set Hugging Face authentication before running if required:
-
-```
+```shell script
 export HF_TOKEN="hf_..."
 ```
-
-
 Default test run:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py
 ```
-
-
 This processes one planned debate by default.
 
 Full run:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py --no-test-mode
 ```
-
-
 Resume from a specific debate:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
 ```
-
-
 Force re-diarisation:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --reprocess
 ```
-
-
 Optional speaker-count bounds:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --min-speakers 8 \
   --max-speakers 30
 ```
-
-
 The programme writes:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
 A timestamped per-run manifest is also created.
+
+The diarisation index preserves source media duration as `duration_seconds` and records processing runtime separately as `diarisation_runtime_seconds`.
 
 This stage performs diarisation only. Transcription, alignment, speaker assignment, and QC are handled by separate pipeline stages.
 

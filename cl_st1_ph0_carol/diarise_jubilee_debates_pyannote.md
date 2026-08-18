@@ -7,49 +7,37 @@
 `diarise_jubilee_debates_pyannote.py` is a batch-processing programme that performs **speaker diarisation** on extracted Jubilee debate audio files using **pyannote.audio**.
 
 The programme is part of:
-
-```
+```plain text
 Corpus Linguistics — Study 1 — Carol, Phase 0 — Speaker Diarisation Test
 ```
-
-
 It is the third GPU-oriented speech-processing stage in the planned pipeline.
 
 The preceding stages are:
 
-| Stage | Programme |
-|---:|---|
-| 1 | `transcribe_jubilee_debates_whisperx.py` |
-| 2 | `align_jubilee_debates_whisperx.py` |
+| Stage | Programme                                |
+|------:|------------------------------------------|
+|     1 | `transcribe_jubilee_debates_whisperx.py` |
+|     2 | `align_jubilee_debates_whisperx.py`      |
 
 The following stages are:
 
-| Stage | Programme |
-|---:|---|
-| 4 | `assign_speakers_jubilee_debates.py` |
-| 5 | `qc_jubilee_debates_speaker_diarisation.py` |
+| Stage | Programme                                   |
+|------:|---------------------------------------------|
+|     4 | `assign_speakers_jubilee_debates.py`        |
+|     5 | `qc_jubilee_debates_speaker_diarisation.py` |
 
 The programme reads the curated audio index produced by the audio extraction stage:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 Each record in this index represents one extracted Jubilee debate audio file. The programme must process records where the audio is available, indicated by:
-
-```
+```plain text
 audio_extraction_status = success
 ```
-
-
 or:
-
-```
+```plain text
 audio_extraction_status = skipped_existing
 ```
-
-
 For each eligible record, the programme uses:
 
 - `corpus_id` to identify the debate;
@@ -58,34 +46,28 @@ For each eligible record, the programme uses:
 - `corpus_id` again to name diarisation outputs.
 
 The source audio files are expected in:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 Diarisation outputs must be written to:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 For each successfully diarised debate, the programme must write:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/<corpus_id>.rttm
 corpus/05_jubilee_debates_diarisation/<corpus_id>.diarisation.json
 corpus/05_jubilee_debates_diarisation/<corpus_id>.segments.ndjson
 ```
-
-
 The intended diarisation engine is:
-
-```
+```plain text
 pyannote.audio
 ```
-
+The default model is:
+```plain text
+pyannote/speaker-diarization-3.1
+```
+The implementation must support current pyannote return structures. In particular, recent versions may return a wrapper object such as `DiarizeOutput` containing a `speaker_diarization` annotation rather than returning a `pyannote.core.Annotation` directly. The programme must normalise both direct annotation outputs and wrapped diarisation outputs into the project-stable segment schema.
 
 The programme performs **speaker diarisation only**. It must not perform:
 
@@ -117,6 +99,7 @@ The programme must implement the following behaviours:
 - Avoid logging or writing Hugging Face token values.
 - Support automatic speaker-count inference by default.
 - Support optional `--num-speakers`, `--min-speakers`, and `--max-speakers` constraints.
+- Support direct pyannote `Annotation` outputs and wrapped outputs such as `DiarizeOutput`.
 - Use test mode by default, limiting processing to one eligible debate.
 - Skip already-diarised debates by default, supporting safe re-runs.
 - Allow reprocessing with an explicit command-line option.
@@ -128,6 +111,8 @@ The programme must implement the following behaviours:
   - a timestamped per-run manifest;
   - a latest manifest overwritten on each run.
 - Write a curated diarisation index for downstream speaker assignment and QC.
+- Preserve source media duration as `duration_seconds` in the diarisation index.
+- Record processing runtime separately as `diarisation_runtime_seconds` in the diarisation index.
 - Exit with status code `0` only when all attempted diarisation jobs succeed or are skipped, and there are no missing inputs or invalid eligible metadata rows.
 - Exit with a non-zero status code if one or more attempted diarisation jobs fail, if source audio is missing, if eligible metadata is invalid, or if there is a configuration/validation error.
 
@@ -138,51 +123,33 @@ The programme must implement the following behaviours:
 The programme must resolve default paths relative to the directory where `diarise_jubilee_debates_pyannote.py` is located, not relative to the current working directory.
 
 If the script is located at:
-
-```
+```plain text
 cl_st1_ph0_carol/diarise_jubilee_debates_pyannote.py
 ```
-
-
 then the default audio index path:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 must resolve to:
-
-```
+```plain text
 cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 This ensures that the programme works when executed from:
-
-```
+```plain text
 cl_st1_carol/
 ```
-
-
 or:
-
-```
+```plain text
 cl_st1_carol/cl_st1_ph0_carol/
 ```
-
-
 or from another current working directory.
 
 ### Internal path base
 
 The implementation should define:
-
 ```python
 SCRIPT_DIR = Path(__file__).resolve().parent
 ```
-
-
 Relative default paths and relative command-line paths should be resolved against `SCRIPT_DIR`.
 
 ### Absolute paths
@@ -207,12 +174,9 @@ the programme must preserve that absolute path.
 ### Input audio index file
 
 Default path:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 The file is expected to be in **NDJSON** format: one JSON object per line.
 
 This file is produced by the audio extraction stage.
@@ -221,45 +185,35 @@ This file is produced by the audio extraction stage.
 
 Each valid eligible audio-index record must contain:
 
-| Field | Type | Description |
-|---|---:|---|
-| `corpus_id` | string | Stable internal debate identifier, e.g. `jubilee_surrounded_001` |
-| `audio_extraction_status` | string | Status from the audio extraction stage |
+| Field                     |   Type | Description                                                      |
+|---------------------------|-------:|------------------------------------------------------------------|
+| `corpus_id`               | string | Stable internal debate identifier, e.g. `jubilee_surrounded_001` |
+| `audio_extraction_status` | string | Status from the audio extraction stage                           |
 
 The source audio path is resolved using:
 
-| Field | Requirement | Description |
-|---|---|---|
-| `audio_file` | optional | Preferred local WAV path when present and usable |
+| Field        | Requirement | Description                                      |
+|--------------|-------------|--------------------------------------------------|
+| `audio_file` | optional    | Preferred local WAV path when present and usable |
 
 If `audio_file` is absent, blank, or unusable, the programme must fall back to:
-
-```
+```plain text
 <audio_dir>/<corpus_id>.wav
 ```
-
-
 ### Eligible audio extraction statuses
 
 The programme must process only records where:
-
-```
+```plain text
 audio_extraction_status = success
 ```
-
-
 or:
-
-```
+```plain text
 audio_extraction_status = skipped_existing
 ```
-
-
 Records with other statuses must be ignored, not treated as errors.
 
 Ineligible statuses include:
-
-```
+```plain text
 failed
 missing_input
 failed_metadata
@@ -269,40 +223,39 @@ null
 ""
 missing value
 ```
-
-
 ### Metadata fields to preserve
 
 The programme should preserve these fields in diarisation outputs and indices when present:
 
-| Field | Description |
-|---|---|
-| `corpus_id` | Internal stable corpus ID |
-| `debate_format` | Debate format |
-| `sample_group` | Sample group |
-| `sample_order` | Sample order |
-| `title` | Selected title, if present |
-| `title_selected` | Selected title |
-| `title_extracted` | Extracted title |
-| `youtube_id` | YouTube video ID |
-| `youtube_url` | Original YouTube URL |
-| `webpage_url` | Canonical URL |
-| `duration_seconds` | Source duration |
-| `duration_string` | Human-readable duration |
-| `chapters` | Chapter metadata |
-| `audio_file` | Source WAV path |
-| `audio_extraction_status` | Previous stage status |
-| `audio_extraction_run_id` | Previous stage run ID |
-| `audio_extracted_at_utc` | Previous stage timestamp |
-| `audio_codec` | Audio codec, if recorded |
-| `audio_sample_rate_hz` | Audio sample rate, if recorded |
-| `audio_channels` | Number of audio channels, if recorded |
-| `audio_duration_seconds` | Extracted audio duration, if recorded |
-| `download_status` | Download stage status |
-| `download_run_id` | Download stage run ID |
-| `selected_by` | Selector |
-| `selection_source` | Selection source |
-| `notes` | Notes |
+| Field                     | Description                                          |
+|---------------------------|------------------------------------------------------|
+| `corpus_id`               | Internal stable corpus ID                            |
+| `debate_format`           | Debate format                                        |
+| `sample_group`            | Sample group                                         |
+| `sample_order`            | Sample order                                         |
+| `title`                   | Selected title, if present                           |
+| `title_selected`          | Selected title                                       |
+| `title_extracted`         | Extracted title                                      |
+| `youtube_id`              | YouTube video ID                                     |
+| `youtube_url`             | Original YouTube URL                                 |
+| `webpage_url`             | Canonical URL                                        |
+| `duration_seconds`        | Source media duration in seconds                     |
+| `duration_string`         | Human-readable source duration                       |
+| `chapters`                | Chapter metadata                                     |
+| `audio_file`              | Source WAV path                                      |
+| `audio_extraction_status` | Previous stage status                                |
+| `audio_extraction_run_id` | Previous stage run ID                                |
+| `audio_extracted_at_utc`  | Previous stage timestamp                             |
+| `audio_codec`             | Audio codec, if recorded                             |
+| `audio_sample_rate_hz`    | Audio sample rate, if recorded                       |
+| `audio_sample_rate`       | Audio sample rate, if recorded under this field name |
+| `audio_channels`          | Number of audio channels, if recorded                |
+| `audio_duration_seconds`  | Extracted audio duration, if recorded                |
+| `download_status`         | Download stage status                                |
+| `download_run_id`         | Download stage run ID                                |
+| `selected_by`             | Selector                                             |
+| `selection_source`        | Selection source                                     |
+| `notes`                   | Notes                                                |
 
 ---
 
@@ -311,34 +264,25 @@ The programme should preserve these fields in diarisation outputs and indices wh
 ### Audio input directory
 
 Default path:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 Each fallback source audio file is expected as:
-
-```
+```plain text
 <audio_dir>/<corpus_id>.wav
 ```
-
-
 Examples:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav
 corpus/02_jubilee_debates_audio/jubilee_surrounded_002.wav
 ```
-
-
 The audio extraction stage should have produced WAV files with:
 
-| Property | Expected value |
-|---|---:|
-| Container | WAV |
-| Channels | mono |
-| Sample rate | 16000 Hz |
+| Property      |    Expected value |
+|---------------|------------------:|
+| Container     |               WAV |
+| Channels      |              mono |
+| Sample rate   |          16000 Hz |
 | Sample format | signed 16-bit PCM |
 
 The diarisation programme may rely on the audio extraction programme for audio compatibility.
@@ -350,77 +294,65 @@ The diarisation programme may rely on the audio extraction programme for audio c
 ### Diarisation output directory
 
 Default path:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 The programme must create this directory if it does not already exist.
 
 ### Per-debate RTTM
 
 Each successful diarisation must write:
-
-```
+```plain text
 <output_dir>/<corpus_id>.rttm
 ```
-
-
 Example:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.rttm
 ```
-
-
 RTTM is required because it is a standard diarisation interchange format and can be used by downstream tooling.
 
 ### Per-debate diarisation JSON
 
 Each successful diarisation must write:
-
-```
+```plain text
 <output_dir>/<corpus_id>.diarisation.json
 ```
-
-
 Example:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.diarisation.json
 ```
-
-
 This file contains project-stable diarisation metadata and a normalised list of speaker turns.
 
 ### Per-debate segments NDJSON
 
 Each successful diarisation should write:
-
-```
+```plain text
 <output_dir>/<corpus_id>.segments.ndjson
 ```
-
-
 Example:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.segments.ndjson
 ```
-
-
 This file should contain one diarised speaker interval per line for easier downstream speaker assignment and QC.
+
+### Duration fields
+
+The programme must distinguish source media duration from processing runtime:
+
+| Field                         | Meaning                                                                                                        |
+|-------------------------------|----------------------------------------------------------------------------------------------------------------|
+| `duration_seconds`            | Source audio/video duration from upstream metadata. This must remain the media duration used by downstream QC. |
+| `duration_string`             | Human-readable source duration from upstream metadata.                                                         |
+| `diarisation_runtime_seconds` | Time taken by the diarisation process for this item.                                                           |
+
+The programme must not overwrite `duration_seconds` with the diarisation runtime. This is important because downstream QC uses `duration_seconds` as the denominator for coverage metrics.
 
 ### Log file
 
 Default path:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 ```
-
-
 The log file must be:
 
 - plain text;
@@ -435,39 +367,27 @@ The programme must write two manifest files.
 #### Latest manifest
 
 Default path:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 ```
-
-
 #### Per-run manifest
 
 A timestamped copy must also be written using the run ID.
 
 Filename pattern:
-
-```
+```plain text
 diarise_jubilee_debates_pyannote_manifest_<run_id>.json
 ```
-
-
 Example:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest_20260804T140000Z.json
 ```
-
-
 ### Diarisation index file
 
 Default path:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
 This curated diarisation index is used by downstream speaker assignment and QC stages.
 
 ---
@@ -477,119 +397,74 @@ This curated diarisation index is used by downstream speaker assignment and QC s
 ## 5.1 Default usage
 
 The programme may be run from inside `cl_st1_ph0_carol/`:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py
 ```
-
-
 or from the project root:
-
-```
+```shell script
 python cl_st1_ph0_carol/diarise_jubilee_debates_pyannote.py
 ```
-
-
 Both commands should resolve default paths correctly.
 
 Default behaviour:
 
 - audio index:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 - audio directory:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 - output directory:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 - backend:
-
-```
+```plain text
 pyannote
 ```
-
-
 - model:
-
-```
+```plain text
 pyannote/speaker-diarization-3.1
 ```
-
-
 - device:
-
-```
+```plain text
 cuda
 ```
-
-
 - speaker count:
-
-```
+```plain text
 auto / unspecified
 ```
-
-
 - minimum speakers:
-
-```
+```plain text
 unspecified
 ```
-
-
 - maximum speakers:
-
-```
+```plain text
 unspecified
 ```
-
-
 - test mode:
-
-```
+```plain text
 enabled
 ```
-
-
 - test limit:
-
-```
+```plain text
 1
 ```
-
-
 - reprocess:
-
-```
+```plain text
 disabled
 ```
-
-
 - existing complete diarisation outputs are skipped;
 - one worker / sequential processing.
 
 ### Note on default test limit
 
 This project processes long-form debate audio with many speakers. The default test limit should remain:
-
-```
+```plain text
 1
 ```
-
-
 ---
 
 ## 5.2 Required arguments
@@ -599,12 +474,9 @@ There are no required command-line arguments if all defaults are used.
 However, the runtime environment must provide Hugging Face authentication if the configured pyannote model requires it.
 
 The recommended environment variable is:
-
-```
+```shell script
 export HF_TOKEN="hf_..."
 ```
-
-
 The programme must not require the token to be passed directly on the command line.
 
 ---
@@ -612,19 +484,13 @@ The programme must not require the token to be passed directly on the command li
 ## 5.3 Optional arguments
 
 ### Audio index
-
-```
+```shell script
 --audio-index PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 Description:
 
 Path to the curated NDJSON audio index from the audio extraction stage.
@@ -632,19 +498,13 @@ Path to the curated NDJSON audio index from the audio extraction stage.
 ---
 
 ### Audio directory
-
-```
+```shell script
 --audio-dir PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 Description:
 
 Fallback directory containing source WAV files.
@@ -652,19 +512,13 @@ Fallback directory containing source WAV files.
 ---
 
 ### Output directory
-
-```
+```shell script
 --output-dir PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 Description:
 
 Directory where diarisation outputs, logs, manifests, and the diarisation index are written.
@@ -672,26 +526,17 @@ Directory where diarisation outputs, logs, manifests, and the diarisation index 
 ---
 
 ### Backend
-
-```
+```shell script
 --backend BACKEND
 ```
-
-
 Default:
-
-```
+```plain text
 pyannote
 ```
-
-
 Allowed values:
-
-```
+```plain text
 pyannote
 ```
-
-
 Description:
 
 Backend label recorded in outputs. The first implementation should use pyannote.audio.
@@ -699,19 +544,13 @@ Backend label recorded in outputs. The first implementation should use pyannote.
 ---
 
 ### Model
-
-```
+```shell script
 --model MODEL_NAME
 ```
-
-
 Default:
-
-```
+```plain text
 pyannote/speaker-diarization-3.1
 ```
-
-
 Description:
 
 Hugging Face model identifier for the pyannote diarisation pipeline.
@@ -721,19 +560,13 @@ The model may require the user to accept terms on Hugging Face before use.
 ---
 
 ### Hugging Face token environment variable
-
-```
+```shell script
 --hf-token-env-var ENV_VAR_NAME
 ```
-
-
 Default:
-
-```
+```plain text
 HF_TOKEN
 ```
-
-
 Description:
 
 Name of the environment variable from which the programme reads the Hugging Face access token.
@@ -748,35 +581,23 @@ The programme must:
 ---
 
 ### Device
-
-```
+```shell script
 --device DEVICE
 ```
-
-
 Default:
-
-```
+```plain text
 cuda
 ```
-
-
 Allowed values:
-
-```
+```plain text
 cuda
 cpu
 auto
 ```
-
-
 For EC2 GPU processing, use:
-
-```
+```plain text
 cuda
 ```
-
-
 If `--device cuda` is requested and CUDA is unavailable, fail fast with configuration error.
 
 If `--device auto` is requested:
@@ -788,19 +609,13 @@ If `--device auto` is requested:
 ---
 
 ### Number of speakers
-
-```
+```shell script
 --num-speakers N
 ```
-
-
 Default:
-
-```
+```plain text
 None
 ```
-
-
 Description:
 
 Optional exact speaker count passed to pyannote when known.
@@ -815,112 +630,76 @@ If provided:
 ---
 
 ### Minimum speakers
-
-```
+```shell script
 --min-speakers N
 ```
-
-
 Default:
-
-```
+```plain text
 None
 ```
-
-
 Description:
 
 Optional lower bound on speaker count.
 
 Potential later tuning value:
-
-```
+```plain text
 8
 ```
-
-
 For the initial implementation, leave unspecified by default.
 
 ---
 
 ### Maximum speakers
-
-```
+```shell script
 --max-speakers N
 ```
-
-
 Default:
-
-```
+```plain text
 None
 ```
-
-
 Description:
 
 Optional upper bound on speaker count.
 
 Potential later tuning value for `Surrounded`-style debates:
-
-```
+```plain text
 30
 ```
-
-
 For the initial implementation, leave unspecified by default.
 
 ---
 
 ### Test mode
-
-```
+```shell script
 --test-mode
 --no-test-mode
 ```
-
-
 Default:
-
-```
+```plain text
 --test-mode
 ```
-
-
 ---
 
 ### Test limit
-
-```
+```shell script
 --test-limit N
 ```
-
-
 Default:
-
-```
+```plain text
 1
 ```
-
-
 Must be a positive integer.
 
 ---
 
 ### Reprocess existing diarisation outputs
-
-```
+```shell script
 --reprocess
 ```
-
-
 Default:
-
-```
+```plain text
 False
 ```
-
-
 When omitted, debates with all required diarisation outputs present are skipped.
 
 When provided, diarisation is run again and existing outputs are overwritten.
@@ -928,94 +707,61 @@ When provided, diarisation is run again and existing outputs are overwritten.
 ---
 
 ### Start corpus ID
-
-```
+```shell script
 --start-corpus-id CORPUS_ID
 ```
-
-
 Default:
-
-```
+```plain text
 None
 ```
-
-
 Start planning from a specific `corpus_id`.
 
 Example:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
 ```
-
-
 ---
 
 ### Log file
-
-```
+```shell script
 --log-file PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 ```
-
-
 ---
 
 ### Manifest file
-
-```
+```shell script
 --manifest-file PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 ```
-
-
 ---
 
 ### Diarisation index file
-
-```
+```shell script
 --diarisation-index-file PATH
 ```
-
-
 Default:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
 ---
 
 ### Workers
-
-```
+```shell script
 --workers N
 ```
-
-
 Default:
-
-```
+```plain text
 1
 ```
-
-
 Only `--workers 1` is supported in the first implementation.
 
 Parallel processing should not be implemented initially because long-form diarisation can be GPU- and memory-sensitive.
@@ -1023,19 +769,13 @@ Parallel processing should not be implemented initially because long-form diaris
 ---
 
 ### Timeout
-
-```
+```shell script
 --timeout SECONDS
 ```
-
-
 Default suggestion:
-
-```
+```plain text
 14400
 ```
-
-
 A four-hour per-item timeout is appropriate for long debate diarisation.
 
 Strict timeout enforcement may require subprocess isolation. The first implementation may record the value without hard enforcement.
@@ -1043,116 +783,84 @@ Strict timeout enforcement may require subprocess isolation. The first implement
 ---
 
 ### Maximum retries
-
-```
+```shell script
 --max-retries N
 ```
-
-
 Default:
-
-```
+```plain text
 1
 ```
-
-
 ---
 
 ### Retry delay
-
-```
+```shell script
 --retry-delay SECONDS
 ```
-
-
 Default:
-
-```
+```plain text
 5
 ```
-
-
 ---
 
 ## 5.4 Example commands
 
 ### Default one-debate diarisation test
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py
 ```
-
-
 ### Test from a specific corpus ID
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --test-limit 1 \
   --start-corpus-id jubilee_surrounded_003
 ```
-
-
 ### Full diarisation run
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py --no-test-mode
 ```
-
-
 ### Full run with loose speaker-count bounds
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --min-speakers 8 \
   --max-speakers 30
 ```
-
-
 ### Full run with exact speaker count for testing
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --num-speakers 21
 ```
-
-
 ### Re-diarise all debates
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --reprocess
 ```
-
-
-### EC2 run inside `tmux`
-
+### Re-diarise a one-item smoke test without retry
+```shell script
+python diarise_jubilee_debates_pyannote.py \
+  --test-limit 1 \
+  --max-retries 0 \
+  --reprocess
 ```
+### EC2 run inside `tmux`
+```shell script
 tmux new -s jubilee_diarise
 conda activate whisperx_pyannote
 cd ~/cl_st1_carol/cl_st1_ph0_carol
 export HF_TOKEN="hf_..."
 python diarise_jubilee_debates_pyannote.py --no-test-mode
 ```
-
-
 Detach:
-
-```
+```plain text
 Ctrl+B
 D
 ```
-
-
 Reattach:
-
-```
+```shell script
 tmux attach -t jubilee_diarise
 ```
-
-
 ---
 
 # 6. Argument Validation
@@ -1203,8 +911,7 @@ A validation error should:
 ## 7.1 Recommended EC2 environment
 
 Recommended EC2 deployment:
-
-```
+```plain text
 Architecture: x86_64
 Instance type: g5.xlarge initially
 GPU: NVIDIA A10G, 24 GB VRAM
@@ -1214,57 +921,37 @@ Environment manager: conda
 Environment name: whisperx_pyannote
 Workers: 1
 ```
-
-
 If memory or runtime is problematic, consider:
-
-```
+```plain text
 g5.2xlarge
 ```
-
-
 or:
-
-```
+```plain text
 g5.4xlarge
 ```
-
-
 ## 7.2 Required Python packages
 
 Required:
-
-```
+```plain text
 pyannote.audio
 torch
 torchaudio
 huggingface_hub
 ```
-
-
 Optional:
-
-```
+```plain text
 tqdm
 ```
-
-
 ## 7.3 CUDA checks
 
 Before diarisation, verify:
-
-```
+```shell script
 nvidia-smi
 ```
-
-
 and:
-
-```
+```shell script
 python -c "import torch; print(torch.cuda.is_available()); print(torch.version.cuda)"
 ```
-
-
 If CUDA is unavailable and `--device cuda` was requested, fail fast.
 
 ## 7.4 Hugging Face access
@@ -1276,19 +963,13 @@ The pyannote model may require:
 3. an access token.
 
 Recommended setup:
-
-```
+```shell script
 export HF_TOKEN="hf_..."
 ```
-
-
 or:
-
-```
+```shell script
 huggingface-cli login
 ```
-
-
 The programme must not put the token into:
 
 - code;
@@ -1299,14 +980,11 @@ The programme must not put the token into:
 - exception traces where avoidable.
 
 It may record:
-
 ```json
 {
   "huggingface_token_present": true
 }
 ```
-
-
 but never the token value.
 
 ---
@@ -1370,6 +1048,8 @@ The programme must follow this workflow:
 
 6. **Diarisation index generation**
    - Combine source metadata and diarisation metadata.
+   - Preserve source `duration_seconds`.
+   - Store diarisation processing runtime as `diarisation_runtime_seconds`.
    - Write curated NDJSON diarisation index.
 
 7. **Manifest writing**
@@ -1385,48 +1065,40 @@ The programme must follow this workflow:
 ## 8.2 Separation of concerns
 
 Suggested function responsibilities:
-
 ```python
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments for the diarisation programme."""
 ```
-
 
 ```python
 def resolve_script_relative_path(path: Path) -> Path:
     """Resolve relative paths against the programme directory."""
 ```
 
-
 ```python
 def setup_logging(log_file: Path) -> logging.Logger:
     """Configure append-only UTF-8 logging."""
 ```
-
 
 ```python
 def validate_args(args: argparse.Namespace) -> None:
     """Validate command-line arguments and filesystem paths."""
 ```
 
-
 ```python
 def check_diarisation_dependencies() -> dict:
     """Check required Python package availability."""
 ```
-
 
 ```python
 def check_cuda_available(device: str) -> dict:
     """Validate CUDA availability when requested."""
 ```
 
-
 ```python
 def get_hf_token(env_var_name: str) -> str | None:
     """Read Hugging Face token from an environment variable without logging it."""
 ```
-
 
 ```python
 def load_audio_index(
@@ -1435,12 +1107,10 @@ def load_audio_index(
     """Load and validate eligible audio records from NDJSON."""
 ```
 
-
 ```python
 def resolve_audio_path(record: dict, audio_dir: Path) -> Path:
     """Resolve source audio path using audio_file or fallback audio directory."""
 ```
-
 
 ```python
 def plan_diarisations(
@@ -1455,7 +1125,6 @@ def plan_diarisations(
     """Create planned, skipped, and missing-input diarisation records."""
 ```
 
-
 ```python
 def load_diarisation_pipeline(
     model_name: str,
@@ -1465,6 +1134,16 @@ def load_diarisation_pipeline(
     """Load the pyannote.audio diarisation pipeline."""
 ```
 
+```python
+def call_pipeline(
+    pipeline: Any,
+    audio_path: Path,
+    num_speakers: int | None,
+    min_speakers: int | None,
+    max_speakers: int | None,
+) -> Any:
+    """Call pyannote pipeline with only non-null speaker-count constraints."""
+```
 
 ```python
 def diarise_one_debate(
@@ -1478,12 +1157,15 @@ def diarise_one_debate(
     """Diarise one debate audio file and return a structured result."""
 ```
 
-
 ```python
 def normalise_diarisation_result(raw_diarisation: Any, corpus_id: str) -> list[dict]:
     """Normalise pyannote output into project-stable speaker interval records."""
 ```
 
+```python
+def summarise_segments(segments: list[dict]) -> dict:
+    """Summarise speaker count, segment count, and speech duration."""
+```
 
 ```python
 def write_rttm(
@@ -1493,7 +1175,6 @@ def write_rttm(
 ) -> None:
     """Write speaker diarisation as RTTM."""
 ```
-
 
 ```python
 def write_diarisation_outputs(
@@ -1505,6 +1186,15 @@ def write_diarisation_outputs(
     """Write diarisation JSON and segment-level NDJSON outputs."""
 ```
 
+```python
+def make_diarisation_index_record(
+    item_result: dict,
+    run_id: str,
+    diarised_at_utc: str,
+    model_config: dict,
+) -> dict:
+    """Build one curated diarisation index record."""
+```
 
 ```python
 def write_diarisation_index(
@@ -1513,7 +1203,6 @@ def write_diarisation_index(
 ) -> None:
     """Write curated NDJSON diarisation index."""
 ```
-
 
 ```python
 def write_manifests(
@@ -1524,13 +1213,10 @@ def write_manifests(
     """Write latest and timestamped manifest files."""
 ```
 
-
 ```python
 def main() -> int:
     """Run the batch Jubilee debate diarisation workflow and return an exit code."""
 ```
-
-
 ---
 
 # 9. Diarisation Behaviour
@@ -1538,58 +1224,68 @@ def main() -> int:
 ## 9.1 Diarisation backend
 
 The required backend is:
-
-```
+```plain text
 pyannote
 ```
-
-
 Conceptual model loading:
-
 ```python
 from pyannote.audio import Pipeline
 
 pipeline = Pipeline.from_pretrained(
     model_name,
+    token=hf_token,
+)
+```
+For compatibility with pyannote versions that use the older argument name, the implementation may fall back to:
+```python
+pipeline = Pipeline.from_pretrained(
+    model_name,
     use_auth_token=hf_token,
 )
 ```
-
-
 Conceptual CUDA placement:
-
 ```python
 pipeline.to(torch.device("cuda"))
 ```
-
-
 Conceptual diarisation call:
-
 ```python
-diarisation = pipeline(
+raw_diarisation = pipeline(
     str(audio_path),
     num_speakers=num_speakers,
     min_speakers=min_speakers,
     max_speakers=max_speakers,
 )
 ```
-
+Only non-null speaker-count constraints should be passed to the pipeline.
 
 Exact API details may vary by pyannote.audio version. The implementation must normalise outputs into the project schema.
+
+### Supported pyannote output shapes
+
+The implementation must support at least these pyannote output shapes:
+
+1. Direct `pyannote.core.Annotation`-like object supporting:
+```python
+raw_diarisation.itertracks(yield_label=True)
+```
+2. Wrapped diarisation output, such as `DiarizeOutput`, where the main diarisation annotation is available as:
+```python
+raw_diarisation.speaker_diarization
+```
+The normalisation logic should use the direct object when it supports `itertracks`. Otherwise, if the output has a `speaker_diarization` attribute, it should use that annotation for speaker interval extraction.
+
+The implementation may ignore additional wrapper fields such as `exclusive_speaker_diarization` and `speaker_embeddings` unless a later version of the project explicitly uses them.
 
 ---
 
 ## 9.2 Speaker-count policy
 
 Default behaviour should be:
-
-```
+```plain text
 num_speakers = None
 min_speakers = None
 max_speakers = None
 ```
-
-
 This allows pyannote to infer speaker count automatically.
 
 For Jubilee `Surrounded` debates, there may be:
@@ -1604,13 +1300,10 @@ For Jubilee `Surrounded` debates, there may be:
 The initial implementation should avoid hard-coding the number of speakers.
 
 Later tuning runs may use:
-
-```
+```plain text
 min_speakers = 8
 max_speakers = 30
 ```
-
-
 or a known exact speaker count for individual debates.
 
 The programme must record the speaker-count configuration in:
@@ -1624,7 +1317,6 @@ The programme must record the speaker-count configuration in:
 ## 9.3 Normalised speaker segment structure
 
 The normalised diarisation segments should use a stable schema:
-
 ```json
 {
   "corpus_id": "jubilee_surrounded_001",
@@ -1636,17 +1328,12 @@ The normalised diarisation segments should use a stable schema:
   "diarisation_status": "speech"
 }
 ```
-
-
 The programme should preserve pyannote speaker labels such as:
-
-```
+```plain text
 SPEAKER_00
 SPEAKER_01
 SPEAKER_02
 ```
-
-
 These labels must be treated as **anonymous diarisation labels**, not real participant identities.
 
 The programme must not attempt to infer real speaker names.
@@ -1656,7 +1343,6 @@ The programme must not attempt to infer real speaker names.
 ## 9.4 Diarisation JSON structure
 
 The per-debate diarisation JSON should include:
-
 ```json
 {
   "corpus_id": "jubilee_surrounded_001",
@@ -1674,8 +1360,8 @@ The per-debate diarisation JSON should include:
   },
   "diarisation": {
     "speaker_count": 18,
-    "segment_count": 1450,
-    "total_speech_seconds": 4820.35,
+    "segment_count": 1759,
+    "total_speech_seconds": 5769.416,
     "speakers": [
       {
         "speaker": "SPEAKER_00",
@@ -1699,7 +1385,10 @@ The per-debate diarisation JSON should include:
       }
     ]
   },
-  "metadata": {},
+  "metadata": {
+    "duration_seconds": 5427,
+    "duration_string": "1:30:27"
+  },
   "run": {
     "diarisation_run_id": "20260804T140000Z",
     "diarised_at_utc": "2026-08-04T14:00:00Z"
@@ -1708,7 +1397,7 @@ The per-debate diarisation JSON should include:
   "error": null
 }
 ```
-
+`total_speech_seconds` is the sum of diarised speaker interval durations. In audio with overlapping speech, this value may be greater than the source audio duration because overlapping speaker intervals are counted separately.
 
 ---
 
@@ -1717,7 +1406,6 @@ The per-debate diarisation JSON should include:
 Each line in `<corpus_id>.segments.ndjson` should contain one diarised speaker interval.
 
 Recommended fields:
-
 ```json
 {
   "corpus_id": "jubilee_surrounded_001",
@@ -1729,8 +1417,6 @@ Recommended fields:
   "diarisation_status": "speech"
 }
 ```
-
-
 ---
 
 ## 9.6 RTTM structure
@@ -1738,12 +1424,9 @@ Recommended fields:
 The RTTM file should use standard speaker diarisation lines.
 
 Example:
-
-```
+```plain text
 SPEAKER jubilee_surrounded_001 1 12.420 6.490 <NA> <NA> SPEAKER_00 <NA> <NA>
 ```
-
-
 Where:
 
 - file ID is `corpus_id`;
@@ -1757,14 +1440,11 @@ Where:
 ## 9.7 Existing files
 
 If all of the following already exist:
-
-```
+```plain text
 <output_dir>/<corpus_id>.rttm
 <output_dir>/<corpus_id>.diarisation.json
 <output_dir>/<corpus_id>.segments.ndjson
 ```
-
-
 and `--reprocess` is not enabled:
 
 - do not run diarisation;
@@ -1811,73 +1491,70 @@ Common failure categories should be recognisable in logs where possible:
 - CUDA out-of-memory;
 - audio decoding failure;
 - invalid diarisation output;
-- output write failure.
+- output write failure;
+- unsupported pyannote output shape.
 
 ---
 
 # 10. Diarisation Index Design
 
 The programme must write:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
 Each line should contain one JSON object per processed, skipped, missing, failed, or invalid eligible item.
 
 Recommended fields:
 
-| Field | Description |
-|---|---|
-| `corpus_id` | Stable debate ID |
-| `debate_format` | Debate format |
-| `sample_group` | Sample group |
-| `sample_order` | Sample order |
-| `title_selected` | Selected title |
-| `title_extracted` | Extracted title |
-| `youtube_id` | YouTube ID |
-| `youtube_url` | YouTube URL |
-| `duration_seconds` | Source duration |
-| `duration_string` | Human-readable duration |
-| `chapters` | Chapter metadata |
-| `audio_file` | Source WAV path |
-| `rttm_file` | RTTM output path |
-| `diarisation_json_file` | Diarisation JSON output path |
-| `segments_ndjson_file` | Segment NDJSON output path |
-| `diarisation_status` | Status |
-| `diarisation_run_id` | Run ID |
-| `diarised_at_utc` | Timestamp |
-| `diarisation_backend` | Backend |
-| `diarisation_model_name` | Model name |
-| `diarisation_device` | Device |
-| `num_speakers` | Exact speaker constraint, if used |
-| `min_speakers` | Minimum speaker constraint, if used |
-| `max_speakers` | Maximum speaker constraint, if used |
-| `detected_speaker_count` | Number of speaker labels returned |
-| `diarised_segment_count` | Number of speaker intervals |
-| `total_speech_seconds` | Total diarised speech time |
-| `audio_extraction_status` | Previous stage status |
-| `audio_extraction_run_id` | Previous stage run ID |
-| `selected_by` | Selector |
-| `selection_source` | Selection source |
-| `notes` | Notes |
-| `error` | Error message |
+| Field                         | Description                                                                                        |
+|-------------------------------|----------------------------------------------------------------------------------------------------|
+| `corpus_id`                   | Stable debate ID                                                                                   |
+| `debate_format`               | Debate format                                                                                      |
+| `sample_group`                | Sample group                                                                                       |
+| `sample_order`                | Sample order                                                                                       |
+| `title_selected`              | Selected title                                                                                     |
+| `title_extracted`             | Extracted title                                                                                    |
+| `youtube_id`                  | YouTube ID                                                                                         |
+| `youtube_url`                 | YouTube URL                                                                                        |
+| `duration_seconds`            | Source audio/video duration from upstream metadata. Must not be overwritten by processing runtime. |
+| `duration_string`             | Human-readable source duration                                                                     |
+| `chapters`                    | Chapter metadata                                                                                   |
+| `audio_file`                  | Source WAV path                                                                                    |
+| `rttm_file`                   | RTTM output path                                                                                   |
+| `diarisation_json_file`       | Diarisation JSON output path                                                                       |
+| `segments_ndjson_file`        | Segment NDJSON output path                                                                         |
+| `diarisation_status`          | Status                                                                                             |
+| `diarisation_run_id`          | Run ID                                                                                             |
+| `diarised_at_utc`             | Timestamp                                                                                          |
+| `diarisation_backend`         | Backend                                                                                            |
+| `diarisation_model_name`      | Model name                                                                                         |
+| `diarisation_device`          | Device                                                                                             |
+| `num_speakers`                | Exact speaker constraint, if used                                                                  |
+| `min_speakers`                | Minimum speaker constraint, if used                                                                |
+| `max_speakers`                | Maximum speaker constraint, if used                                                                |
+| `detected_speaker_count`      | Number of speaker labels returned                                                                  |
+| `diarised_segment_count`      | Number of speaker intervals                                                                        |
+| `total_speech_seconds`        | Sum of diarised speaker interval durations                                                         |
+| `diarisation_runtime_seconds` | Processing runtime for this item                                                                   |
+| `audio_extraction_status`     | Previous stage status                                                                              |
+| `audio_extraction_run_id`     | Previous stage run ID                                                                              |
+| `selected_by`                 | Selector                                                                                           |
+| `selection_source`            | Selection source                                                                                   |
+| `notes`                       | Notes                                                                                              |
+| `error`                       | Error message                                                                                      |
+
+The diarisation index must preserve source metadata from the input audio index. In particular, `duration_seconds` must remain the source media duration because downstream QC uses it as the denominator for coverage metrics.
+
+Processing runtime must be recorded separately as `diarisation_runtime_seconds`.
 
 The diarisation index must be suitable as input to:
-
-```
+```plain text
 assign_speakers_jubilee_debates.py
 ```
-
-
 and:
-
-```
+```plain text
 qc_jubilee_debates_speaker_diarisation.py
 ```
-
-
 ---
 
 # 11. JSON Manifest Design
@@ -1885,7 +1562,6 @@ qc_jubilee_debates_speaker_diarisation.py
 ## 11.1 Manifest structure
 
 The manifest must use this general structure:
-
 ```json
 {
   "run_metadata": {
@@ -1908,6 +1584,7 @@ The manifest must use this general structure:
       "backend": "pyannote",
       "model_name": "pyannote/speaker-diarization-3.1",
       "device": "cuda",
+      "requested_device": "cuda",
       "num_speakers": null,
       "min_speakers": null,
       "max_speakers": null,
@@ -1950,16 +1627,17 @@ The manifest must use this general structure:
       "status": "success",
       "error": null,
       "retries": 0,
-      "duration_seconds": 1800.5,
+      "duration_seconds": 388.431,
       "start_time": "2026-08-04T14:01:00Z",
-      "end_time": "2026-08-04T14:31:00Z",
+      "end_time": "2026-08-04T14:07:28Z",
       "detected_speaker_count": 18,
-      "diarised_segment_count": 1450,
-      "total_speech_seconds": 4820.35,
+      "diarised_segment_count": 1759,
+      "total_speech_seconds": 5769.416,
       "metadata": {
         "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
         "youtube_id": "WV29R1M25n8",
-        "duration_seconds": 5427
+        "duration_seconds": 5427,
+        "duration_string": "1:30:27"
       }
     }
   ],
@@ -1967,21 +1645,23 @@ The manifest must use this general structure:
   "ignored_records": []
 }
 ```
+In manifest item records, `duration_seconds` may represent item processing runtime for backward compatibility with the run manifest. However, the diarisation index must expose this value as `diarisation_runtime_seconds` and must preserve source media duration as `duration_seconds`.
 
+Downstream stages must rely on the diarisation index field `duration_seconds` for source media duration.
 
 ---
 
 ## 11.2 Required item statuses
 
-| Status | Meaning |
-|---|---|
-| `success` | Diarisation completed successfully |
-| `failed` | Diarisation was attempted but failed |
-| `skipped_existing` | Diarisation outputs already existed and `--reprocess` was not enabled |
-| `missing_input` | Source audio was missing |
-| `failed_metadata` | Eligible audio-index row was invalid |
-| `ignored_audio_unavailable` | Record ignored because extracted audio was not available |
-| `interrupted` | Processing stopped due to keyboard interruption |
+| Status                      | Meaning                                                               |
+|-----------------------------|-----------------------------------------------------------------------|
+| `success`                   | Diarisation completed successfully                                    |
+| `failed`                    | Diarisation was attempted but failed                                  |
+| `skipped_existing`          | Diarisation outputs already existed and `--reprocess` was not enabled |
+| `missing_input`             | Source audio was missing                                              |
+| `failed_metadata`           | Eligible audio-index row was invalid                                  |
+| `ignored_audio_unavailable` | Record ignored because extracted audio was not available              |
+| `interrupted`               | Processing stopped due to keyboard interruption                       |
 
 ---
 
@@ -1990,19 +1670,13 @@ The manifest must use this general structure:
 The programme must write an append-only UTF-8 log file.
 
 Default:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 ```
-
-
 Log format:
-
-```
+```plain text
 [YYYY-MM-DD HH:MM:SS] LEVEL  message
 ```
-
-
 Required log events:
 
 - startup;
@@ -2072,12 +1746,9 @@ Examples:
 - Hugging Face model terms not accepted.
 
 Exit code:
-
-```
+```plain text
 2
 ```
-
-
 ---
 
 ## 13.2 Per-item errors
@@ -2092,6 +1763,7 @@ Examples:
 - diarisation backend exception;
 - CUDA out of memory;
 - invalid diarisation output;
+- unsupported pyannote output shape;
 - output file cannot be written.
 
 For each per-item error:
@@ -2105,12 +1777,9 @@ For each per-item error:
 - continue to next item.
 
 Exit code:
-
-```
+```plain text
 1
 ```
-
-
 if any per-item error occurred.
 
 ---
@@ -2124,22 +1793,19 @@ If interrupted with `Ctrl+C`, the programme must:
 - write partial manifest where possible;
 - log interruption;
 - exit with code:
-
-```
+```plain text
 130
 ```
-
-
 ---
 
 ## 13.4 Exit codes
 
-| Exit code | Meaning |
-|---:|---|
-| `0` | Completed with no failed attempted diarisation jobs, no missing inputs, and no invalid eligible metadata rows |
-| `1` | Completed, but one or more diarisation jobs failed, source inputs were missing, or eligible metadata rows were invalid |
-| `2` | Configuration or validation error |
-| `130` | Interrupted by user |
+| Exit code | Meaning                                                                                                                |
+|----------:|------------------------------------------------------------------------------------------------------------------------|
+|       `0` | Completed with no failed attempted diarisation jobs, no missing inputs, and no invalid eligible metadata rows          |
+|       `1` | Completed, but one or more diarisation jobs failed, source inputs were missing, or eligible metadata rows were invalid |
+|       `2` | Configuration or validation error                                                                                      |
+|     `130` | Interrupted by user                                                                                                    |
 
 Skipped existing files are not failures.
 
@@ -2167,7 +1833,6 @@ At the top of `diarise_jubilee_debates_pyannote.py`, include a module-level docs
 - example commands.
 
 Suggested module docstring:
-
 ```python
 """
 Diarise Jubilee debate audio with pyannote.audio.
@@ -2208,8 +1873,6 @@ Full run from a specific debate:
     python diarise_jubilee_debates_pyannote.py --no-test-mode --start-corpus-id jubilee_surrounded_003
 """
 ```
-
-
 ---
 
 ## 14.2 Function docstrings
@@ -2235,10 +1898,13 @@ At minimum, docstrings are required for:
 - `resolve_audio_path`
 - `plan_diarisations`
 - `load_diarisation_pipeline`
+- `call_pipeline`
 - `diarise_one_debate`
 - `normalise_diarisation_result`
+- `summarise_segments`
 - `write_rttm`
 - `write_diarisation_outputs`
+- `make_diarisation_index_record`
 - `write_diarisation_index`
 - `write_manifests`
 - `main`
@@ -2246,7 +1912,6 @@ At minimum, docstrings are required for:
 ---
 
 # 15. Suggested Constants
-
 ```python
 TOOL_NAME = "diarise_jubilee_debates_pyannote.py"
 TOOL_VERSION = "v1"
@@ -2295,8 +1960,6 @@ OUTPUT_SEGMENTS_NDJSON_EXTENSION = ".segments.ndjson"
 
 ELIGIBLE_AUDIO_EXTRACTION_STATUSES = ("success", "skipped_existing")
 ```
-
-
 ---
 
 # 16. Development Notes
@@ -2310,6 +1973,7 @@ The first implementation should prioritise:
 - eligibility filtering by `audio_extraction_status`;
 - robust input audio resolution;
 - stable pyannote pipeline loading;
+- compatibility with current pyannote output wrappers such as `DiarizeOutput`;
 - secure Hugging Face token handling;
 - automatic speaker-count inference by default;
 - optional speaker-count constraints;
@@ -2317,6 +1981,8 @@ The first implementation should prioritise:
 - stable diarisation JSON output;
 - stable segment NDJSON output;
 - reliable diarisation index output;
+- preservation of upstream source duration metadata;
+- separate recording of diarisation runtime as `diarisation_runtime_seconds`;
 - reliable logging;
 - robust manifest writing;
 - clear environment validation;
@@ -2339,6 +2005,14 @@ Downstream stages include:
 
 Diarised labels such as `SPEAKER_00` are not real identities.
 
+## 16.3 Diarisation coverage note
+
+The diarisation stage reports `total_speech_seconds` as the sum of all diarised speaker interval durations. In overlapping speech, this sum can exceed the source media duration.
+
+Therefore downstream QC may report diarisation coverage above 100% when using summed diarised speech time. This is not necessarily an error. It indicates that overlapping speaker intervals were counted separately.
+
+However, unexpectedly large coverage values should trigger review because they may indicate incorrect source duration metadata or excessive overlapping diarisation intervals.
+
 ---
 
 # 17. Acceptance Criteria
@@ -2346,76 +2020,49 @@ Diarised labels such as `SPEAKER_00` are not real identities.
 The programme is considered complete when:
 
 1. Running from inside `cl_st1_ph0_carol/` works:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py
 ```
-
-
 2. Running from project root works:
-
-```
+```shell script
 python cl_st1_ph0_carol/diarise_jubilee_debates_pyannote.py
 ```
-
-
 3. Default paths are resolved relative to the programme directory.
 
 4. It reads:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 5. It processes only records where extracted audio is available.
 
 6. It uses source audio from `audio_file` when present and usable.
 
 7. It falls back to:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/<corpus_id>.wav
 ```
-
-
 8. It creates the output directory if needed:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 9. Each successful diarisation writes:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/<corpus_id>.rttm
 corpus/05_jubilee_debates_diarisation/<corpus_id>.diarisation.json
 corpus/05_jubilee_debates_diarisation/<corpus_id>.segments.ndjson
 ```
-
-
 10. The default backend is:
-
-```
+```plain text
 pyannote
 ```
-
-
 11. The default model is:
-
-```
+```plain text
 pyannote/speaker-diarization-3.1
 ```
-
-
 12. The default device is:
-
-```
+```plain text
 cuda
 ```
-
-
 13. Existing complete diarisation outputs are skipped unless `--reprocess` is used.
 
 14. If only some diarisation outputs exist, the item is treated as incomplete and planned for diarisation.
@@ -2427,64 +2074,52 @@ cuda
 17. Invalid eligible metadata rows are marked as `failed_metadata`.
 
 18. The programme supports:
-
-```
+```shell script
 --start-corpus-id CORPUS_ID
 ```
-
-
 19. If `--start-corpus-id` is not found among eligible records, the programme exits with configuration error.
 
 20. The programme supports automatic speaker-count inference by default.
 
 21. The programme supports optional:
-
-```
+```shell script
 --num-speakers N
 --min-speakers N
 --max-speakers N
 ```
-
-
 22. Hugging Face token values are never logged or written to outputs.
 
-23. A log file is written at:
+23. The programme supports direct pyannote `Annotation` outputs and wrapped outputs such as `DiarizeOutput`.
 
-```
+24. The diarisation index preserves source media duration in `duration_seconds`.
+
+25. The diarisation index records processing runtime separately as `diarisation_runtime_seconds`.
+
+26. A log file is written at:
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 ```
-
-
-24. A latest manifest is written at:
-
-```
+27. A latest manifest is written at:
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 ```
+28. A timestamped per-run manifest is also written.
 
-
-25. A timestamped per-run manifest is also written.
-
-26. A diarisation index is written at:
-
-```
+29. A diarisation index is written at:
+```plain text
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
-27. The diarisation index is suitable as input to:
-
-```
+30. The diarisation index is suitable as input to:
+```plain text
 assign_speakers_jubilee_debates.py
 ```
-
-
-28. The programme exits with:
+31. The programme exits with:
     - `0` for clean completion;
     - `1` for item-level failures, missing inputs, or invalid eligible metadata;
     - `2` for configuration errors;
     - `130` for keyboard interruption.
 
-29. The programme does **not** transcribe, align, assign speakers to words, identify real speakers, or produce QC reports.
+32. The programme does **not** transcribe, align, assign speakers to words, identify real speakers, or produce QC reports.
 
 ---
 
@@ -2495,104 +2130,70 @@ assign_speakers_jubilee_debates.py
 The `diarise_jubilee_debates_pyannote.py` programme performs speaker diarisation on extracted Jubilee debate WAV audio using pyannote.audio.
 
 It reads the audio index:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
 ```
-
-
 Only records whose `audio_extraction_status` indicates available audio are processed.
 
 Source audio files are resolved from the `audio_file` field when available. Otherwise, audio is read from:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/
 ```
-
-
 Each fallback source audio file is expected as:
-
-```
+```plain text
 corpus/02_jubilee_debates_audio/<corpus_id>.wav
 ```
-
-
 Diarisation outputs are written to:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/
 ```
-
-
 Each successful diarisation writes:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/<corpus_id>.rttm
 corpus/05_jubilee_debates_diarisation/<corpus_id>.diarisation.json
 corpus/05_jubilee_debates_diarisation/<corpus_id>.segments.ndjson
 ```
-
-
 Set Hugging Face authentication before running if required:
-
-```
+```shell script
 export HF_TOKEN="hf_..."
 ```
-
-
 Default test run:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py
 ```
-
-
 This processes one planned debate by default.
 
 Full run:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py --no-test-mode
 ```
-
-
 Resume from a specific debate:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --start-corpus-id jubilee_surrounded_003
 ```
-
-
 Force re-diarisation:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --reprocess
 ```
-
-
 Optional speaker-count bounds:
-
-```
+```shell script
 python diarise_jubilee_debates_pyannote.py \
   --no-test-mode \
   --min-speakers 8 \
   --max-speakers 30
 ```
-
-
 The programme writes:
-
-```
+```plain text
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote.log
 corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
 ```
-
-
 A timestamped per-run manifest is also created.
+
+The diarisation index preserves source media duration as `duration_seconds` and records processing runtime separately as `diarisation_runtime_seconds`.
 
 This stage performs diarisation only. Transcription, alignment, speaker assignment, and QC are handled by separate pipeline stages.
