@@ -1,0 +1,28 @@
+[2026-08-18 15:30:10] INFO  Starting assign_speakers_jubilee_debates.py run_id=20260818T153010Z
+[2026-08-18 15:30:10] INFO  Alignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson
+[2026-08-18 15:30:10] INFO  Diarisation index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
+[2026-08-18 15:30:10] INFO  Alignment directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 15:30:10] INFO  Diarisation directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 15:30:10] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts
+[2026-08-18 15:30:10] INFO  Configuration: test_mode=True test_limit=1 reprocess=False start_corpus_id=None assignment_method=overlap min_overlap_ratio=0.0 merge_adjacent=True
+[2026-08-18 15:30:10] INFO  Loaded records: alignment_total=1 eligible_alignment=1 diarisation_total=1 eligible_diarisation=1 matched=1 ignored=0 invalid=0 planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 15:30:10] INFO  Attempting speaker assignment: jubilee_surrounded_001
+[2026-08-18 15:30:23] INFO  SUCCESS jubilee_surrounded_001 words=19676 assigned=19667 unassigned=9 segments=876
+[2026-08-18 15:30:23] INFO  Wrote speaker-assignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_debates_speaker_assignment_index.ndjson
+[2026-08-18 15:30:23] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates_manifest.json
+[2026-08-18 15:30:23] INFO  Wrote run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates_manifest_20260818T153010Z.json
+[2026-08-18 15:30:23] INFO  Final summary: {'alignment_index_records': 1, 'eligible_alignment_records': 1, 'diarisation_index_records': 1, 'eligible_diarisation_records': 1, 'matched_records': 1, 'ignored_records': 0, 'invalid_metadata': 0, 'planned': 1, 'attempted': 1, 'succeeded': 1, 'failed': 0, 'missing_input': 0, 'skipped_existing': 0}
+[2026-08-18 15:51:59] INFO  Starting assign_speakers_jubilee_debates.py run_id=20260818T155159Z
+[2026-08-18 15:51:59] INFO  Alignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson
+[2026-08-18 15:51:59] INFO  Diarisation index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
+[2026-08-18 15:51:59] INFO  Alignment directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 15:51:59] INFO  Diarisation directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 15:51:59] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts
+[2026-08-18 15:51:59] INFO  Configuration: test_mode=True test_limit=1 reprocess=True start_corpus_id=None assignment_method=overlap min_overlap_ratio=0.0 merge_adjacent=True
+[2026-08-18 15:51:59] INFO  Loaded records: alignment_total=1 eligible_alignment=1 diarisation_total=1 eligible_diarisation=1 matched=1 ignored=0 invalid=0 planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 15:51:59] INFO  Attempting speaker assignment: jubilee_surrounded_001
+[2026-08-18 15:52:13] INFO  SUCCESS jubilee_surrounded_001 words=19676 assigned=19667 unassigned=9 segments=876
+[2026-08-18 15:52:13] INFO  Wrote speaker-assignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_debates_speaker_assignment_index.ndjson
+[2026-08-18 15:52:13] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates_manifest.json
+[2026-08-18 15:52:13] INFO  Wrote run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates_manifest_20260818T155159Z.json
+[2026-08-18 15:52:13] INFO  Final summary: {'alignment_index_records': 1, 'eligible_alignment_records': 1, 'diarisation_index_records': 1, 'eligible_diarisation_records': 1, 'matched_records': 1, 'ignored_records': 0, 'invalid_metadata': 0, 'planned': 1, 'attempted': 1, 'succeeded': 1, 'failed': 0, 'missing_input': 0, 'skipped_existing': 0}

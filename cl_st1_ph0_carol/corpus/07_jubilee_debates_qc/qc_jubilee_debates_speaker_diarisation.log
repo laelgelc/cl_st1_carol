@@ -1,0 +1,40 @@
+[2026-08-18 15:34:20] INFO  Starting qc_jubilee_debates_speaker_diarisation.py run_id=20260818T153420Z
+[2026-08-18 15:34:20] INFO  Speaker index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_debates_speaker_assignment_index.ndjson
+[2026-08-18 15:34:20] INFO  Alignment directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 15:34:20] INFO  Diarisation directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 15:34:20] INFO  Speaker transcripts directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts
+[2026-08-18 15:34:20] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc
+[2026-08-18 15:34:20] INFO  Test mode: True; test_limit=1
+[2026-08-18 15:34:20] INFO  Reprocess: False
+[2026-08-18 15:34:20] INFO  Start corpus ID: None
+[2026-08-18 15:34:20] INFO  QC config: {'gap_warning_threshold': 5.0, 'unknown_span_warning_threshold': 10.0, 'unassigned_word_ratio_warning_threshold': 0.05, 'diarisation_coverage_warning_threshold': 0.6, 'diarisation_coverage_high_warning_threshold': 0.98, 'min_expected_speakers': 3, 'max_expected_speakers': 35, 'short_turn_threshold': 0.5, 'short_turn_ratio_warning_threshold': 0.25, 'long_turn_threshold': 120.0, 'speaker_imbalance_warning_threshold': 0.65, 'timeout_seconds': 3600, 'max_retries': 1, 'retry_delay_seconds': 5, 'start_corpus_id': None}
+[2026-08-18 15:34:20] INFO  Loaded speaker-assignment index: records=1 eligible=1 ignored=0 invalid=0
+[2026-08-18 15:34:20] INFO  Planning complete: planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 15:34:20] INFO  QC attempt 1/2 for jubilee_surrounded_001
+[2026-08-18 15:34:20] INFO  SUCCESS jubilee_surrounded_001 rating=review warnings=2
+[2026-08-18 15:34:20] INFO  Wrote corpus summary JSON: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_summary.json
+[2026-08-18 15:34:20] INFO  Wrote corpus summary Markdown: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_summary.md
+[2026-08-18 15:34:20] INFO  Wrote QC index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_index.ndjson
+[2026-08-18 15:34:20] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/qc_jubilee_debates_speaker_diarisation_manifest.json
+[2026-08-18 15:34:20] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/qc_jubilee_debates_speaker_diarisation_manifest_20260818T153420Z.json
+[2026-08-18 15:34:20] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_records=0
+[2026-08-18 15:52:13] INFO  Starting qc_jubilee_debates_speaker_diarisation.py run_id=20260818T155213Z
+[2026-08-18 15:52:13] INFO  Speaker index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_debates_speaker_assignment_index.ndjson
+[2026-08-18 15:52:13] INFO  Alignment directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 15:52:13] INFO  Diarisation directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 15:52:13] INFO  Speaker transcripts directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts
+[2026-08-18 15:52:13] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc
+[2026-08-18 15:52:13] INFO  Test mode: True; test_limit=1
+[2026-08-18 15:52:13] INFO  Reprocess: True
+[2026-08-18 15:52:13] INFO  Start corpus ID: None
+[2026-08-18 15:52:13] INFO  QC config: {'gap_warning_threshold': 5.0, 'unknown_span_warning_threshold': 10.0, 'unassigned_word_ratio_warning_threshold': 0.05, 'diarisation_coverage_warning_threshold': 0.6, 'diarisation_coverage_high_warning_threshold': 0.98, 'min_expected_speakers': 3, 'max_expected_speakers': 35, 'short_turn_threshold': 0.5, 'short_turn_ratio_warning_threshold': 0.25, 'long_turn_threshold': 120.0, 'speaker_imbalance_warning_threshold': 0.65, 'timeout_seconds': 3600, 'max_retries': 1, 'retry_delay_seconds': 5, 'start_corpus_id': None}
+[2026-08-18 15:52:13] INFO  Loaded speaker-assignment index: records=1 eligible=1 ignored=0 invalid=0
+[2026-08-18 15:52:13] INFO  Planning complete: planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 15:52:13] INFO  QC attempt 1/2 for jubilee_surrounded_001
+[2026-08-18 15:52:13] INFO  SUCCESS jubilee_surrounded_001 rating=review warnings=2
+[2026-08-18 15:52:13] INFO  Wrote corpus summary JSON: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_summary.json
+[2026-08-18 15:52:13] INFO  Wrote corpus summary Markdown: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_summary.md
+[2026-08-18 15:52:13] INFO  Wrote QC index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/jubilee_debates_speaker_diarisation_qc_index.ndjson
+[2026-08-18 15:52:13] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/qc_jubilee_debates_speaker_diarisation_manifest.json
+[2026-08-18 15:52:13] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/07_jubilee_debates_qc/qc_jubilee_debates_speaker_diarisation_manifest_20260818T155213Z.json
+[2026-08-18 15:52:13] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_records=0

@@ -1,0 +1,200 @@
+{
+  "run_metadata": {
+    "run_id": "20260818T125941Z",
+    "tool_name": "align_jubilee_debates_whisperx.py",
+    "tool_version": "v1",
+    "start_time": "2026-08-18T12:59:41Z",
+    "end_time": "2026-08-18T13:00:58Z",
+    "test_mode": true,
+    "test_limit": 1,
+    "reprocess": false,
+    "workers": 1,
+    "transcript_index_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_debates_transcript_index.ndjson",
+    "audio_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio",
+    "transcript_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts",
+    "output_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment",
+    "alignment_index_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson",
+    "log_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx.log",
+    "manifest_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest.json",
+    "config": {
+      "backend": "whisperx",
+      "device": "cuda",
+      "language": "en",
+      "batch_size": 8,
+      "return_char_alignments": false,
+      "interpolate_method": "nearest",
+      "timeout_seconds": 14400,
+      "max_retries": 1,
+      "retry_delay_seconds": 5,
+      "start_corpus_id": null
+    },
+    "environment": {
+      "python_version": "3.11.15",
+      "cuda_available": true,
+      "cuda_device_name": "NVIDIA A10G",
+      "torch_version": "2.8.0+cu128",
+      "torch_cuda_version": "12.8",
+      "whisperx_version": "unknown",
+      "torchaudio_version": "2.8.0+cu128"
+    },
+    "summary": {
+      "transcript_index_records": 1,
+      "eligible_transcript_records": 1,
+      "ignored_transcript_records": 0,
+      "invalid_metadata": 0,
+      "planned": 1,
+      "attempted": 1,
+      "succeeded": 1,
+      "failed": 0,
+      "missing_input": 0,
+      "skipped_existing": 0
+    },
+    "interrupted": false
+  },
+  "items": [
+    {
+      "corpus_id": "jubilee_surrounded_001",
+      "debate_format": "Surrounded",
+      "sample_group": "carol_initial_sample",
+      "sample_order": 1,
+      "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+      "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+      "youtube_id": "WV29R1M25n8",
+      "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+      "duration_seconds": 69.794,
+      "duration_string": "1:30:27",
+      "chapters": [
+        {
+          "start_time": 0,
+          "title": "Intro",
+          "end_time": 45
+        },
+        {
+          "start_time": 45,
+          "title": "Claim #1 Abortion is murder and should be illegal",
+          "end_time": 1258
+        },
+        {
+          "start_time": 1258,
+          "title": "Claim #2 College is a scam",
+          "end_time": 2416
+        },
+        {
+          "start_time": 2416,
+          "title": "Claim #3 Trans women are not women",
+          "end_time": 3626
+        },
+        {
+          "start_time": 3626,
+          "title": "Claim #4 Kamal Harris is a DEI candidate",
+          "end_time": 4741
+        },
+        {
+          "start_time": 4741,
+          "title": "Student's Claim: Affirmative Action is constitutional",
+          "end_time": 5427
+        }
+      ],
+      "audio_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
+      "transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.txt",
+      "transcript_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.json",
+      "transcription_status": "success",
+      "transcription_run_id": "20260818T123022Z",
+      "transcribed_at_utc": "2026-08-18T12:32:52Z",
+      "transcript_characters": 108414,
+      "segment_count": 2243,
+      "detected_language": "en",
+      "language_probability": null,
+      "model_name": "large-v3",
+      "backend": "whisperx",
+      "device": "cuda",
+      "compute_type": "float16",
+      "batch_size": 8,
+      "audio_extraction_status": "success",
+      "audio_extraction_run_id": "20260817T190013Z",
+      "selected_by": "Carol",
+      "selection_source": "email",
+      "notes": null,
+      "input_audio_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
+      "input_transcript_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.json",
+      "aligned_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json",
+      "words_ndjson_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.words.ndjson",
+      "status": "success",
+      "error": null,
+      "retries": 0,
+      "start_time": "2026-08-18T12:59:48Z",
+      "end_time": "2026-08-18T13:00:58Z",
+      "word_count": 19676,
+      "aligned_word_count": 19676,
+      "unaligned_word_count": 0,
+      "metadata": {
+        "corpus_id": "jubilee_surrounded_001",
+        "debate_format": "Surrounded",
+        "sample_group": "carol_initial_sample",
+        "sample_order": 1,
+        "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+        "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+        "youtube_id": "WV29R1M25n8",
+        "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+        "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+        "duration_seconds": 108.204,
+        "duration_string": "1:30:27",
+        "chapters": [
+          {
+            "start_time": 0,
+            "title": "Intro",
+            "end_time": 45
+          },
+          {
+            "start_time": 45,
+            "title": "Claim #1 Abortion is murder and should be illegal",
+            "end_time": 1258
+          },
+          {
+            "start_time": 1258,
+            "title": "Claim #2 College is a scam",
+            "end_time": 2416
+          },
+          {
+            "start_time": 2416,
+            "title": "Claim #3 Trans women are not women",
+            "end_time": 3626
+          },
+          {
+            "start_time": 3626,
+            "title": "Claim #4 Kamal Harris is a DEI candidate",
+            "end_time": 4741
+          },
+          {
+            "start_time": 4741,
+            "title": "Student's Claim: Affirmative Action is constitutional",
+            "end_time": 5427
+          }
+        ],
+        "audio_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
+        "transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.txt",
+        "transcript_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.json",
+        "transcription_status": "success",
+        "transcription_run_id": "20260818T123022Z",
+        "transcribed_at_utc": "2026-08-18T12:32:52Z",
+        "transcript_characters": 108414,
+        "segment_count": 238,
+        "detected_language": "en",
+        "language_probability": null,
+        "model_name": "large-v3",
+        "backend": "whisperx",
+        "device": "cuda",
+        "compute_type": "float16",
+        "batch_size": 8,
+        "audio_extraction_status": "success",
+        "audio_extraction_run_id": "20260817T190013Z",
+        "selected_by": "Carol",
+        "selection_source": "email",
+        "notes": null
+      }
+    }
+  ],
+  "invalid_records": [],
+  "ignored_records": []
+}

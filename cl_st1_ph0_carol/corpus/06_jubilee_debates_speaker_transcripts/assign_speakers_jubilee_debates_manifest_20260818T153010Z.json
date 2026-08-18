@@ -1,0 +1,144 @@
+{
+  "run_metadata": {
+    "run_id": "20260818T153010Z",
+    "tool_name": "assign_speakers_jubilee_debates.py",
+    "tool_version": "v1",
+    "start_time": "2026-08-18T15:30:10Z",
+    "end_time": "2026-08-18T15:30:23Z",
+    "test_mode": true,
+    "test_limit": 1,
+    "reprocess": false,
+    "workers": 1,
+    "alignment_index_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson",
+    "diarisation_index_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson",
+    "alignment_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment",
+    "diarisation_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation",
+    "output_dir": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts",
+    "speaker_index_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_debates_speaker_assignment_index.ndjson",
+    "log_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates.log",
+    "manifest_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/assign_speakers_jubilee_debates_manifest.json",
+    "config": {
+      "assignment_method": "overlap",
+      "min_overlap_ratio": 0.0,
+      "unassigned_speaker_label": "UNKNOWN_SPEAKER",
+      "merge_adjacent": true,
+      "max_merge_gap": 1.0,
+      "max_segment_duration": 30.0,
+      "max_segment_words": 120,
+      "timeout_seconds": 3600,
+      "max_retries": 1,
+      "retry_delay_seconds": 5,
+      "start_corpus_id": null
+    },
+    "environment": {
+      "python_version": "3.11.15",
+      "platform": "Linux-6.17.0-1019-aws-x86_64-with-glibc2.39"
+    },
+    "summary": {
+      "alignment_index_records": 1,
+      "eligible_alignment_records": 1,
+      "diarisation_index_records": 1,
+      "eligible_diarisation_records": 1,
+      "matched_records": 1,
+      "ignored_records": 0,
+      "invalid_metadata": 0,
+      "planned": 1,
+      "attempted": 1,
+      "succeeded": 1,
+      "failed": 0,
+      "missing_input": 0,
+      "skipped_existing": 0
+    },
+    "interrupted": false
+  },
+  "items": [
+    {
+      "corpus_id": "jubilee_surrounded_001",
+      "input_aligned_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json",
+      "input_words_ndjson_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.words.ndjson",
+      "input_diarisation_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.diarisation.json",
+      "input_diarisation_segments_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.segments.ndjson",
+      "speaker_words_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_001.speaker_words.json",
+      "speaker_words_ndjson_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_001.speaker_words.ndjson",
+      "speaker_segments_json_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_001.speaker_segments.json",
+      "speaker_segments_ndjson_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_001.speaker_segments.ndjson",
+      "speaker_transcript_text_path": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_001.speaker_transcript.txt",
+      "status": "success",
+      "error": null,
+      "retries": 0,
+      "duration_seconds": 13.485,
+      "start_time": "2026-08-18T15:30:10Z",
+      "end_time": "2026-08-18T15:30:23Z",
+      "word_count": 19676,
+      "assigned_word_count": 19667,
+      "unassigned_word_count": 9,
+      "speaker_segment_count": 876,
+      "detected_speaker_count": 18,
+      "assigned_speaker_count": 18,
+      "metadata": {
+        "corpus_id": "jubilee_surrounded_001",
+        "debate_format": "Surrounded",
+        "sample_group": "carol_initial_sample",
+        "sample_order": 1,
+        "title_selected": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk)",
+        "title_extracted": "1 Conservative vs 25 Liberal College Students (Feat. Charlie Kirk) | Surrounded",
+        "youtube_id": "WV29R1M25n8",
+        "youtube_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+        "webpage_url": "https://www.youtube.com/watch?v=WV29R1M25n8",
+        "duration_seconds": 388.431,
+        "duration_string": "1:30:27",
+        "chapters": [
+          {
+            "start_time": 0,
+            "title": "Intro",
+            "end_time": 45
+          },
+          {
+            "start_time": 45,
+            "title": "Claim #1 Abortion is murder and should be illegal",
+            "end_time": 1258
+          },
+          {
+            "start_time": 1258,
+            "title": "Claim #2 College is a scam",
+            "end_time": 2416
+          },
+          {
+            "start_time": 2416,
+            "title": "Claim #3 Trans women are not women",
+            "end_time": 3626
+          },
+          {
+            "start_time": 3626,
+            "title": "Claim #4 Kamal Harris is a DEI candidate",
+            "end_time": 4741
+          },
+          {
+            "start_time": 4741,
+            "title": "Student's Claim: Affirmative Action is constitutional",
+            "end_time": 5427
+          }
+        ],
+        "audio_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_001.wav",
+        "transcript_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.json",
+        "aligned_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json",
+        "words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.words.ndjson",
+        "rttm_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.rttm",
+        "diarisation_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.diarisation.json",
+        "segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_001.segments.ndjson",
+        "alignment_status": "success",
+        "alignment_run_id": "20260818T125941Z",
+        "aligned_at_utc": "2026-08-18T13:00:58Z",
+        "diarisation_status": "success",
+        "diarisation_run_id": "20260818T151955Z",
+        "diarised_at_utc": "2026-08-18T15:26:29Z",
+        "detected_speaker_count": 18,
+        "selected_by": "Carol",
+        "selection_source": "email",
+        "notes": null
+      }
+    }
+  ],
+  "invalid_records": [],
+  "ignored_records": []
+}

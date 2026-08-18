@@ -1,0 +1,21 @@
+[2026-08-18 12:30:22] INFO  Starting transcribe_jubilee_debates_whisperx.py run_id=20260818T123022Z
+[2026-08-18 12:30:22] INFO  Audio index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+[2026-08-18 12:30:22] INFO  Input directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 12:30:22] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts
+[2026-08-18 12:30:22] INFO  Model: backend=whisperx model=large-v3 device=cuda compute_type=float16
+[2026-08-18 12:30:22] INFO  Transcription: language=en task=transcribe batch_size=8 vad_filter=True
+[2026-08-18 12:30:22] INFO  Test mode: True; test_limit=1
+[2026-08-18 12:30:22] INFO  Reprocess: False
+[2026-08-18 12:30:22] INFO  Start corpus ID: None
+[2026-08-18 12:30:24] INFO  Dependency availability: {'whisperx': {'available': True, 'version': 'unknown'}, 'torch': {'available': True, 'version': '2.8.0+cu128'}, 'faster_whisper': {'available': True, 'version': '1.2.1'}}
+[2026-08-18 12:30:24] INFO  CUDA available: True; device=NVIDIA A10G
+[2026-08-18 12:30:24] INFO  Loaded audio index: input=5 eligible=5 ignored=0 invalid=0
+[2026-08-18 12:30:24] INFO  Planning complete: planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 12:30:24] INFO  Loading transcription model large-v3
+[2026-08-18 12:31:04] INFO  Transcription model loaded successfully
+[2026-08-18 12:31:04] INFO  Transcription attempt 1/2 for jubilee_surrounded_001
+[2026-08-18 12:32:52] INFO  SUCCESS jubilee_surrounded_001 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_surrounded_001.txt
+[2026-08-18 12:32:52] INFO  Wrote transcript index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_debates_transcript_index.ndjson
+[2026-08-18 12:32:52] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/transcribe_jubilee_debates_whisperx_manifest.json
+[2026-08-18 12:32:52] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/transcribe_jubilee_debates_whisperx_manifest_20260818T123022Z.json
+[2026-08-18 12:32:52] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_metadata=0

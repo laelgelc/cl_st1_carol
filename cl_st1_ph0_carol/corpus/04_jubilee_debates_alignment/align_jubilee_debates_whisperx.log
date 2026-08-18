@@ -1,0 +1,21 @@
+[2026-08-18 12:59:41] INFO  Starting align_jubilee_debates_whisperx.py run_id=20260818T125941Z
+[2026-08-18 12:59:41] INFO  Transcript index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_debates_transcript_index.ndjson
+[2026-08-18 12:59:41] INFO  Audio directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 12:59:41] INFO  Transcript directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts
+[2026-08-18 12:59:41] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 12:59:41] INFO  Alignment config: backend=whisperx device=cuda language=en batch_size=8 return_char_alignments=False interpolate_method=nearest
+[2026-08-18 12:59:41] INFO  Test mode: True; test_limit=1
+[2026-08-18 12:59:41] INFO  Reprocess: False
+[2026-08-18 12:59:41] INFO  Start corpus ID: None
+[2026-08-18 12:59:43] INFO  Dependency availability: {'whisperx': {'available': True, 'version': 'unknown'}, 'torch': {'available': True, 'version': '2.8.0+cu128'}, 'torchaudio': {'available': True, 'version': '2.8.0+cu128'}}
+[2026-08-18 12:59:43] INFO  CUDA available: True; device=NVIDIA A10G
+[2026-08-18 12:59:43] INFO  Loaded transcript index: input=1 eligible=1 ignored=0 invalid=0
+[2026-08-18 12:59:43] INFO  Planning complete: planned=1 skipped_existing=0 missing_input=0
+[2026-08-18 12:59:43] INFO  Loading alignment model for language=en
+[2026-08-18 12:59:48] INFO  Alignment model loaded successfully
+[2026-08-18 12:59:48] INFO  Alignment attempt 1/2 for jubilee_surrounded_001
+[2026-08-18 13:00:58] INFO  SUCCESS jubilee_surrounded_001 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json word_count=19676 aligned=19676 unaligned=0
+[2026-08-18 13:00:58] INFO  Wrote alignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson
+[2026-08-18 13:00:58] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest.json
+[2026-08-18 13:00:58] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest_20260818T125941Z.json
+[2026-08-18 13:00:58] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_metadata=0
