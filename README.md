@@ -517,4 +517,23 @@ A timestamped per-run manifest is also created.
 
 This stage performs QC reporting only. It does not modify upstream outputs or identify real speakers.
 
+### Note: Observed Phase 0 processing time
+
+Based on the completed EC2 GPU runs for the five initial `Surrounded` Jubilee debates, the current staged pipeline is substantially faster than real time on a `g5.xlarge` instance with an NVIDIA A10G GPU.
+
+For a roughly **1h30m** debate, the observed processing time from available WAV audio to speaker-attributed transcript and QC report is approximately:
+```plain text
+10–12 minutes per debate
+```
+Including video download, which depends on YouTube/network conditions and may require cookies, a safer estimate is:
+```plain text
+12–17 minutes per debate
+```
+For the five-debate Phase 0 sample, the observed/supported planning estimate is:
+```plain text
+~1h15m expected total processing time
+~1h30m–2h safe operational budget, including download variability
+```
+The main processing bottleneck is **pyannote.audio diarisation**. WhisperX transcription and alignment are comparatively fast on the tested EC2 GPU setup, while speaker assignment and QC take only seconds per debate.
+
 
