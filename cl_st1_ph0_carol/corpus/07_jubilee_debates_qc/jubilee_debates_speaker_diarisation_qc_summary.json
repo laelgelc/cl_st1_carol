@@ -1,40 +1,58 @@
 {
   "run": {
-    "qc_run_id": "20260818T155213Z",
-    "qc_at_utc": "2026-08-18T15:52:13Z"
+    "qc_run_id": "20260818T173100Z",
+    "qc_at_utc": "2026-08-18T17:31:00Z"
   },
   "summary": {
-    "debates_evaluated": 1,
+    "debates_evaluated": 3,
     "passed": 0,
-    "review": 1,
+    "review": 3,
     "warning": 0,
     "failed": 0,
     "unknown": 0,
-    "total_audio_duration_seconds": 5427.0,
-    "total_speaker_words": 19676,
-    "total_assigned_words": 19667,
-    "total_unknown_speaker_words": 9,
-    "overall_unknown_word_ratio": 0.000457
+    "total_audio_duration_seconds": 18108.0,
+    "total_speaker_words": 63207,
+    "total_assigned_words": 63186,
+    "total_unknown_speaker_words": 21,
+    "overall_unknown_word_ratio": 0.000332
   },
   "items": [
     {
-      "corpus_id": "jubilee_surrounded_001",
+      "corpus_id": "jubilee_surrounded_003",
+      "qc_rating": "review",
+      "detected_speaker_count": 21,
+      "assigned_speaker_count": 21,
+      "unknown_word_ratio": 4.9e-05,
+      "diarisation_coverage_ratio": 1.026378,
+      "warning_count": 2
+    },
+    {
+      "corpus_id": "jubilee_surrounded_004",
+      "qc_rating": "review",
+      "detected_speaker_count": 24,
+      "assigned_speaker_count": 24,
+      "unknown_word_ratio": 0.000319,
+      "diarisation_coverage_ratio": 1.0929,
+      "warning_count": 2
+    },
+    {
+      "corpus_id": "jubilee_surrounded_005",
       "qc_rating": "review",
       "detected_speaker_count": 18,
       "assigned_speaker_count": 18,
-      "unknown_word_ratio": 0.000457,
-      "diarisation_coverage_ratio": 1.063095,
-      "warning_count": 2
+      "unknown_word_ratio": 0.000677,
+      "diarisation_coverage_ratio": 0.954914,
+      "warning_count": 1
     }
   ],
   "common_warnings": [
     {
-      "code": "high_diarisation_coverage",
-      "count": 1
+      "code": "diarisation_overlaps_detected",
+      "count": 3
     },
     {
-      "code": "diarisation_overlaps_detected",
-      "count": 1
+      "code": "high_diarisation_coverage",
+      "count": 2
     }
   ]
 }

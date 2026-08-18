@@ -1,0 +1,276 @@
+{
+  "corpus_id": "jubilee_surrounded_004",
+  "qc_status": "success",
+  "qc_rating": "review",
+  "metadata": {
+    "corpus_id": "jubilee_surrounded_004",
+    "debate_format": "Surrounded",
+    "sample_group": "carol_initial_sample",
+    "sample_order": 4,
+    "title_selected": "1 Liberal Man vs 20 MAGA Women (ft. Dean Withers)",
+    "title_extracted": "1 Liberal Man vs 20 MAGA Women (ft. Dean Withers) | Surrounded",
+    "youtube_id": "odBbDQj-GRs",
+    "youtube_url": "https://www.youtube.com/watch?v=odBbDQj-GRs",
+    "webpage_url": "https://www.youtube.com/watch?v=odBbDQj-GRs",
+    "duration_seconds": 6818,
+    "duration_string": "1:53:38",
+    "chapters": [
+      {
+        "start_time": 0,
+        "title": "Intro",
+        "end_time": 6818
+      }
+    ],
+    "audio_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_004.wav",
+    "aligned_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_004.aligned.json",
+    "words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_004.words.ndjson",
+    "diarisation_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_004.diarisation.json",
+    "segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_004.segments.ndjson",
+    "speaker_words_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_words.json",
+    "speaker_words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_words.ndjson",
+    "speaker_segments_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_segments.json",
+    "speaker_segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_segments.ndjson",
+    "speaker_transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_transcript.txt",
+    "alignment_status": "success",
+    "diarisation_status": "success",
+    "speaker_assignment_status": "success",
+    "alignment_run_id": "20260818T170310Z",
+    "diarisation_run_id": "20260818T170704Z",
+    "speaker_assignment_run_id": "20260818T173025Z",
+    "selected_by": "Carol",
+    "selection_source": "email",
+    "notes": null
+  },
+  "input_paths": {
+    "speaker_words_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_words.json",
+    "speaker_words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_words.ndjson",
+    "speaker_segments_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_segments.json",
+    "speaker_segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_segments.ndjson",
+    "speaker_transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_004.speaker_transcript.txt",
+    "aligned_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_004.aligned.json",
+    "words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_004.words.ndjson",
+    "diarisation_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_004.diarisation.json",
+    "segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_004.segments.ndjson"
+  },
+  "input_availability": {
+    "speaker_words_json_file": true,
+    "speaker_words_ndjson_file": true,
+    "speaker_segments_json_file": true,
+    "speaker_segments_ndjson_file": true,
+    "speaker_transcript_text_file": true,
+    "aligned_json_file": true,
+    "words_ndjson_file": true,
+    "diarisation_json_file": true,
+    "segments_ndjson_file": true
+  },
+  "metrics": {
+    "audio_duration_seconds": 6818.0,
+    "alignment": {
+      "word_count": 25110,
+      "aligned_word_count": 25110,
+      "unaligned_word_count": 0,
+      "missing_word_timing_ratio": 0.0,
+      "invalid_word_timing_count": 0,
+      "non_monotonic_word_count": 0,
+      "long_word_duration_count": 0,
+      "earliest_word_timestamp": 0.211,
+      "latest_word_timestamp": 6818.081,
+      "transcript_time_span_seconds": 6817.87,
+      "transcript_coverage_ratio": 0.999981,
+      "long_gaps": [
+        {
+          "start": 1379.96,
+          "end": 1385.607,
+          "duration_seconds": 5.647
+        },
+        {
+          "start": 4760.555,
+          "end": 4773.587,
+          "duration_seconds": 13.032
+        }
+      ],
+      "long_gap_count": 2
+    },
+    "diarisation": {
+      "segment_count": 1681,
+      "valid_segment_count": 1681,
+      "invalid_segment_count": 0,
+      "detected_speaker_count": 24,
+      "total_diarised_speech_seconds": 7451.391,
+      "diarisation_coverage_ratio": 1.0929,
+      "speaker_durations": {
+        "SPEAKER_20": 241.02700000000053,
+        "SPEAKER_04": 3803.706999999997,
+        "SPEAKER_08": 738.7819999999986,
+        "SPEAKER_05": 264.04599999999965,
+        "SPEAKER_03": 323.79999999999905,
+        "SPEAKER_18": 69.77700000000011,
+        "SPEAKER_06": 290.18200000000036,
+        "SPEAKER_17": 71.6690000000001,
+        "SPEAKER_01": 20.875000000000682,
+        "SPEAKER_13": 43.21500000000049,
+        "SPEAKER_00": 206.70100000000429,
+        "SPEAKER_12": 87.19199999999955,
+        "SPEAKER_14": 105.36500000000103,
+        "SPEAKER_19": 15.18899999999951,
+        "SPEAKER_23": 16.875,
+        "SPEAKER_22": 23.45600000000013,
+        "SPEAKER_07": 92.20400000000063,
+        "SPEAKER_09": 64.89899999999943,
+        "SPEAKER_16": 258.7149999999999,
+        "SPEAKER_02": 29.093999999999596,
+        "SPEAKER_10": 103.20499999999902,
+        "SPEAKER_15": 240.99700000000166,
+        "SPEAKER_11": 194.92700000000286,
+        "SPEAKER_21": 145.49200000000292
+      },
+      "top_speaker_by_duration": "SPEAKER_04",
+      "top_speaker_duration_seconds": 3803.707,
+      "top_speaker_duration_ratio": 0.510469,
+      "short_interval_count": 516,
+      "long_interval_count": 0,
+      "overlap_count": 1021,
+      "long_gaps": [
+        {
+          "start": 36.11,
+          "end": 45.965,
+          "duration_seconds": 9.855
+        }
+      ],
+      "long_gap_count": 1
+    },
+    "speaker_assignment": {
+      "speaker_word_count": 25110,
+      "assigned_word_count": 25102,
+      "unassigned_word_count": 8,
+      "unknown_speaker_word_count": 8,
+      "unknown_word_ratio": 0.000319,
+      "speaker_assignment_coverage_ratio": 0.999681,
+      "missing_word_timing_count": 0,
+      "missing_word_timing_ratio": 0.0,
+      "timing_anomaly_count": 0,
+      "assigned_speaker_count": 24,
+      "speaker_word_distribution": {
+        "SPEAKER_20": 806,
+        "SPEAKER_04": 14057,
+        "SPEAKER_08": 2154,
+        "SPEAKER_05": 705,
+        "SPEAKER_03": 1128,
+        "SPEAKER_18": 181,
+        "SPEAKER_06": 866,
+        "SPEAKER_01": 57,
+        "SPEAKER_17": 210,
+        "SPEAKER_12": 251,
+        "SPEAKER_19": 53,
+        "SPEAKER_23": 56,
+        "SPEAKER_22": 83,
+        "SPEAKER_07": 259,
+        "SPEAKER_16": 741,
+        "SPEAKER_02": 100,
+        "SPEAKER_10": 316,
+        "SPEAKER_13": 180,
+        "SPEAKER_15": 701,
+        "SPEAKER_14": 369,
+        "SPEAKER_11": 615,
+        "SPEAKER_00": 482,
+        "SPEAKER_21": 535,
+        "SPEAKER_09": 197
+      },
+      "speaker_duration_distribution": {
+        "SPEAKER_20": 151.3230000000036,
+        "SPEAKER_04": 2521.57500000001,
+        "SPEAKER_08": 456.1710000000244,
+        "SPEAKER_05": 150.78499999999974,
+        "SPEAKER_03": 201.62999999999283,
+        "SPEAKER_18": 36.02800000000073,
+        "SPEAKER_06": 171.69800000000257,
+        "SPEAKER_01": 12.367999999999768,
+        "SPEAKER_17": 45.86299999999926,
+        "SPEAKER_12": 50.347000000000435,
+        "SPEAKER_19": 9.786999999999807,
+        "SPEAKER_23": 12.667999999999665,
+        "SPEAKER_22": 18.624999999999545,
+        "SPEAKER_07": 47.522999999999,
+        "SPEAKER_16": 147.976999999986,
+        "SPEAKER_02": 21.050000000000182,
+        "SPEAKER_10": 62.43200000000252,
+        "SPEAKER_13": 27.757999999997537,
+        "SPEAKER_15": 157.811999999999,
+        "SPEAKER_14": 67.62700000000723,
+        "SPEAKER_11": 112.33200000000079,
+        "SPEAKER_00": 94.56800000000658,
+        "SPEAKER_21": 91.16100000001006,
+        "SPEAKER_09": 43.45999999999913
+      },
+      "assignment_status_distribution": {
+        "assigned": 25102,
+        "unassigned_no_overlap": 8
+      },
+      "top_speaker_by_words": "SPEAKER_04",
+      "top_speaker_word_count": 14057,
+      "top_speaker_word_ratio": 0.559995,
+      "top_speaker_by_duration": "SPEAKER_04",
+      "top_speaker_duration_seconds": 2521.575,
+      "top_speaker_duration_ratio": 0.535075,
+      "long_unknown_spans": [],
+      "long_unknown_span_count": 0,
+      "long_gaps": [
+        {
+          "start": 1379.96,
+          "end": 1385.607,
+          "duration_seconds": 5.647
+        },
+        {
+          "start": 4760.555,
+          "end": 4773.587,
+          "duration_seconds": 13.032
+        }
+      ],
+      "long_gap_count": 2
+    },
+    "turn_taking": {
+      "speaker_segment_count": 842,
+      "invalid_segment_timing_count": 0,
+      "short_turn_count": 77,
+      "short_turn_ratio": 0.091449,
+      "long_turn_count": 0,
+      "speaker_switch_count": 707,
+      "average_segment_duration": 7.691,
+      "median_segment_duration": 3.843,
+      "average_words_per_segment": 29.822,
+      "segment_word_total": 25110
+    },
+    "speaker_distribution": {
+      "top_speaker_by_words": "SPEAKER_04",
+      "top_speaker_word_ratio": 0.559995,
+      "top_speaker_by_duration": "SPEAKER_04",
+      "top_speaker_duration_ratio": 0.535075
+    }
+  },
+  "warnings": [
+    {
+      "code": "high_diarisation_coverage",
+      "severity": "review",
+      "message": "Diarisation coverage is unexpectedly high.",
+      "value": 1.0929,
+      "threshold": 0.98
+    },
+    {
+      "code": "diarisation_overlaps_detected",
+      "severity": "review",
+      "message": "Overlapping diarisation intervals were detected.",
+      "value": null,
+      "threshold": null
+    }
+  ],
+  "recommendations": [
+    "Spot-check the plain-text speaker transcript against the audio.",
+    "Compare detected and assigned speaker counts against the expected debate format.",
+    "Inspect diarisation coverage and long gaps against the audio timeline."
+  ],
+  "run": {
+    "qc_run_id": "20260818T173100Z",
+    "qc_at_utc": "2026-08-18T17:31:00Z"
+  },
+  "error": null
+}

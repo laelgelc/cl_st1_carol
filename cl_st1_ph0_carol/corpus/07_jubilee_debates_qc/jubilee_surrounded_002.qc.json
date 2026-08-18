@@ -1,0 +1,548 @@
+{
+  "corpus_id": "jubilee_surrounded_002",
+  "qc_status": "success",
+  "qc_rating": "review",
+  "metadata": {
+    "corpus_id": "jubilee_surrounded_002",
+    "debate_format": "Surrounded",
+    "sample_group": "carol_initial_sample",
+    "sample_order": 2,
+    "title_selected": "1 Progressive vs 20 Far-Right Conservatives (ft. Mehdi Hasan)",
+    "title_extracted": "1 Progressive vs 20 Far-Right Conservatives (ft. Mehdi Hasan)",
+    "youtube_id": "2S-WJN3L5eo",
+    "youtube_url": "https://www.youtube.com/watch?v=2S-WJN3L5eo",
+    "webpage_url": "https://www.youtube.com/watch?v=2S-WJN3L5eo",
+    "duration_seconds": 6053,
+    "duration_string": "1:40:53",
+    "chapters": [
+      {
+        "start_time": 0,
+        "title": "Intro",
+        "end_time": 12
+      },
+      {
+        "start_time": 12,
+        "title": "Claim #1 Donald Trump is pro crime and pro criminal",
+        "end_time": 1299
+      },
+      {
+        "start_time": 1299,
+        "title": "Claim #2 Donald Trump is defying the constitution",
+        "end_time": 2669
+      },
+      {
+        "start_time": 2669,
+        "title": "Claim #3 Immigrants, overall, are good for America",
+        "end_time": 4295
+      },
+      {
+        "start_time": 4295,
+        "title": "Claim #4 Donald Trump’s plan for Gaza is ethnic cleansing",
+        "end_time": 5469
+      },
+      {
+        "start_time": 5469,
+        "title": "Kai’s Claim We should get rid of birthright citizenship",
+        "end_time": 6053
+      }
+    ],
+    "audio_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_surrounded_002.wav",
+    "aligned_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.aligned.json",
+    "words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.words.ndjson",
+    "diarisation_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_002.diarisation.json",
+    "segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_002.segments.ndjson",
+    "speaker_words_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_words.json",
+    "speaker_words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_words.ndjson",
+    "speaker_segments_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_segments.json",
+    "speaker_segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_segments.ndjson",
+    "speaker_transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_transcript.txt",
+    "alignment_status": "success",
+    "diarisation_status": "success",
+    "speaker_assignment_status": "success",
+    "alignment_run_id": "20260818T164209Z",
+    "diarisation_run_id": "20260818T164338Z",
+    "speaker_assignment_run_id": "20260818T165130Z",
+    "selected_by": "Carol",
+    "selection_source": "email",
+    "notes": null
+  },
+  "input_paths": {
+    "speaker_words_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_words.json",
+    "speaker_words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_words.ndjson",
+    "speaker_segments_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_segments.json",
+    "speaker_segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_segments.ndjson",
+    "speaker_transcript_text_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/06_jubilee_debates_speaker_transcripts/jubilee_surrounded_002.speaker_transcript.txt",
+    "aligned_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.aligned.json",
+    "words_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.words.ndjson",
+    "diarisation_json_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_002.diarisation.json",
+    "segments_ndjson_file": "/home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_surrounded_002.segments.ndjson"
+  },
+  "input_availability": {
+    "speaker_words_json_file": true,
+    "speaker_words_ndjson_file": true,
+    "speaker_segments_json_file": true,
+    "speaker_segments_ndjson_file": true,
+    "speaker_transcript_text_file": true,
+    "aligned_json_file": true,
+    "words_ndjson_file": true,
+    "diarisation_json_file": true,
+    "segments_ndjson_file": true
+  },
+  "metrics": {
+    "audio_duration_seconds": 6053.0,
+    "alignment": {
+      "word_count": 23378,
+      "aligned_word_count": 23378,
+      "unaligned_word_count": 0,
+      "missing_word_timing_ratio": 0.0,
+      "invalid_word_timing_count": 0,
+      "non_monotonic_word_count": 0,
+      "long_word_duration_count": 3,
+      "earliest_word_timestamp": 0.291,
+      "latest_word_timestamp": 6053.056,
+      "transcript_time_span_seconds": 6052.764999999999,
+      "transcript_coverage_ratio": 0.999961,
+      "long_gaps": [
+        {
+          "start": 41.914,
+          "end": 52.012,
+          "duration_seconds": 10.098
+        },
+        {
+          "start": 214.424,
+          "end": 220.52,
+          "duration_seconds": 6.096
+        },
+        {
+          "start": 580.85,
+          "end": 586.848,
+          "duration_seconds": 5.998
+        },
+        {
+          "start": 919.506,
+          "end": 925.313,
+          "duration_seconds": 5.807
+        },
+        {
+          "start": 1160.86,
+          "end": 1167.197,
+          "duration_seconds": 6.337
+        },
+        {
+          "start": 1316.913,
+          "end": 1322.453,
+          "duration_seconds": 5.54
+        },
+        {
+          "start": 1741.925,
+          "end": 1747.335,
+          "duration_seconds": 5.41
+        },
+        {
+          "start": 1760.301,
+          "end": 1767.721,
+          "duration_seconds": 7.42
+        },
+        {
+          "start": 1970.579,
+          "end": 1977.821,
+          "duration_seconds": 7.242
+        },
+        {
+          "start": 2377.956,
+          "end": 2384.562,
+          "duration_seconds": 6.606
+        },
+        {
+          "start": 2693.543,
+          "end": 2699.727,
+          "duration_seconds": 6.184
+        },
+        {
+          "start": 2916.342,
+          "end": 2923.803,
+          "duration_seconds": 7.461
+        },
+        {
+          "start": 3627.62,
+          "end": 3633.174,
+          "duration_seconds": 5.554
+        },
+        {
+          "start": 4461.647,
+          "end": 4467.552,
+          "duration_seconds": 5.905
+        },
+        {
+          "start": 4695.602,
+          "end": 4702.132,
+          "duration_seconds": 6.53
+        },
+        {
+          "start": 5126.376,
+          "end": 5134.712,
+          "duration_seconds": 8.336
+        },
+        {
+          "start": 5254.575,
+          "end": 5261.318,
+          "duration_seconds": 6.743
+        },
+        {
+          "start": 5272.883,
+          "end": 5281.538,
+          "duration_seconds": 8.655
+        }
+      ],
+      "long_gap_count": 18
+    },
+    "diarisation": {
+      "segment_count": 1932,
+      "valid_segment_count": 1932,
+      "invalid_segment_count": 0,
+      "detected_speaker_count": 23,
+      "total_diarised_speech_seconds": 6992.063,
+      "diarisation_coverage_ratio": 1.15514,
+      "speaker_durations": {
+        "SPEAKER_05": 490.8909999999983,
+        "SPEAKER_02": 3095.3380000000043,
+        "SPEAKER_00": 77.44000000000358,
+        "SPEAKER_21": 91.66999999999847,
+        "SPEAKER_07": 75.4949999999999,
+        "SPEAKER_18": 71.13099999999989,
+        "SPEAKER_22": 43.787000000002706,
+        "SPEAKER_10": 343.64199999999994,
+        "SPEAKER_11": 302.97599999999727,
+        "SPEAKER_01": 8.977999999999838,
+        "SPEAKER_17": 167.8049999999987,
+        "SPEAKER_04": 246.95000000000027,
+        "SPEAKER_19": 105.66999999999985,
+        "SPEAKER_08": 172.58299999999895,
+        "SPEAKER_12": 94.16199999999799,
+        "SPEAKER_20": 101.92500000000018,
+        "SPEAKER_16": 62.723999999999705,
+        "SPEAKER_09": 67.53400000000397,
+        "SPEAKER_03": 638.5749999999975,
+        "SPEAKER_14": 135.82700000000023,
+        "SPEAKER_15": 137.16100000000142,
+        "SPEAKER_06": 285.21000000000095,
+        "SPEAKER_13": 174.5889999999963
+      },
+      "top_speaker_by_duration": "SPEAKER_02",
+      "top_speaker_duration_seconds": 3095.338,
+      "top_speaker_duration_ratio": 0.442693,
+      "short_interval_count": 605,
+      "long_interval_count": 0,
+      "overlap_count": 1294,
+      "long_gaps": [
+        {
+          "start": 42.033,
+          "end": 51.938,
+          "duration_seconds": 9.905
+        },
+        {
+          "start": 214.546,
+          "end": 220.469,
+          "duration_seconds": 5.923
+        },
+        {
+          "start": 580.919,
+          "end": 586.825,
+          "duration_seconds": 5.906
+        },
+        {
+          "start": 919.702,
+          "end": 925.253,
+          "duration_seconds": 5.551
+        },
+        {
+          "start": 1160.963,
+          "end": 1167.157,
+          "duration_seconds": 6.194
+        },
+        {
+          "start": 1317.007,
+          "end": 1322.272,
+          "duration_seconds": 5.265
+        },
+        {
+          "start": 1325.444,
+          "end": 1331.266,
+          "duration_seconds": 5.822
+        },
+        {
+          "start": 1742.02,
+          "end": 1747.201,
+          "duration_seconds": 5.181
+        },
+        {
+          "start": 1760.448,
+          "end": 1767.721,
+          "duration_seconds": 7.273
+        },
+        {
+          "start": 1970.693,
+          "end": 1977.781,
+          "duration_seconds": 7.088
+        },
+        {
+          "start": 2377.853,
+          "end": 2384.485,
+          "duration_seconds": 6.632
+        },
+        {
+          "start": 2693.585,
+          "end": 2699.66,
+          "duration_seconds": 6.075
+        },
+        {
+          "start": 2916.419,
+          "end": 2923.76,
+          "duration_seconds": 7.341
+        },
+        {
+          "start": 3284.598,
+          "end": 3290.285,
+          "duration_seconds": 5.687
+        },
+        {
+          "start": 3901.43,
+          "end": 3907.184,
+          "duration_seconds": 5.754
+        },
+        {
+          "start": 4461.832,
+          "end": 4467.35,
+          "duration_seconds": 5.518
+        },
+        {
+          "start": 4695.719,
+          "end": 4702.756,
+          "duration_seconds": 7.037
+        },
+        {
+          "start": 5126.437,
+          "end": 5134.672,
+          "duration_seconds": 8.235
+        },
+        {
+          "start": 5272.996,
+          "end": 5281.265,
+          "duration_seconds": 8.269
+        }
+      ],
+      "long_gap_count": 19
+    },
+    "speaker_assignment": {
+      "speaker_word_count": 23378,
+      "assigned_word_count": 23372,
+      "unassigned_word_count": 6,
+      "unknown_speaker_word_count": 6,
+      "unknown_word_ratio": 0.000257,
+      "speaker_assignment_coverage_ratio": 0.999743,
+      "missing_word_timing_count": 0,
+      "missing_word_timing_ratio": 0.0,
+      "timing_anomaly_count": 0,
+      "assigned_speaker_count": 23,
+      "speaker_word_distribution": {
+        "SPEAKER_05": 1838,
+        "SPEAKER_02": 10318,
+        "SPEAKER_07": 250,
+        "SPEAKER_18": 241,
+        "SPEAKER_04": 939,
+        "SPEAKER_19": 332,
+        "SPEAKER_20": 359,
+        "SPEAKER_01": 21,
+        "SPEAKER_10": 1326,
+        "SPEAKER_21": 287,
+        "SPEAKER_03": 2226,
+        "SPEAKER_14": 397,
+        "SPEAKER_15": 422,
+        "SPEAKER_16": 215,
+        "SPEAKER_11": 1183,
+        "SPEAKER_22": 86,
+        "SPEAKER_06": 896,
+        "SPEAKER_09": 222,
+        "SPEAKER_12": 224,
+        "SPEAKER_17": 454,
+        "SPEAKER_08": 527,
+        "SPEAKER_13": 564,
+        "SPEAKER_00": 45
+      },
+      "speaker_duration_distribution": {
+        "SPEAKER_05": 324.4119999999825,
+        "SPEAKER_02": 1858.1140000000144,
+        "SPEAKER_07": 43.995000000000026,
+        "SPEAKER_18": 39.932000000000215,
+        "SPEAKER_04": 158.35999999999774,
+        "SPEAKER_19": 61.00800000000015,
+        "SPEAKER_20": 64.15999999999917,
+        "SPEAKER_01": 5.6830000000004475,
+        "SPEAKER_10": 242.45799999999804,
+        "SPEAKER_21": 55.39799999999991,
+        "SPEAKER_03": 397.6150000000032,
+        "SPEAKER_14": 76.61799999999857,
+        "SPEAKER_15": 77.23899999999958,
+        "SPEAKER_16": 41.51299999999901,
+        "SPEAKER_11": 196.245000000009,
+        "SPEAKER_22": 14.46599999999944,
+        "SPEAKER_06": 180.01400000000012,
+        "SPEAKER_09": 40.19099999999844,
+        "SPEAKER_12": 46.34800000000541,
+        "SPEAKER_17": 94.25500000000102,
+        "SPEAKER_08": 105.19700000000739,
+        "SPEAKER_13": 101.5379999999941,
+        "SPEAKER_00": 8.294000000003507
+      },
+      "assignment_status_distribution": {
+        "assigned": 23372,
+        "unassigned_no_overlap": 6
+      },
+      "top_speaker_by_words": "SPEAKER_02",
+      "top_speaker_word_count": 10318,
+      "top_speaker_word_ratio": 0.441468,
+      "top_speaker_by_duration": "SPEAKER_02",
+      "top_speaker_duration_seconds": 1858.114,
+      "top_speaker_duration_ratio": 0.438954,
+      "long_unknown_spans": [],
+      "long_unknown_span_count": 0,
+      "long_gaps": [
+        {
+          "start": 41.914,
+          "end": 52.012,
+          "duration_seconds": 10.098
+        },
+        {
+          "start": 214.424,
+          "end": 220.52,
+          "duration_seconds": 6.096
+        },
+        {
+          "start": 580.85,
+          "end": 586.848,
+          "duration_seconds": 5.998
+        },
+        {
+          "start": 919.506,
+          "end": 925.313,
+          "duration_seconds": 5.807
+        },
+        {
+          "start": 1160.86,
+          "end": 1167.197,
+          "duration_seconds": 6.337
+        },
+        {
+          "start": 1316.913,
+          "end": 1322.453,
+          "duration_seconds": 5.54
+        },
+        {
+          "start": 1741.925,
+          "end": 1747.335,
+          "duration_seconds": 5.41
+        },
+        {
+          "start": 1760.301,
+          "end": 1767.721,
+          "duration_seconds": 7.42
+        },
+        {
+          "start": 1970.579,
+          "end": 1977.821,
+          "duration_seconds": 7.242
+        },
+        {
+          "start": 2377.956,
+          "end": 2384.562,
+          "duration_seconds": 6.606
+        },
+        {
+          "start": 2693.543,
+          "end": 2699.727,
+          "duration_seconds": 6.184
+        },
+        {
+          "start": 2916.342,
+          "end": 2923.803,
+          "duration_seconds": 7.461
+        },
+        {
+          "start": 3627.62,
+          "end": 3633.174,
+          "duration_seconds": 5.554
+        },
+        {
+          "start": 4461.647,
+          "end": 4467.552,
+          "duration_seconds": 5.905
+        },
+        {
+          "start": 4695.602,
+          "end": 4702.132,
+          "duration_seconds": 6.53
+        },
+        {
+          "start": 5126.376,
+          "end": 5134.712,
+          "duration_seconds": 8.336
+        },
+        {
+          "start": 5254.575,
+          "end": 5261.318,
+          "duration_seconds": 6.743
+        },
+        {
+          "start": 5272.883,
+          "end": 5281.538,
+          "duration_seconds": 8.655
+        }
+      ],
+      "long_gap_count": 18
+    },
+    "turn_taking": {
+      "speaker_segment_count": 809,
+      "invalid_segment_timing_count": 0,
+      "short_turn_count": 64,
+      "short_turn_ratio": 0.07911,
+      "long_turn_count": 0,
+      "speaker_switch_count": 692,
+      "average_segment_duration": 7.025,
+      "median_segment_duration": 3.843,
+      "average_words_per_segment": 28.897,
+      "segment_word_total": 23378
+    },
+    "speaker_distribution": {
+      "top_speaker_by_words": "SPEAKER_02",
+      "top_speaker_word_ratio": 0.441468,
+      "top_speaker_by_duration": "SPEAKER_02",
+      "top_speaker_duration_ratio": 0.438954
+    }
+  },
+  "warnings": [
+    {
+      "code": "high_diarisation_coverage",
+      "severity": "review",
+      "message": "Diarisation coverage is unexpectedly high.",
+      "value": 1.15514,
+      "threshold": 0.98
+    },
+    {
+      "code": "diarisation_overlaps_detected",
+      "severity": "review",
+      "message": "Overlapping diarisation intervals were detected.",
+      "value": null,
+      "threshold": null
+    }
+  ],
+  "recommendations": [
+    "Spot-check the plain-text speaker transcript against the audio.",
+    "Compare detected and assigned speaker counts against the expected debate format.",
+    "Inspect diarisation coverage and long gaps against the audio timeline."
+  ],
+  "run": {
+    "qc_run_id": "20260818T165148Z",
+    "qc_at_utc": "2026-08-18T16:51:48Z"
+  },
+  "error": null
+}

@@ -94,3 +94,58 @@ Access to model pyannote/speaker-diarization-3.1 is restricted and you are not i
 [2026-08-18 15:51:58] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
 [2026-08-18 15:51:58] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest_20260818T154523Z.json
 [2026-08-18 15:51:58] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_records=0
+[2026-08-18 16:43:38] INFO  Starting diarise_jubilee_debates_pyannote.py run_id=20260818T164338Z
+[2026-08-18 16:43:38] INFO  Audio index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+[2026-08-18 16:43:38] INFO  Audio directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 16:43:38] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 16:43:38] INFO  Backend: pyannote
+[2026-08-18 16:43:38] INFO  Model: pyannote/speaker-diarization-3.1
+[2026-08-18 16:43:38] INFO  Requested device: cuda
+[2026-08-18 16:43:38] INFO  Speaker constraints: num=None min=None max=None
+[2026-08-18 16:43:38] INFO  Test mode: True; test_limit=1
+[2026-08-18 16:43:38] INFO  Reprocess: False
+[2026-08-18 16:43:38] INFO  Start corpus ID: None
+[2026-08-18 16:43:42] INFO  Dependency check complete.
+[2026-08-18 16:43:42] INFO  CUDA available=True selected_device=cuda cuda_device_name=NVIDIA A10G
+[2026-08-18 16:43:42] INFO  Hugging Face token present: True
+[2026-08-18 16:43:42] INFO  Loaded audio index: total=5 eligible=5 ignored=0 invalid=0
+[2026-08-18 16:43:42] INFO  Planning complete: planned=1 skipped_existing=1 missing_input=0
+[2026-08-18 16:43:42] INFO  SKIPPED_EXISTING jubilee_surrounded_001
+[2026-08-18 16:43:42] INFO  Loading pyannote pipeline.
+[2026-08-18 16:43:44] INFO  Loaded pyannote pipeline successfully.
+[2026-08-18 16:43:44] INFO  Diarisation attempt 1/2 for jubilee_surrounded_002
+[2026-08-18 16:51:29] INFO  SUCCESS jubilee_surrounded_002 speakers=23 segments=1932 speech_seconds=6992.063
+[2026-08-18 16:51:29] INFO  Wrote diarisation index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
+[2026-08-18 16:51:29] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
+[2026-08-18 16:51:29] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest_20260818T164338Z.json
+[2026-08-18 16:51:29] INFO  Finished run: succeeded=1 failed=0 skipped_existing=1 missing_input=0 invalid_records=0
+[2026-08-18 17:07:04] INFO  Starting diarise_jubilee_debates_pyannote.py run_id=20260818T170704Z
+[2026-08-18 17:07:04] INFO  Audio index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio/jubilee_debates_audio_index.ndjson
+[2026-08-18 17:07:04] INFO  Audio directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 17:07:04] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation
+[2026-08-18 17:07:04] INFO  Backend: pyannote
+[2026-08-18 17:07:04] INFO  Model: pyannote/speaker-diarization-3.1
+[2026-08-18 17:07:04] INFO  Requested device: cuda
+[2026-08-18 17:07:04] INFO  Speaker constraints: num=None min=None max=None
+[2026-08-18 17:07:04] INFO  Test mode: False; test_limit=1
+[2026-08-18 17:07:04] INFO  Reprocess: False
+[2026-08-18 17:07:04] INFO  Start corpus ID: None
+[2026-08-18 17:07:09] INFO  Dependency check complete.
+[2026-08-18 17:07:09] INFO  CUDA available=True selected_device=cuda cuda_device_name=NVIDIA A10G
+[2026-08-18 17:07:09] INFO  Hugging Face token present: True
+[2026-08-18 17:07:09] INFO  Loaded audio index: total=5 eligible=5 ignored=0 invalid=0
+[2026-08-18 17:07:09] INFO  Planning complete: planned=3 skipped_existing=2 missing_input=0
+[2026-08-18 17:07:09] INFO  SKIPPED_EXISTING jubilee_surrounded_001
+[2026-08-18 17:07:09] INFO  SKIPPED_EXISTING jubilee_surrounded_002
+[2026-08-18 17:07:09] INFO  Loading pyannote pipeline.
+[2026-08-18 17:07:10] INFO  Loaded pyannote pipeline successfully.
+[2026-08-18 17:07:10] INFO  Diarisation attempt 1/2 for jubilee_surrounded_003
+[2026-08-18 17:14:31] INFO  SUCCESS jubilee_surrounded_003 speakers=21 segments=971 speech_seconds=6058.711
+[2026-08-18 17:14:31] INFO  Diarisation attempt 1/2 for jubilee_surrounded_004
+[2026-08-18 17:23:59] INFO  SUCCESS jubilee_surrounded_004 speakers=24 segments=1681 speech_seconds=7451.391
+[2026-08-18 17:23:59] INFO  Diarisation attempt 1/2 for jubilee_surrounded_005
+[2026-08-18 17:30:23] INFO  SUCCESS jubilee_surrounded_005 speakers=18 segments=1518 speech_seconds=5144.122
+[2026-08-18 17:30:23] INFO  Wrote diarisation index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/jubilee_debates_diarisation_index.ndjson
+[2026-08-18 17:30:23] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest.json
+[2026-08-18 17:30:23] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/05_jubilee_debates_diarisation/diarise_jubilee_debates_pyannote_manifest_20260818T170704Z.json
+[2026-08-18 17:30:23] INFO  Finished run: succeeded=3 failed=0 skipped_existing=2 missing_input=0 invalid_records=0

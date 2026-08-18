@@ -19,3 +19,52 @@
 [2026-08-18 13:00:58] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest.json
 [2026-08-18 13:00:58] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest_20260818T125941Z.json
 [2026-08-18 13:00:58] INFO  Finished run: succeeded=1 failed=0 skipped_existing=0 missing_input=0 invalid_metadata=0
+[2026-08-18 16:42:09] INFO  Starting align_jubilee_debates_whisperx.py run_id=20260818T164209Z
+[2026-08-18 16:42:09] INFO  Transcript index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_debates_transcript_index.ndjson
+[2026-08-18 16:42:09] INFO  Audio directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 16:42:09] INFO  Transcript directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts
+[2026-08-18 16:42:09] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 16:42:09] INFO  Alignment config: backend=whisperx device=cuda language=en batch_size=8 return_char_alignments=False interpolate_method=nearest
+[2026-08-18 16:42:09] INFO  Test mode: True; test_limit=1
+[2026-08-18 16:42:09] INFO  Reprocess: False
+[2026-08-18 16:42:09] INFO  Start corpus ID: None
+[2026-08-18 16:42:11] INFO  Dependency availability: {'whisperx': {'available': True, 'version': 'unknown'}, 'torch': {'available': True, 'version': '2.8.0+cu128'}, 'torchaudio': {'available': True, 'version': '2.8.0+cu128'}}
+[2026-08-18 16:42:11] INFO  CUDA available: True; device=NVIDIA A10G
+[2026-08-18 16:42:11] INFO  Loaded transcript index: input=2 eligible=2 ignored=0 invalid=0
+[2026-08-18 16:42:11] INFO  Planning complete: planned=1 skipped_existing=1 missing_input=0
+[2026-08-18 16:42:11] INFO  SKIPPED_EXISTING jubilee_surrounded_001 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json
+[2026-08-18 16:42:11] INFO  Loading alignment model for language=en
+[2026-08-18 16:42:15] INFO  Alignment model loaded successfully
+[2026-08-18 16:42:15] INFO  Alignment attempt 1/2 for jubilee_surrounded_002
+[2026-08-18 16:43:36] INFO  SUCCESS jubilee_surrounded_002 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.aligned.json word_count=23378 aligned=23378 unaligned=0
+[2026-08-18 16:43:36] INFO  Wrote alignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson
+[2026-08-18 16:43:36] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest.json
+[2026-08-18 16:43:36] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest_20260818T164209Z.json
+[2026-08-18 16:43:36] INFO  Finished run: succeeded=1 failed=0 skipped_existing=1 missing_input=0 invalid_metadata=0
+[2026-08-18 17:03:10] INFO  Starting align_jubilee_debates_whisperx.py run_id=20260818T170310Z
+[2026-08-18 17:03:10] INFO  Transcript index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts/jubilee_debates_transcript_index.ndjson
+[2026-08-18 17:03:10] INFO  Audio directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/02_jubilee_debates_audio
+[2026-08-18 17:03:10] INFO  Transcript directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/03_jubilee_debates_transcripts
+[2026-08-18 17:03:10] INFO  Output directory: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment
+[2026-08-18 17:03:10] INFO  Alignment config: backend=whisperx device=cuda language=en batch_size=8 return_char_alignments=False interpolate_method=nearest
+[2026-08-18 17:03:10] INFO  Test mode: False; test_limit=1
+[2026-08-18 17:03:10] INFO  Reprocess: False
+[2026-08-18 17:03:10] INFO  Start corpus ID: None
+[2026-08-18 17:03:11] INFO  Dependency availability: {'whisperx': {'available': True, 'version': 'unknown'}, 'torch': {'available': True, 'version': '2.8.0+cu128'}, 'torchaudio': {'available': True, 'version': '2.8.0+cu128'}}
+[2026-08-18 17:03:11] INFO  CUDA available: True; device=NVIDIA A10G
+[2026-08-18 17:03:11] INFO  Loaded transcript index: input=5 eligible=5 ignored=0 invalid=0
+[2026-08-18 17:03:11] INFO  Planning complete: planned=3 skipped_existing=2 missing_input=0
+[2026-08-18 17:03:11] INFO  SKIPPED_EXISTING jubilee_surrounded_001 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_001.aligned.json
+[2026-08-18 17:03:11] INFO  SKIPPED_EXISTING jubilee_surrounded_002 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_002.aligned.json
+[2026-08-18 17:03:11] INFO  Loading alignment model for language=en
+[2026-08-18 17:03:15] INFO  Alignment model loaded successfully
+[2026-08-18 17:03:15] INFO  Alignment attempt 1/2 for jubilee_surrounded_003
+[2026-08-18 17:04:29] INFO  SUCCESS jubilee_surrounded_003 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_003.aligned.json word_count=20381 aligned=20381 unaligned=0
+[2026-08-18 17:04:29] INFO  Alignment attempt 1/2 for jubilee_surrounded_004
+[2026-08-18 17:05:57] INFO  SUCCESS jubilee_surrounded_004 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_004.aligned.json word_count=25110 aligned=25110 unaligned=0
+[2026-08-18 17:05:57] INFO  Alignment attempt 1/2 for jubilee_surrounded_005
+[2026-08-18 17:07:03] INFO  SUCCESS jubilee_surrounded_005 -> /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_surrounded_005.aligned.json word_count=17716 aligned=17716 unaligned=0
+[2026-08-18 17:07:03] INFO  Wrote alignment index: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/jubilee_debates_alignment_index.ndjson
+[2026-08-18 17:07:03] INFO  Wrote latest manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest.json
+[2026-08-18 17:07:03] INFO  Wrote per-run manifest: /home/ubuntu/cl_st1_carol/cl_st1_ph0_carol/corpus/04_jubilee_debates_alignment/align_jubilee_debates_whisperx_manifest_20260818T170310Z.json
+[2026-08-18 17:07:03] INFO  Finished run: succeeded=3 failed=0 skipped_existing=2 missing_input=0 invalid_metadata=0
