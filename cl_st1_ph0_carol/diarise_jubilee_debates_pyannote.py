@@ -1204,10 +1204,14 @@ def make_diarisation_index_record(
     Error behaviour:
         Does not raise for missing optional metadata.
     """
+    source_metadata = item_result.get("metadata")
+    if not isinstance(source_metadata, dict):
+        source_metadata = {}
+
     record = {
-        field: item_result.get(field)
+        field: source_metadata.get(field, item_result.get(field))
         for field in PRESERVED_METADATA_FIELDS
-        if field in item_result
+        if field in source_metadata or field in item_result
     }
 
     record.update(
@@ -1229,6 +1233,7 @@ def make_diarisation_index_record(
             "detected_speaker_count": item_result.get("detected_speaker_count"),
             "diarised_segment_count": item_result.get("diarised_segment_count"),
             "total_speech_seconds": item_result.get("total_speech_seconds"),
+            "diarisation_runtime_seconds": item_result.get("duration_seconds"),
             "error": item_result.get("error"),
         }
     )
