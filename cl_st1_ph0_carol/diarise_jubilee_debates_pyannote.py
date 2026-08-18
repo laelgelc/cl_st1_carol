@@ -776,8 +776,15 @@ def normalise_diarisation_result(raw_diarisation: Any, corpus_id: str) -> list[d
     """
     segments: list[dict[str, Any]] = []
 
+    diarisation = raw_diarisation
+    if not hasattr(diarisation, "itertracks") and hasattr(
+        raw_diarisation,
+        "speaker_diarization",
+    ):
+        diarisation = raw_diarisation.speaker_diarization
+
     try:
-        iterator = raw_diarisation.itertracks(yield_label=True)
+        iterator = diarisation.itertracks(yield_label=True)
     except AttributeError as exc:
         raise ValueError("Diarisation output does not support itertracks.") from exc
 
