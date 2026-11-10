@@ -1,0 +1,136 @@
+### Pragmatic & Interactional Moves
+
+* **PHATIC:** Conversational greetings, floor management, and turn handshakes.
+* **META:** Metacommunication, conversational policing, and debating the debate rules.
+* **EXPO:** Contextual setup, non-argumentative narrative background, and topic transitions.
+* **AD_HOM:** Interpersonal provocation, psychological assessments, and personal attacks.
+
+---
+
+### Toulmin Argumentation Elements
+
+* **C (`C_1` / `C_2`):** **Claim**
+The core thesis, standpoint, or conclusion advanced by a speaker (Subscript `1` = Proponent / David; `2` = Challenger).
+* **D (`D_1` / `D_2`):** **Data / Grounds**
+Empirical facts, statistics, historical precedents, or specific observational evidence adduced to support a claim.
+* **W (`W_1` / `W_2`):** **Warrant**
+The general principle, bridge, or rule of inference justifying the cognitive step from the Data to the Claim.
+* **B (`B_1` / `B_2`):** **Backing**
+Explicit legal, institutional, statutory, or doctrinal authority certifying the validity of the Warrant (e.g., constitutional amendments, statutes).
+* **Q (`Q_1` / `Q_2`):** **Modal Qualifier**
+Lexical markers signaling the epistemic force, degree of certainty, or scope of the Claim (e.g., *explicitly*, *actually*, *absolutely*).
+* **R (`R_1` / `R_2`):** **Rebuttal**
+Counter-conditions, exceptions, or direct defeaters advanced to undercut, limit, or overturn the opposing argument's Data, Warrant, or Claim.
+
+-------
+https://www.youtube.com/watch?v=sYZs9vqUfA8
+
+youtube_transcript_api sYZs9vqUfA8 --languages en --format text > transcript.txt
+-------
+
+Gemini Flash 3.8 Prompts
+
+Prompt 1:
+Segment the transcript into self-contained passages by marking the beginning and end of each passage with [s:PASSAGE] ... [e:PASSAGE]. norm the spelling, punctuation, and speaker IDs. Within each passage, use these speaker IDs:
+
+Host:
+Challenger:
+Guest:
+
+<paste transcript here>
+
+Prompt 2:
+In the passage that follows, find its internal elements using the categories below, marking them up as show below. No stretch of text can be left unlabeled. If none of the labels are applicable to a particular potion, mark that portion as [b:UNSURE-<your new label>] ... [e:UNSURE-<your new label>].
+
+Host: [s:PHATIC]All right. If you would like to be the next debater, please get to the chair in 3, 2, 1.[e:PHATIC]
+
+Challenger: [s:PHATIC]I'm doing all right. I'm doing all right.[e:PHATIC]
+
+Guest: [s:PHATIC]Perfect.[e:PHATIC] [s:EXPO]So, as I stated earlier, I'm just looking to preserve American culture and further it. So, that is respecting individuals' rights, and[e:EXPO] [s:C_1][s:Q_1]explicitly[e:Q_1] the Trump administration is explicitly violating those things. I think it's [s:Q_1]incredibly[e:Q_1] incredibly anti-American to deploy the military to cities of Democratic governors whom you don't really support, [s:D_1a]just based on lies of mass illegal immigrants rioting in the streets destroying America.[e:D_1a][e:C_1] [s:EXPO]I think it's absolutely ridiculous. Like, imagine having standing armies;[e:EXPO] [s:W_1a]that's a very anti-American thing to do, correct?[e:W_1a] [s:EXPO]I don't think Democrats were looking to do that.[e:EXPO]
+
+<paste passage here>
+-------
+
+Host: [s:PHATIC]All right. If you would like to be the next debater, please get to the chair in 3, 2, 1.[e:PHATIC]
+
+David: [s:PHATIC]Hi.[e:PHATIC]
+
+Challenger: [s:PHATIC]Hi, how are you doing?[e:PHATIC]
+
+David: [s:PHATIC]Good, how are you?[e:PHATIC]
+
+Challenger: [s:PHATIC]I'm doing all right. I'm doing all right.[e:PHATIC]
+
+David: [s:PHATIC]Perfect.[e:PHATIC] [s:EXPO]So, as I stated earlier, I'm just looking to preserve American culture and further it. So, that is respecting individuals' rights, and[e:EXPO] [s:C_1][s:Q_1]explicitly[e:Q_1] the Trump administration is explicitly violating those things. I think it's [s:Q_1]incredibly[e:Q_1] incredibly anti-American to deploy the military to cities of Democratic governors whom you don't really support, [s:D_1a]just based on lies of mass illegal immigrants rioting in the streets destroying America.[e:D_1a][e:C_1] [s:EXPO]I think it's absolutely ridiculous. Like, imagine having standing armies;[e:EXPO] [s:W_1a]that's a very anti-American thing to do, correct?[e:W_1a] [s:EXPO]I don't think Democrats were looking to do that.[e:EXPO]
+
+Challenger: [s:META]No, that's not correct at all, because the Democrats—[e:META]
+
+David: [s:META]—National Guard being illegally deployed against the Constitution in Chicago, or—[e:META]
+
+Challenger: [s:PHATIC]Thank you.[e:PHATIC]
+
+David: [s:META]No, well, that's not responding to what I—[e:META]
+
+Challenger: [s:META]I can respond to the claim. Thank you.[e:META]
+
+David: [s:META]Yeah, respond to the claim. Yes, that's true.[e:META]
+
+Challenger: [s:META]I'm going to. Anyway, if you look at what was actually happening in these cities, right?[e:META] [s:D_2a]Washington, D.C., for example, one of the Democratic cities that had the National Guard enacted in it: the violent crime rate dropped drastically. Murders are at a record low under President Trump, and [s:W_2a]it's because he's actually using law enforcement the way that it is supposed to be used.[e:W_2a] We absolutely had riots that were burning down cities, and this is something that Democratic leaders allowed to happen. Look at what was going on during BLM, where white people were being attacked out in the streets. You had COVID, where people couldn't go to church, they couldn't go to school, our education system was absolutely decimated—but for some reason, they could go riot in the streets. Something that we're seeing again: when a woman gets held accountable for the fact that she tried to run over police officers, you once again try to destroy the cities.[e:D_2a] [s:C_2a]It's very nice that President Trump is stopping you guys from destroying your own cities, and you should be thanking him.[e:C_2a]
+
+David: [s:R_1a]Uh, no. He's not stopping anybody from destroying cities.[e:R_1a] [s:EXPO]I mean, the reason why Renee Good and Alex Pretty are even a thing... I notice how you didn't mention Alex Pretty,[e:EXPO] [s:D_1b]because he was actually publicly executed in the fetal position, shot from the back.[e:D_1b] [s:EXPO]Yeah, it's pretty brutal. And that's all the result of his inflammatory policy. And when Tim Walz was asking for these people to go away,[e:EXPO] [s:D_1c]the roving patrols by Immigration and Customs Enforcement and CBP—[e:D_1c]
+
+Challenger: [s:META]So, enforcing our border patrol is inflammatory?[e:META]
+
+David: [s:W_1b]Killing American citizens who are protesting is not enforcing the law.[e:W_1b] [s:PHATIC]I'm sorry,[e:PHATIC] [s:C_1b]that's [s:Q_1]actually[e:Q_1] actually violating the Constitution.[e:C_1b] [s:EXPO]And what I mentioned earlier when I talked about standing armies: the reason why I'm saying it's anti-American is because it's unconstitutional.[e:EXPO] [s:B_1a]That's in violation of the Tenth Amendment.[e:B_1a]
+
+Challenger: [s:META]What part of the Constitution—[e:META]
+
+David: [s:AD_HOM]—respect it, right? Like the Constitution and stuff. I know liberals do.[e:AD_HOM]
+
+Challenger: [s:AD_HOM]Yeah, no, they really don't. They really don't, right?[e:AD_HOM] [s:R_2a]If you're so worried about American citizens, why aren't you worried about people who are being murdered and tortured each and every single day by illegal aliens, like we saw with Laken Riley, like we saw with Jocelyn Nungaray?[e:R_2a] [s:AD_HOM]It's interesting that you only care about somebody like Alex Pretty because he aligned with your morals and values.[e:AD_HOM] [s:W_2b]Law enforcement is here to protect everybody, and that's exactly what they're doing.[e:W_2b] [s:META]Whether you agree or disagree with the actions of that specific agent, that doesn't tie into the policy. I asked you for a specific policy.[e:META]
+
+David: [s:META]The policy is specifically illegal.[e:META]
+
+Challenger: [s:META]What you told me was that—[e:META]
+
+David: [s:META]Border Patrol is not illegal.[e:META]
+
+Challenger: [s:META]Border Patrol is not illegal.[e:META]
+
+David: [s:META]I never said that it was.[e:META]
+
+Challenger: [s:META]The specific policy you stated, and I quote, is having roving—[e:META]
+
+David: [s:META]Roving patrols.[e:META]
+
+Challenger: [s:META]Roving patrols of law enforcement.[e:META]
+
+David: [s:META]With no explicit directives that result in the—yeah.[e:META]
+
+Challenger: [s:META]That's not illegal.[e:META]
+
+David: [s:AD_HOM]I'm not making the claim that that in particular is illegal. I'm stating—okay, let's calm down. Let's take a breath so you can understand. You're not calm; you're trembling. So, to be clear, when it comes to the roving patrols, the idea that this is best policy or best practice is absolutely ridiculous. And first of all,[e:AD_HOM] [s:C_1c]what's illegal is when they executed a guy exercising his First and Second Amendment rights [s:D_1d]by carrying a concealed firearm and also going to a protest, not intervening whatsoever. He didn't even touch a single one of those agents.[e:D_1d] That's what's illegal there. That's a public execution.[e:C_1c]
+
+Challenger: [s:R_2b]Reaching for his firearm?[e:R_2b]
+
+David: [s:META]There's no evidence of him reaching for his firearm.[e:META]
+
+Challenger: [s:META]He was reaching for his firearm.[e:META]
+
+David: [s:AD_HOM]Did the Older Millennial tell you that?[e:AD_HOM]
+
+Challenger: [s:AD_HOM]And again, if you try to—the Older Millennial is wonderful, so I don't know what you're getting at. But regardless,[e:AD_HOM] [s:D_2b]if you look at the actual footage, he absolutely reaches for his firearm.[e:D_2b] [s:META]Yes, he does.[e:META]
+
+David: [s:AD_HOM]He did have a weapon, though: he had a camera. And whenever you record the Trump administration, they don't really like transparency, so they're probably going to kill you.[e:AD_HOM]
+
+Challenger: [s:META]That's really fascinating, because they were all wearing body cameras, right?[e:META]
+
+David: [s:META]ICE—Immigration and Customs Enforcement—when they kill people here... well, not here, sorry, in Texas, that's where I'm from, they weren't wearing body cameras.[e:META]
+
+Challenger: [s:META]They are wearing body cameras. It's by law. And if you look at what was—wait a second, let me finish. Thank you.[e:META]
+
+David: [s:META]I just want a substantive response, but you're not really addressing—[e:META]
+
+Challenger: [s:META]I have told you directly. You're not sure about that. If you look at what was actually happening during this time,[e:META] [s:D_2c]Alex Pretty was getting in the way of the lawful arrest of illegal aliens who are going around murdering American citizens.[e:D_2c] [s:META]And again, whether you agree or disagree with the one specific instance of what happened to Alex Pretty, that does not translate over to law, and it certainly doesn't translate over to Trump.[e:META] [s:C_2b][s:Q_2]absolutely[e:Q_2] What Trump was doing was absolutely lawful,[e:C_2b] [s:PHATIC]and thank God he's doing it,[e:PHATIC] [s:W_2c]because if you don't want dead Americans, you've got to stop the foreign invasion.[e:W_2c]
+
+David: [s:AD_HOM][laughter] The "foreign invasion"? That's ridiculous. No, I legitimately thought that was funny.[e:AD_HOM] [s:R_1b]So, if your primary concern is, again, like I said, Americans, then you're not going to conduct mass deportations, because they result in more violent criminals being released since you're going to prioritize easier removals—which typically involves people who have been here for a long period of time, working better jobs, etc., who are easily caught and removed from the country.[e:R_1b] [s:EXPO]I want Immigration and Customs Enforcement to prioritize the criminals who killed Laken Riley, who murdered Sheridan Gorman. I want cooperation between states. Republicans don't want that.[e:EXPO] [s:D_1e]They deployed thousands of Immigration and Customs Enforcement officers to Minnesota, and in order to remove them, they gave the governor an ultimatum: if you give up your state's voter rolls, then we'll remove ICE. It's a political pawn. They're weaponizing law enforcement to do the bidding of the President of the United States. And eleven people have died in public as a result of that, and then multiple have died in detention, and they've lost in the courts 19,000 times with 5,000 due process violations.[e:D_1e] [s:C_1d]That is not enforcing the law; that's violating it [s:Q_1]explicitly[e:Q_1] explicitly.[e:C_1d]
